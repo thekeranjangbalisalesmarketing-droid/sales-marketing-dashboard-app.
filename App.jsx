@@ -64,12 +64,11 @@ const INITIAL_PICS = [
   { id: 'pic-5', posisi: 'DRIVER', nama: 'NADA', status: 'Active' },
   { id: 'pic-6', posisi: 'EVENT', nama: 'SELVIA', status: 'Active' },
   { id: 'pic-7', posisi: 'EVENT', nama: 'DHIMAS', status: 'Active' },
-  { id: 'pic-8', posisi: 'EVENT', nama: 'VIQI', status: 'Active' },
   { id: 'pic-9', posisi: 'GOVERMENT', nama: 'LINDA', status: 'Active' },
   { id: 'pic-10', posisi: 'B2B', nama: 'VACANT', status: 'Vacant' },
   { id: 'pic-11', posisi: 'CRM', nama: 'ARVA', status: 'Active' },
   { id: 'pic-12', posisi: 'MAGANG', nama: 'FAHMI', status: 'Active' },
-  { id: 'pic-13', posisi: 'HELPER', nama: 'DARMA', status: 'Active' },
+  { id: 'pic-13', posisi: 'HELPER', nama: 'DHARMA', status: 'Active' },
   { id: 'pic-14', posisi: 'ADMIN & ASISTEN', nama: 'WINDA', status: 'Active' },
 ];
 
@@ -164,40 +163,6 @@ const INITIAL_KPI_SCORECARDS = [
 
 const INITIAL_ACQUISITIONS = [
   {
-    id: 'acq-1',
-    tanggal: '2026-11-07',
-    minggu: 'W1',
-    waktu: '09:00 - 19:00',
-    kanal: 'EVENT',
-    pic: 'VIQI',
-    instansi: 'MUSICOS 189 (COMPETITION DRUM)',
-    program: 'EVENT + BELANJA',
-    venue: 'TEATER SABA & BELANJA',
-    partner: 'KANG HENDRA',
-    transport: 'MOBIL',
-    pax: 100,
-    revenue: 15000000,
-    transaksi: 25,
-    noHp: '0877-6876-4855'
-  },
-  {
-    id: 'acq-2',
-    tanggal: '2026-11-08',
-    minggu: 'W1',
-    waktu: '09:00 - 19:00',
-    kanal: 'EVENT',
-    pic: 'VIQI',
-    instansi: 'MUSICOS 189 (COMPETITION ELECTRIC BAND)',
-    program: 'EVENT + BELANJA',
-    venue: 'TEATER SABA & BELANJA',
-    partner: 'KANG HENDRA',
-    transport: 'MOBIL',
-    pax: 100,
-    revenue: 15000000,
-    transaksi: 28,
-    noHp: '0877-6876-4855'
-  },
-  {
     id: 'acq-3',
     tanggal: '2026-11-14',
     minggu: 'W2',
@@ -231,23 +196,6 @@ const INITIAL_ACQUISITIONS = [
     transaksi: 75,
     noHp: '-'
   },
-  {
-    id: 'acq-5',
-    tanggal: '2026-11-29',
-    minggu: 'W5',
-    waktu: 'TENTATIF',
-    kanal: 'EVENT',
-    pic: 'VIQI',
-    instansi: 'EVENT AWAN',
-    program: 'EVENT + BELANJA',
-    venue: 'TEATER SABA & BELANJA',
-    partner: 'AWAN',
-    transport: 'MOBIL',
-    pax: 400,
-    revenue: 42000000,
-    transaksi: 70,
-    noHp: '-'
-  }
 ];
 
 const INITIAL_WEEKLY_METRICS = [
@@ -256,57 +204,6 @@ const INITIAL_WEEKLY_METRICS = [
   { minggu: 'W3', label: '15–21 Nov', revenue: 57960580, traffic: 890, transaksi: 120 },
   { minggu: 'W4', label: '22–28 Nov', revenue: 38450000, traffic: 710, transaksi: 76 },
   { minggu: 'W5', label: '29–30 Nov', revenue: 87000000, traffic: 800, transaksi: 145 }
-];
-
-const INITIAL_TASKS = [
-  {
-    id: 'task-1',
-    judul: 'Follow Up Event AWAN & Celebration (29 Nov)',
-    pic: 'DHIMAS & VIQI',
-    kanal: 'EVENT',
-    tanggal: '2026-11-29',
-    waktu: '15:00',
-    prioritas: 'Critical',
-    status: 'In Progress',
-    progress: 70
-  },
-  {
-    id: 'task-2',
-    judul: 'Follow Up Rombongan YYK Prima Tour',
-    pic: 'NADIA',
-    kanal: 'GUIDE',
-    tanggal: '2026-11-14',
-    waktu: '10:00',
-    prioritas: 'High',
-    status: 'Done',
-    progress: 100
-  },
-  {
-    id: 'task-3',
-    judul: 'Follow Up Rencana 2 Venue Akhir Okt / Awal Des',
-    pic: 'DHIMAS',
-    kanal: 'EVENT',
-    tanggal: '2026-11-25',
-    waktu: '11:00',
-    prioritas: 'High',
-    status: 'In Progress',
-    progress: 50
-  }
-];
-
-const INITIAL_MOMS = [
-  {
-    id: 'mom-1',
-    tanggal: '2026-11-20',
-    minggu: 'W3',
-    judul: 'Evaluasi Schedule Rombongan Event & Guide',
-    peserta: 'CHOKI DASYAT, NADIA, SELVIA, DHIMAS, VIQI, WINDA',
-    poinPembahasan: 'Koordinasi venue Teater Saba & Belanja untuk rombongan event dan guide, serta tindak lanjut prospek Warm/Hot dari kunjungan mitra EO & sekolah.',
-    actionItem: 'Konfirmasi teknis venue & rundown rombongan akhir November',
-    picAction: 'DHIMAS',
-    deadline: '2026-11-25',
-    convertedToTask: false
-  }
 ];
 
 const formatIDR = (val) => {
@@ -480,7 +377,7 @@ export default function App() {
   const [aiMessages, setAiMessages] = useState([
     {
       role: 'assistant',
-      text: 'Halo! Saya AI Sales & Marketing Strategist. Tanya saya tentang jadwal rombongan event & guide, perbandingan W1–W5, skor KPI per PIC, atau posisi VACANT.'
+      text: 'Halo! Saya AI Admin Sales & Marketing Strategist. Tanya saya tentang jadwal rombongan & event, perbandingan W1–W5, skor KPI per PIC, atau posisi VACANT.'
     }
   ]);
 
