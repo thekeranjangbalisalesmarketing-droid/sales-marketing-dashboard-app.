@@ -154,9 +154,9 @@ const INITIAL_KPI_SCORECARDS = [
     periodeLabel: 'BULANAN',
     summaryLabel: '',
     rows: [
-      { id: 'fg-1', indikator: 'SERVICE TRAILING', bobot: 100, target: 10, targetMtd: 7, actual: 4, isCurrency: false }
+      { id: 'd-1', indikator: 'SERVICE TRAILING', bobot: 100, target: 10, targetMtd: 7, actual: 4, isCurrency: false }
     ]
-  },    
+  },
   {
     id: 'sc-admin-winda',
     picName: 'WINDA',
@@ -214,6 +214,46 @@ const INITIAL_WEEKLY_METRICS = [
   { minggu: 'W3', label: '15–21 Nov', revenue: 57960580, traffic: 890, transaksi: 120 },
   { minggu: 'W4', label: '22–28 Nov', revenue: 38450000, traffic: 710, transaksi: 76 },
   { minggu: 'W5', label: '29–30 Nov', revenue: 87000000, traffic: 800, transaksi: 145 }
+];
+
+const INITIAL_TASKS = [
+  {
+    id: 'task-1',
+    judul: 'Follow Up Event A Celebration of Confidence & Creativity (29 Nov)',
+    pic: 'DHIMAS',
+    kanal: 'EVENT',
+    tanggal: '2026-11-29',
+    waktu: '15:00',
+    prioritas: 'Critical',
+    status: 'In Progress',
+    progress: 70
+  },
+  {
+    id: 'task-2',
+    judul: 'Follow Up Rombongan YYK Prima Tour',
+    pic: 'NADIA',
+    kanal: 'GUIDE',
+    tanggal: '2026-11-14',
+    waktu: '10:00',
+    prioritas: 'Done',
+    status: 'Done',
+    progress: 100
+  }
+];
+
+const INITIAL_MOMS = [
+  {
+    id: 'mom-1',
+    tanggal: '2026-11-20',
+    minggu: 'W3',
+    judul: 'Evaluasi Schedule Rombongan & Event November 2026',
+    peserta: 'CHOKI DASYAT, NADIA, SELVIA, DHIMAS, LINDA, ARVA, FAHMI, DHARMA, WINDA',
+    poinPembahasan: 'Koordinasi jadwal rombongan, kesiapan venue Teater Saba & Belanja, serta percepatan pencapaian target KPI per PIC.',
+    actionItem: 'Konfirmasi teknis event tanggal 29 November & update capaian actual mingguan',
+    picAction: 'WINDA',
+    deadline: '2026-11-23',
+    convertedToTask: false
+  }
 ];
 
 const formatIDR = (val) => {
