@@ -148,6 +148,16 @@ const INITIAL_KPI_SCORECARDS = [
     ]
   },
   {
+    id: 'sc-helper-dharma',
+    picName: 'DHARMA',
+    posisi: 'HELPER',
+    periodeLabel: 'BULANAN',
+    summaryLabel: '',
+    rows: [
+      { id: 'fg-1', indikator: 'SERVICE TRAILING', bobot: 100, target: 10, targetMtd: 7, actual: 4, isCurrency: false }
+    ]
+  },    
+  {
     id: 'sc-admin-winda',
     picName: 'WINDA',
     posisi: 'ADMIN & ASISTEN',
