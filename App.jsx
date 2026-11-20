@@ -40,7 +40,7 @@ import {
   Legend
 } from 'recharts';
 
-const STORAGE_KEY = 'sm_command_center_v2';
+const STORAGE_KEY = 'sm_command_center_v3';
 const AUTH_SESSION_KEY = 'sm_command_center_unlocked_v1';
 const ACCESS_PASSCODE = import.meta.env.VITE_APP_PASSCODE || 'SM2026';
 
@@ -49,6 +49,9 @@ const PROGRAM_PAKET_OPTIONS = [
   'LUNCH + SHOPPING',
   'SHOPPING ONLY',
   'EVENT TEATER 1484',
+  'EVENT + BELANJA',
+  'BELANJA + MELUKIS GERABAH',
+  'BELANJA + MEMBATIK',
   'DINNER ONLY',
   'LUNCH ONLY'
 ];
@@ -58,15 +61,16 @@ const INITIAL_PICS = [
   { id: 'pic-2', posisi: 'LEADER', nama: 'VACANT', status: 'Vacant' },
   { id: 'pic-3', posisi: 'GUIDE', nama: 'NADIA', status: 'Active' },
   { id: 'pic-4', posisi: 'T & T', nama: 'VACANT', status: 'Vacant' },
-  { id: 'pic-5', posisi: 'DRIVER', nama: 'VACANT', status: 'Vacant' },
-  { id: 'pic-6', posisi: 'EVENT', nama: 'SILVIA', status: 'Active' },
+  { id: 'pic-5', posisi: 'DRIVER', nama: 'NADA', status: 'Active' },
+  { id: 'pic-6', posisi: 'EVENT', nama: 'SELVIA', status: 'Active' },
   { id: 'pic-7', posisi: 'EVENT', nama: 'DHIMAS', status: 'Active' },
-  { id: 'pic-8', posisi: 'GOVERMENT', nama: 'LINDA', status: 'Active' },
-  { id: 'pic-9', posisi: 'B2B', nama: 'VACANT', status: 'Vacant' },
-  { id: 'pic-10', posisi: 'CRM', nama: 'ARVA', status: 'Active' },
-  { id: 'pic-11', posisi: 'MAGANG', nama: 'FAHMI', status: 'Active' },
-  { id: 'pic-12', posisi: 'HELPER', nama: 'DARMA', status: 'Active' },
-  { id: 'pic-13', posisi: 'ADMIN & ASISTEN', nama: 'WINDA', status: 'Active' },
+  { id: 'pic-8', posisi: 'EVENT', nama: 'VIQI', status: 'Active' },
+  { id: 'pic-9', posisi: 'GOVERMENT', nama: 'LINDA', status: 'Active' },
+  { id: 'pic-10', posisi: 'B2B', nama: 'VACANT', status: 'Vacant' },
+  { id: 'pic-11', posisi: 'CRM', nama: 'ARVA', status: 'Active' },
+  { id: 'pic-12', posisi: 'MAGANG', nama: 'FAHMI', status: 'Active' },
+  { id: 'pic-13', posisi: 'HELPER', nama: 'DARMA', status: 'Active' },
+  { id: 'pic-14', posisi: 'ADMIN & ASISTEN', nama: 'WINDA', status: 'Active' },
 ];
 
 const INITIAL_KPI_SCORECARDS = [
@@ -82,17 +86,6 @@ const INITIAL_KPI_SCORECARDS = [
     ]
   },
   {
-    id: 'sc-leader',
-    picName: 'VACANT',
-    posisi: 'LEADER',
-    periodeLabel: 'BULANAN',
-    summaryLabel: 'TOTAL',
-    rows: [
-      { id: 'l-1', indikator: 'REVENUE', bobot: 50, target: 1451343151, targetMtd: 967562100, actual: 189411850, isCurrency: true },
-      { id: 'l-2', indikator: 'TRAFFIC', bobot: 50, target: 4973, targetMtd: 3316, actual: 3192, isCurrency: false }
-    ]
-  },
-  {
     id: 'sc-guide',
     picName: 'NADIA',
     posisi: 'GUIDE',
@@ -104,30 +97,8 @@ const INITIAL_KPI_SCORECARDS = [
     ]
   },
   {
-    id: 'sc-tt',
-    picName: 'VACANT',
-    posisi: 'T&T',
-    periodeLabel: 'BULANAN',
-    summaryLabel: '',
-    rows: [
-      { id: 't-1', indikator: 'REVENUE', bobot: 50, target: 290268630, targetMtd: 187270084, actual: 0, isCurrency: true },
-      { id: 't-2', indikator: 'TRAFFIC', bobot: 50, target: 995, targetMtd: 642, actual: 0, isCurrency: false }
-    ]
-  },
-  {
-    id: 'sc-driver',
-    picName: 'VACANT',
-    posisi: 'DRIVER',
-    periodeLabel: 'BULANAN',
-    summaryLabel: '',
-    rows: [
-      { id: 'd-1', indikator: 'REVENUE', bobot: 70, target: 290268630, targetMtd: 187270084, actual: 0, isCurrency: true },
-      { id: 'd-2', indikator: 'TRAFFIC', bobot: 30, target: 995, targetMtd: 642, actual: 0, isCurrency: false }
-    ]
-  },
-  {
-    id: 'sc-event-silvia',
-    picName: 'SILVIA',
+    id: 'sc-event-selvia',
+    picName: 'SELVIA',
     posisi: 'EVENT',
     periodeLabel: 'BULANAN',
     summaryLabel: '',
@@ -158,17 +129,6 @@ const INITIAL_KPI_SCORECARDS = [
     ]
   },
   {
-    id: 'sc-b2b-vacant',
-    picName: 'VACANT',
-    posisi: 'B2B',
-    periodeLabel: 'BULANAN',
-    summaryLabel: '',
-    rows: [
-      { id: 'b-1', indikator: 'REVENUE', bobot: 70, target: 3586, targetMtd: 2314, actual: 0, isCurrency: false },
-      { id: 'b-2', indikator: 'TRAFFIC', bobot: 30, target: 290268630, targetMtd: 187270084, actual: 0, isCurrency: true }
-    ]
-  },
-  {
     id: 'sc-crm-arva',
     picName: 'ARVA',
     posisi: 'CRM',
@@ -189,16 +149,6 @@ const INITIAL_KPI_SCORECARDS = [
     ]
   },
   {
-    id: 'sc-helper-darma',
-    picName: 'DARMA',
-    posisi: 'HELPER',
-    periodeLabel: 'BULANAN',
-    summaryLabel: '',
-    rows: [
-      { id: 'hd-1', indikator: 'SERVICE TRAILING', bobot: 100, target: 10, targetMtd: 7, actual: 4, isCurrency: false }
-    ]
-  },
-  {
     id: 'sc-admin-winda',
     picName: 'WINDA',
     posisi: 'ADMIN & ASISTEN',
@@ -215,187 +165,132 @@ const INITIAL_KPI_SCORECARDS = [
 const INITIAL_ACQUISITIONS = [
   {
     id: 'acq-1',
-    tanggal: '2026-11-01',
-    minggu: 'W1',
-    waktu: '15:07',
-    kanal: 'GUIDE',
-    pic: 'NADIA',
-    instansi: 'PT SAMA MANDIRI KARANGANYAR',
-    program: 'DINNER + SHOPPING',
-    pax: 50,
-    revenue: 3125000,
-    transaksi: 14,
-    noHp: '082266143591'
-  },
-  {
-    id: 'acq-2',
-    tanggal: '2026-11-03',
-    minggu: 'W1',
-    waktu: '14:20',
-    kanal: 'GUIDE',
-    pic: 'NADIA',
-    instansi: 'SMAN 1 BAURENO',
-    program: 'DINNER + SHOPPING',
-    pax: 270,
-    revenue: 5654200,
-    transaksi: 27,
-    noHp: '081356041945'
-  },
-  {
-    id: 'acq-3',
-    tanggal: '2026-11-05',
-    minggu: 'W1',
-    waktu: '18:30',
-    kanal: 'EVENT',
-    pic: 'SILVIA',
-    instansi: 'UPN VETERAN SURABAYA JATIM',
-    program: 'DINNER + SHOPPING',
-    pax: 280,
-    revenue: 2807200,
-    transaksi: 28,
-    noHp: '08174293438'
-  },
-  {
-    id: 'acq-4',
     tanggal: '2026-11-07',
     minggu: 'W1',
     waktu: '09:00 - 19:00',
     kanal: 'EVENT',
+    pic: 'VIQI',
+    instansi: 'MUSICOS 189 (COMPETITION DRUM)',
+    program: 'EVENT + BELANJA',
+    venue: 'TEATER SABA & BELANJA',
+    partner: 'KANG HENDRA',
+    transport: 'MOBIL',
+    pax: 100,
+    revenue: 15000000,
+    transaksi: 25,
+    noHp: '0877-6876-4855'
+  },
+  {
+    id: 'acq-2',
+    tanggal: '2026-11-08',
+    minggu: 'W1',
+    waktu: '09:00 - 19:00',
+    kanal: 'EVENT',
+    pic: 'VIQI',
+    instansi: 'MUSICOS 189 (COMPETITION ELECTRIC BAND)',
+    program: 'EVENT + BELANJA',
+    venue: 'TEATER SABA & BELANJA',
+    partner: 'KANG HENDRA',
+    transport: 'MOBIL',
+    pax: 100,
+    revenue: 15000000,
+    transaksi: 28,
+    noHp: '0877-6876-4855'
+  },
+  {
+    id: 'acq-3',
+    tanggal: '2026-11-14',
+    minggu: 'W2',
+    waktu: 'TENTATIF',
+    kanal: 'GUIDE',
+    pic: 'NADIA',
+    instansi: 'YYK PRIMA TOUR',
+    program: 'LUNCH + SHOPPING',
+    venue: 'RESTO & BELANJA',
+    partner: 'MITRA TOUR',
+    transport: 'BUS',
+    pax: 120,
+    revenue: 18000000,
+    transaksi: 32,
+    noHp: '-'
+  },
+  {
+    id: 'acq-4',
+    tanggal: '2026-11-29',
+    minggu: 'W5',
+    waktu: '15:00 - 19:00',
+    kanal: 'EVENT',
     pic: 'DHIMAS',
-    instansi: 'KPOP EXO L',
-    program: 'EVENT TEATER 1484',
-    pax: 150,
-    revenue: 5145000,
-    transaksi: 19,
-    noHp: '082145600496'
+    instansi: 'A CELEBRATION OF CONFIDENCE & CREATIVITY',
+    program: 'EVENT + BELANJA',
+    venue: 'TEATER SABA & BELANJA',
+    partner: 'AWAN',
+    transport: 'MOBIL',
+    pax: 400,
+    revenue: 45000000,
+    transaksi: 75,
+    noHp: '-'
   },
   {
     id: 'acq-5',
-    tanggal: '2026-11-11',
-    minggu: 'W2',
-    waktu: '10:03',
-    kanal: 'CRM',
-    pic: 'ARVA',
-    instansi: 'BAZAR EO',
-    program: 'SHOPPING ONLY',
-    pax: 95,
-    revenue: 20340060,
-    transaksi: 35,
-    noHp: '08964158107'
-  },
-  {
-    id: 'acq-6',
-    tanggal: '2026-11-12',
-    minggu: 'W2',
-    waktu: '11:45',
+    tanggal: '2026-11-29',
+    minggu: 'W5',
+    waktu: 'TENTATIF',
     kanal: 'EVENT',
-    pic: 'SILVIA',
-    instansi: 'GK MUKERNAS BMPS 2026',
-    program: 'EVENT TEATER 1484',
-    pax: 120,
-    revenue: 14759500,
-    transaksi: 36,
-    noHp: '082147513515'
-  },
-  {
-    id: 'acq-7',
-    tanggal: '2026-11-13',
-    minggu: 'W2',
-    waktu: '15:19',
-    kanal: 'GOVERMENT',
-    pic: 'LINDA',
-    instansi: 'DINAS PARIWISATA & INSTANSI',
-    program: 'DINNER + SHOPPING',
-    pax: 85,
-    revenue: 8420000,
-    transaksi: 18,
-    noHp: '081380421170'
-  },
-  {
-    id: 'acq-8',
-    tanggal: '2026-11-16',
-    minggu: 'W3',
-    waktu: '15:27',
-    kanal: 'GUIDE',
-    pic: 'NADIA',
-    instansi: 'AWI MUSIC CENTER SURABAYA',
-    program: 'LUNCH + SHOPPING',
-    pax: 150,
-    revenue: 2071400,
-    transaksi: 20,
-    noHp: '089681201575'
-  },
-  {
-    id: 'acq-9',
-    tanggal: '2026-11-18',
-    minggu: 'W3',
-    waktu: '15:02',
-    kanal: 'GOVERMENT',
-    pic: 'LINDA',
-    instansi: 'KEMENKES',
-    program: 'DINNER + SHOPPING',
-    pax: 110,
-    revenue: 6762000,
-    transaksi: 15,
-    noHp: '087760445327'
-  },
-  {
-    id: 'acq-10',
-    tanggal: '2026-11-20',
-    minggu: 'W3',
-    waktu: '17:00 - 20:00',
-    kanal: 'EVENT',
-    pic: 'DHIMAS',
-    instansi: 'MUKERNAS BMPS 2026',
-    program: 'EVENT TEATER 1484',
-    pax: 300,
-    revenue: 49127180,
-    transaksi: 85,
-    noHp: '08133654514'
+    pic: 'VIQI',
+    instansi: 'EVENT AWAN',
+    program: 'EVENT + BELANJA',
+    venue: 'TEATER SABA & BELANJA',
+    partner: 'AWAN',
+    transport: 'MOBIL',
+    pax: 400,
+    revenue: 42000000,
+    transaksi: 70,
+    noHp: '-'
   }
 ];
 
 const INITIAL_WEEKLY_METRICS = [
-  { minggu: 'W1', label: '1–7 Nov', revenue: 16733200, traffic: 750, transaksi: 88 },
-  { minggu: 'W2', label: '8–14 Nov', revenue: 43519560, traffic: 640, transaksi: 89 },
+  { minggu: 'W1', label: '1–7 Nov', revenue: 30000000, traffic: 200, transaksi: 53 },
+  { minggu: 'W2', label: '8–14 Nov', revenue: 18000000, traffic: 120, transaksi: 32 },
   { minggu: 'W3', label: '15–21 Nov', revenue: 57960580, traffic: 890, transaksi: 120 },
   { minggu: 'W4', label: '22–28 Nov', revenue: 38450000, traffic: 710, transaksi: 76 },
-  { minggu: 'W5', label: '29–30 Nov', revenue: 14200000, traffic: 340, transaksi: 32 }
+  { minggu: 'W5', label: '29–30 Nov', revenue: 87000000, traffic: 800, transaksi: 145 }
 ];
 
 const INITIAL_TASKS = [
   {
     id: 'task-1',
-    judul: 'Follow Up Proposal Rombongan Event W3 & W4',
-    pic: 'DHIMAS',
+    judul: 'Follow Up Event AWAN & Celebration (29 Nov)',
+    pic: 'DHIMAS & VIQI',
     kanal: 'EVENT',
-    tanggal: '2026-11-21',
-    waktu: '10:00',
+    tanggal: '2026-11-29',
+    waktu: '15:00',
     prioritas: 'Critical',
     status: 'In Progress',
-    progress: 65
+    progress: 70
   },
   {
     id: 'task-2',
-    judul: 'Blast Database Mitra Guide & Travel Agent Bali',
+    judul: 'Follow Up Rombongan YYK Prima Tour',
     pic: 'NADIA',
     kanal: 'GUIDE',
-    tanggal: '2026-11-22',
-    waktu: '09:30',
+    tanggal: '2026-11-14',
+    waktu: '10:00',
     prioritas: 'High',
-    status: 'In Progress',
-    progress: 50
+    status: 'Done',
+    progress: 100
   },
   {
     id: 'task-3',
-    judul: 'Rekapitulasi Transaksi & Invoice Mingguan W3',
-    pic: 'WINDA',
-    kanal: 'ADMIN & ASISTEN',
-    tanggal: '2026-11-21',
-    waktu: '16:00',
-    prioritas: 'Normal',
-    status: 'Done',
-    progress: 100
+    judul: 'Follow Up Rencana 2 Venue Akhir Okt / Awal Des',
+    pic: 'DHIMAS',
+    kanal: 'EVENT',
+    tanggal: '2026-11-25',
+    waktu: '11:00',
+    prioritas: 'High',
+    status: 'In Progress',
+    progress: 50
   }
 ];
 
@@ -404,12 +299,12 @@ const INITIAL_MOMS = [
     id: 'mom-1',
     tanggal: '2026-11-20',
     minggu: 'W3',
-    judul: 'Evaluasi Performa Sales & Marketing Mingguan W3',
-    peserta: 'CHOKI DASYAT, SILVIA, DHIMAS, LINDA, ARVA, WINDA',
-    poinPembahasan: 'Lonjakan transaksi pada rombongan event besar perlu diimbangi dengan pengisian posisi Vacant (Leader, T&T, Driver, B2B) serta percepatan closing leads CRM.',
-    actionItem: 'Susun daftar prioritas follow up 50 prospek event & government untuk W4',
+    judul: 'Evaluasi Schedule Rombongan Event & Guide',
+    peserta: 'CHOKI DASYAT, NADIA, SELVIA, DHIMAS, VIQI, WINDA',
+    poinPembahasan: 'Koordinasi venue Teater Saba & Belanja untuk rombongan event dan guide, serta tindak lanjut prospek Warm/Hot dari kunjungan mitra EO & sekolah.',
+    actionItem: 'Konfirmasi teknis venue & rundown rombongan akhir November',
     picAction: 'DHIMAS',
-    deadline: '2026-11-23',
+    deadline: '2026-11-25',
     convertedToTask: false
   }
 ];
@@ -441,15 +336,15 @@ const calcPctChange = (current, previous) => {
   return Number((((curr - prev) / Math.abs(prev)) * 100).toFixed(1));
 };
 
-const buildGoogleCalendarUrl = (title, dateStr, timeStr, details, location = 'Sales & Marketing Command Center') => {
+const buildGoogleCalendarUrl = (title, dateStr, timeStr, details, location = 'Teater Saba & Belanja') => {
   const cleanDate = (dateStr || '2026-11-21').replace(/-/g, '');
-  const cleanTime = (timeStr || '09:00').replace(':', '') + '00';
-  const endHourNum = (parseInt((timeStr || '09:00').split(':')[0], 10) + 1) % 24;
+  const rawTime = (timeStr || '09:00').split('-')[0].trim().replace('.', ':');
+  const cleanTime = (rawTime.includes(':') ? rawTime : '09:00').padStart(5, '0').replace(':', '') + '00';
+  const endHourNum = (parseInt(cleanTime.slice(0, 2), 10) + 1) % 24;
   const endHour = String(endHourNum).padStart(2, '0');
-  const endMin = (timeStr || '09:00').split(':')[1] || '00';
-  const endTime = `${endHour}${endMin}00`;
+  const endMin = cleanTime.slice(2, 4);
   const startDT = `${cleanDate}T${cleanTime}`;
-  const endDT = `${cleanDate}T${endTime}`;
+  const endDT = `${cleanDate}T${endHour}${endMin}00`;
   const params = new URLSearchParams({
     action: 'TEMPLATE',
     text: title,
@@ -544,6 +439,9 @@ export default function App() {
     pic: 'NADIA',
     instansi: '',
     program: 'DINNER + SHOPPING',
+    venue: 'TEATER SABA & BELANJA',
+    partner: '',
+    transport: 'BUS',
     pax: 0,
     revenue: 0,
     transaksi: 0,
@@ -557,8 +455,8 @@ export default function App() {
 
   const [newTask, setNewTask] = useState({
     judul: '',
-    pic: 'CHOKI DASYAT',
-    kanal: 'MANAGER',
+    pic: 'NADIA',
+    kanal: 'GUIDE',
     tanggal: '2026-11-21',
     waktu: '10:00',
     prioritas: 'High',
@@ -582,7 +480,7 @@ export default function App() {
   const [aiMessages, setAiMessages] = useState([
     {
       role: 'assistant',
-      text: 'Halo! Saya AI Sales & Marketing Strategist. Tanya saya tentang perbandingan W1–W5, skor KPI per PIC, pencapaian %ACV & %Realisasi, atau posisi VACANT.'
+      text: 'Halo! Saya AI Sales & Marketing Strategist. Tanya saya tentang jadwal rombongan event & guide, perbandingan W1–W5, skor KPI per PIC, atau posisi VACANT.'
     }
   ]);
 
@@ -671,6 +569,7 @@ export default function App() {
     setFormAcq((prev) => ({
       ...prev,
       instansi: '',
+      partner: '',
       pax: 0,
       revenue: 0,
       transaksi: 0,
@@ -695,7 +594,8 @@ export default function App() {
         row.instansi.toLowerCase().includes(q) ||
         row.pic.toLowerCase().includes(q) ||
         row.kanal.toLowerCase().includes(q) ||
-        row.program.toLowerCase().includes(q);
+        row.program.toLowerCase().includes(q) ||
+        (row.partner || '').toLowerCase().includes(q);
 
       let matchDate = true;
       if (periodMode === 'harian') {
@@ -1148,7 +1048,7 @@ export default function App() {
                   <ShieldCheck className="w-3.5 h-3.5" /> Auto-Backup Aktif ({lastSavedAt})
                 </span>
                 <span>•</span>
-                <span>13 Posisi Tim Sales & Marketing</span>
+                <span>Report Sales & Marketing November 2026</span>
               </div>
             </div>
           </div>
@@ -1532,10 +1432,10 @@ export default function App() {
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 mb-1">Instansi / Rombongan</label>
+                  <label className="block text-slate-400 mb-1">Event / Rombongan</label>
                   <input
                     type="text"
-                    placeholder="Contoh: SMAN 1 DENPASAR"
+                    placeholder="Contoh: SMK / EVENT / TOUR"
                     value={formAcq.instansi}
                     onChange={(e) => setFormAcq({ ...formAcq, instansi: e.target.value.toUpperCase() })}
                     className="w-full rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-2 text-white"
@@ -1543,7 +1443,7 @@ export default function App() {
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 mb-1">Program Paket (Ketik Manual)</label>
+                  <label className="block text-slate-400 mb-1">Program Paket (Edit Manual)</label>
                   <input
                     type="text"
                     list="program-paket-list"
@@ -1589,7 +1489,7 @@ export default function App() {
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 mb-1">Waktu</label>
+                  <label className="block text-slate-400 mb-1">Waktu / Schedule</label>
                   <input
                     type="text"
                     value={formAcq.waktu}
@@ -1598,12 +1498,12 @@ export default function App() {
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 mb-1">No HP / WA</label>
+                  <label className="block text-slate-400 mb-1">Partner / WA</label>
                   <input
                     type="text"
-                    placeholder="08xxxxxxxxxx"
-                    value={formAcq.noHp}
-                    onChange={(e) => setFormAcq({ ...formAcq, noHp: e.target.value })}
+                    placeholder="Partner / No HP"
+                    value={formAcq.partner}
+                    onChange={(e) => setFormAcq({ ...formAcq, partner: e.target.value.toUpperCase() })}
                     className="w-full rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-2 text-white"
                   />
                 </div>
@@ -1621,7 +1521,7 @@ export default function App() {
             <div className="rounded-xl border border-slate-800 bg-[#0a0d14] overflow-hidden">
               <div className="p-3.5 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 bg-[#0e131d]">
                 <h3 className="text-xs sm:text-sm font-bold text-amber-300 uppercase tracking-wider">
-                  DAILY REPORT AKUISISI SALES & MARKETING ({filteredAcquisitions.length} Record)
+                  SCHEDULE ROMBONGAN EVENT & GUIDE ({filteredAcquisitions.length} Record)
                 </h3>
                 <div className="flex flex-wrap items-center gap-2 text-xs">
                   <select
@@ -1638,7 +1538,7 @@ export default function App() {
                   </select>
                   <input
                     type="text"
-                    placeholder="Cari instansi / PIC..."
+                    placeholder="Cari rombongan / PIC / partner..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1.5 text-slate-200"
@@ -1654,13 +1554,13 @@ export default function App() {
                       <th className="py-2 px-2.5 border border-slate-800">Tanggal</th>
                       <th className="py-2 px-2.5 border border-slate-800">W</th>
                       <th className="py-2 px-2.5 border border-slate-800">Waktu</th>
-                      <th className="py-2 px-2.5 border border-slate-800">PIC / Nama</th>
-                      <th className="py-2 px-2.5 border border-slate-800">Instansi / Rombongan</th>
+                      <th className="py-2 px-2.5 border border-slate-800">PIC</th>
+                      <th className="py-2 px-2.5 border border-slate-800">Event / Rombongan</th>
                       <th className="py-2 px-2.5 border border-slate-800">Program Paket</th>
+                      <th className="py-2 px-2.5 border border-slate-800">Venue</th>
+                      <th className="py-2 px-2.5 border border-slate-800">Partner</th>
                       <th className="py-2 px-2.5 border border-slate-800 text-right">Pax</th>
                       <th className="py-2 px-2.5 border border-slate-800 text-right">Revenue</th>
-                      <th className="py-2 px-2.5 border border-slate-800 text-right">Trx</th>
-                      <th className="py-2 px-2.5 border border-slate-800">No HP</th>
                       <th className="py-2 px-2.5 border border-slate-800 text-center">Aksi</th>
                     </tr>
                   </thead>
@@ -1676,12 +1576,12 @@ export default function App() {
                         <td className="py-2 px-2.5 border border-slate-800/70 font-medium text-slate-200">{row.pic}</td>
                         <td className="py-2 px-2.5 border border-slate-800/70 font-semibold text-white">{row.instansi}</td>
                         <td className="py-2 px-2.5 border border-slate-800/70 text-sky-200">{row.program}</td>
+                        <td className="py-2 px-2.5 border border-slate-800/70 text-slate-300">{row.venue || '-'}</td>
+                        <td className="py-2 px-2.5 border border-slate-800/70 text-slate-300">{row.partner || '-'}</td>
                         <td className="py-2 px-2.5 border border-slate-800/70 text-right">{formatNum(row.pax)}</td>
                         <td className="py-2 px-2.5 border border-slate-800/70 text-right font-bold text-emerald-300">
                           {formatIDR(row.revenue)}
                         </td>
-                        <td className="py-2 px-2.5 border border-slate-800/70 text-right">{formatNum(row.transaksi)}</td>
-                        <td className="py-2 px-2.5 border border-slate-800/70 text-slate-300">{row.noHp || '-'}</td>
                         <td className="py-2 px-2.5 border border-slate-800/70 text-center">
                           <button
                             type="button"
