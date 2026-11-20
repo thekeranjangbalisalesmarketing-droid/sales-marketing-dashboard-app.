@@ -40,25 +40,176 @@ import {
   Legend
 } from 'recharts';
 
-const STORAGE_KEY = 'sm_command_center_v1';
+const STORAGE_KEY = 'sm_command_center_v2';
 const AUTH_SESSION_KEY = 'sm_command_center_unlocked_v1';
-// Ubah kata sandi di bawah ini sesuai keinginan Anda (default: SM2026)
 const ACCESS_PASSCODE = import.meta.env.VITE_APP_PASSCODE || 'SM2026';
 
+const PROGRAM_PAKET_OPTIONS = [
+  'DINNER + SHOPPING',
+  'LUNCH + SHOPPING',
+  'SHOPPING ONLY',
+  'EVENT TEATER 1484',
+  'DINNER ONLY',
+  'LUNCH ONLY'
+];
+
 const INITIAL_PICS = [
-  { id: 'pic-1', posisi: 'MANAGER', nama: 'ECO MUHAMAD RIDWAN', status: 'Active' },
+  { id: 'pic-1', posisi: 'MANAGER', nama: 'CHOKI DASYAT', status: 'Active' },
   { id: 'pic-2', posisi: 'LEADER', nama: 'VACANT', status: 'Vacant' },
-  { id: 'pic-3', posisi: 'GUIDE', nama: 'AGNETIA MARIA NADIA SORAYA', status: 'Active' },
-  { id: 'pic-4', posisi: 'DRIVER', nama: 'VACANT', status: 'Vacant' },
-  { id: 'pic-5', posisi: 'T & T', nama: 'VACANT', status: 'Vacant' },
+  { id: 'pic-3', posisi: 'GUIDE', nama: 'NADIA', status: 'Active' },
+  { id: 'pic-4', posisi: 'T & T', nama: 'VACANT', status: 'Vacant' },
+  { id: 'pic-5', posisi: 'DRIVER', nama: 'VACANT', status: 'Vacant' },
   { id: 'pic-6', posisi: 'EVENT', nama: 'SILVIA', status: 'Active' },
-  { id: 'pic-7', posisi: 'EVENT DEALING', nama: 'DHIMAS', status: 'Active' },
+  { id: 'pic-7', posisi: 'EVENT', nama: 'DHIMAS', status: 'Active' },
   { id: 'pic-8', posisi: 'GOVERMENT', nama: 'LINDA', status: 'Active' },
   { id: 'pic-9', posisi: 'B2B', nama: 'VACANT', status: 'Vacant' },
   { id: 'pic-10', posisi: 'CRM', nama: 'ARVA', status: 'Active' },
-  { id: 'pic-11', posisi: 'HELPER', nama: 'GEDE AGUS DHARMA ARTHA', status: 'Active' },
-  { id: 'pic-12', posisi: 'MAGANG', nama: 'FAHMI', status: 'Active' },
-  { id: 'pic-13', posisi: 'ADMIN', nama: 'WINDA ELLYANA PUSPA SARI', status: 'Active' },
+  { id: 'pic-11', posisi: 'MAGANG', nama: 'FAHMI', status: 'Active' },
+  { id: 'pic-12', posisi: 'HELPER', nama: 'DARMA', status: 'Active' },
+  { id: 'pic-13', posisi: 'ADMIN & ASISTEN', nama: 'WINDA', status: 'Active' },
+];
+
+const INITIAL_KPI_SCORECARDS = [
+  {
+    id: 'sc-manager',
+    picName: 'CHOKI DASYAT',
+    posisi: 'MANAGER',
+    periodeLabel: 'BULANAN',
+    summaryLabel: 'TOTAL',
+    rows: [
+      { id: 'm-1', indikator: 'REVENUE', bobot: 40, target: 3628357876, targetMtd: 2418905251, actual: 654461361, isCurrency: true },
+      { id: 'm-2', indikator: 'TRAFFIC', bobot: 60, target: 12433, targetMtd: 8289, actual: 5091, isCurrency: false }
+    ]
+  },
+  {
+    id: 'sc-leader',
+    picName: 'VACANT',
+    posisi: 'LEADER',
+    periodeLabel: 'BULANAN',
+    summaryLabel: 'TOTAL',
+    rows: [
+      { id: 'l-1', indikator: 'REVENUE', bobot: 50, target: 1451343151, targetMtd: 967562100, actual: 189411850, isCurrency: true },
+      { id: 'l-2', indikator: 'TRAFFIC', bobot: 50, target: 4973, targetMtd: 3316, actual: 3192, isCurrency: false }
+    ]
+  },
+  {
+    id: 'sc-guide',
+    picName: 'NADIA',
+    posisi: 'GUIDE',
+    periodeLabel: 'BULANAN',
+    summaryLabel: '',
+    rows: [
+      { id: 'g-1', indikator: 'REVENUE', bobot: 50, target: 290268630, targetMtd: 193512420, actual: 117227200, isCurrency: true },
+      { id: 'g-2', indikator: 'TRAFFIC', bobot: 50, target: 995, targetMtd: 663, actual: 2642, isCurrency: false }
+    ]
+  },
+  {
+    id: 'sc-tt',
+    picName: 'VACANT',
+    posisi: 'T&T',
+    periodeLabel: 'BULANAN',
+    summaryLabel: '',
+    rows: [
+      { id: 't-1', indikator: 'REVENUE', bobot: 50, target: 290268630, targetMtd: 187270084, actual: 0, isCurrency: true },
+      { id: 't-2', indikator: 'TRAFFIC', bobot: 50, target: 995, targetMtd: 642, actual: 0, isCurrency: false }
+    ]
+  },
+  {
+    id: 'sc-driver',
+    picName: 'VACANT',
+    posisi: 'DRIVER',
+    periodeLabel: 'BULANAN',
+    summaryLabel: '',
+    rows: [
+      { id: 'd-1', indikator: 'REVENUE', bobot: 70, target: 290268630, targetMtd: 187270084, actual: 0, isCurrency: true },
+      { id: 'd-2', indikator: 'TRAFFIC', bobot: 30, target: 995, targetMtd: 642, actual: 0, isCurrency: false }
+    ]
+  },
+  {
+    id: 'sc-event-silvia',
+    picName: 'SILVIA',
+    posisi: 'EVENT',
+    periodeLabel: 'BULANAN',
+    summaryLabel: '',
+    rows: [
+      { id: 'es-1', indikator: 'REVENUE', bobot: 50, target: 290268630, targetMtd: 193512420, actual: 189411850, isCurrency: true },
+      { id: 'es-2', indikator: 'TRAFFIC', bobot: 50, target: 995, targetMtd: 663, actual: 409, isCurrency: false }
+    ]
+  },
+  {
+    id: 'sc-event-dhimas',
+    picName: 'DHIMAS',
+    posisi: 'EVENT',
+    periodeLabel: 'BULANAN',
+    summaryLabel: '',
+    rows: [
+      { id: 'ed-1', indikator: 'DEALING MITRA EVENT', bobot: 100, target: 20, targetMtd: 13, actual: 8, isCurrency: false }
+    ]
+  },
+  {
+    id: 'sc-gov-linda',
+    picName: 'LINDA',
+    posisi: 'GOVERMENT',
+    periodeLabel: 'BULANAN',
+    summaryLabel: '',
+    rows: [
+      { id: 'gl-1', indikator: 'REVENUE', bobot: 70, target: 290268630, targetMtd: 187270084, actual: 20682000, isCurrency: true },
+      { id: 'gl-2', indikator: 'TRAFFIC', bobot: 30, target: 995, targetMtd: 642, actual: 51, isCurrency: false }
+    ]
+  },
+  {
+    id: 'sc-b2b-vacant',
+    picName: 'VACANT',
+    posisi: 'B2B',
+    periodeLabel: 'BULANAN',
+    summaryLabel: '',
+    rows: [
+      { id: 'b-1', indikator: 'REVENUE', bobot: 70, target: 3586, targetMtd: 2314, actual: 0, isCurrency: false },
+      { id: 'b-2', indikator: 'TRAFFIC', bobot: 30, target: 290268630, targetMtd: 187270084, actual: 0, isCurrency: true }
+    ]
+  },
+  {
+    id: 'sc-crm-arva',
+    picName: 'ARVA',
+    posisi: 'CRM',
+    periodeLabel: 'BULANAN',
+    summaryLabel: '',
+    rows: [
+      { id: 'c-1', indikator: 'PENYELESAIAN CRM', bobot: 100, target: 620, targetMtd: 400, actual: 176, isCurrency: false }
+    ]
+  },
+  {
+    id: 'sc-magang-fahmi',
+    picName: 'FAHMI',
+    posisi: 'MAGANG',
+    periodeLabel: 'BULANAN',
+    summaryLabel: '',
+    rows: [
+      { id: 'fg-1', indikator: 'NEW DATABASE TRAVEL', bobot: 100, target: 250, targetMtd: 161, actual: 126, isCurrency: false }
+    ]
+  },
+  {
+    id: 'sc-helper-darma',
+    picName: 'DARMA',
+    posisi: 'HELPER',
+    periodeLabel: 'BULANAN',
+    summaryLabel: '',
+    rows: [
+      { id: 'hd-1', indikator: 'SERVICE TRAILING', bobot: 100, target: 10, targetMtd: 7, actual: 4, isCurrency: false }
+    ]
+  },
+  {
+    id: 'sc-admin-winda',
+    picName: 'WINDA',
+    posisi: 'ADMIN & ASISTEN',
+    periodeLabel: 'BULANAN',
+    summaryLabel: '',
+    rows: [
+      { id: 'w-1', indikator: 'KETERLAKSANAAN GOALS', bobot: 25, target: 100, targetMtd: 71, actual: 30, isPercentValue: true },
+      { id: 'w-2', indikator: 'KETERLAKSANAAN SO', bobot: 25, target: 100, targetMtd: 71, actual: 29, isPercentValue: true },
+      { id: 'w-3', indikator: 'KETERLAKSANAAN SI', bobot: 50, target: 100, targetMtd: 71, actual: 14, isPercentValue: true }
+    ]
+  }
 ];
 
 const INITIAL_ACQUISITIONS = [
@@ -68,14 +219,13 @@ const INITIAL_ACQUISITIONS = [
     minggu: 'W1',
     waktu: '15:07',
     kanal: 'GUIDE',
-    pic: 'AGNETIA MARIA NADIA SORAYA',
+    pic: 'NADIA',
     instansi: 'PT SAMA MANDIRI KARANGANYAR',
     program: 'DINNER + SHOPPING',
     pax: 50,
     revenue: 3125000,
     transaksi: 14,
-    noHp: '082266143591',
-    keterangan: 'Rombongan korporat tiba tepat waktu'
+    noHp: '082266143591'
   },
   {
     id: 'acq-2',
@@ -83,14 +233,13 @@ const INITIAL_ACQUISITIONS = [
     minggu: 'W1',
     waktu: '14:20',
     kanal: 'GUIDE',
-    pic: 'AGNETIA MARIA NADIA SORAYA',
+    pic: 'NADIA',
     instansi: 'SMAN 1 BAURENO',
     program: 'DINNER + SHOPPING',
     pax: 270,
     revenue: 5654200,
     transaksi: 27,
-    noHp: '081356041945',
-    keterangan: 'Study tour sekolah menengah'
+    noHp: '081356041945'
   },
   {
     id: 'acq-3',
@@ -104,23 +253,21 @@ const INITIAL_ACQUISITIONS = [
     pax: 280,
     revenue: 2807200,
     transaksi: 28,
-    noHp: '08174293438',
-    keterangan: 'Gathering mahasiswa & dosen'
+    noHp: '08174293438'
   },
   {
     id: 'acq-4',
     tanggal: '2026-11-07',
     minggu: 'W1',
     waktu: '09:00 - 19:00',
-    kanal: 'EVENT DEALING',
+    kanal: 'EVENT',
     pic: 'DHIMAS',
     instansi: 'KPOP EXO L',
     program: 'EVENT TEATER 1484',
     pax: 150,
     revenue: 5145000,
     transaksi: 19,
-    noHp: '082145600496',
-    keterangan: 'Event komunitas & gathering'
+    noHp: '082145600496'
   },
   {
     id: 'acq-5',
@@ -134,8 +281,7 @@ const INITIAL_ACQUISITIONS = [
     pax: 95,
     revenue: 20340060,
     transaksi: 35,
-    noHp: '08964158107',
-    keterangan: 'Follow up database CRM aktif'
+    noHp: '08964158107'
   },
   {
     id: 'acq-6',
@@ -149,8 +295,7 @@ const INITIAL_ACQUISITIONS = [
     pax: 120,
     revenue: 14759500,
     transaksi: 36,
-    noHp: '082147513515',
-    keterangan: 'Agenda mukernas nasional'
+    noHp: '082147513515'
   },
   {
     id: 'acq-7',
@@ -164,8 +309,7 @@ const INITIAL_ACQUISITIONS = [
     pax: 85,
     revenue: 8420000,
     transaksi: 18,
-    noHp: '081380421170',
-    keterangan: 'Kunjungan dinas pemerintahan'
+    noHp: '081380421170'
   },
   {
     id: 'acq-8',
@@ -173,14 +317,13 @@ const INITIAL_ACQUISITIONS = [
     minggu: 'W3',
     waktu: '15:27',
     kanal: 'GUIDE',
-    pic: 'AGNETIA MARIA NADIA SORAYA',
+    pic: 'NADIA',
     instansi: 'AWI MUSIC CENTER SURABAYA',
     program: 'LUNCH + SHOPPING',
     pax: 150,
     revenue: 2071400,
     transaksi: 20,
-    noHp: '089681201575',
-    keterangan: 'Rombongan musik & seni'
+    noHp: '089681201575'
   },
   {
     id: 'acq-9',
@@ -194,44 +337,30 @@ const INITIAL_ACQUISITIONS = [
     pax: 110,
     revenue: 6762000,
     transaksi: 15,
-    noHp: '087760445327',
-    keterangan: 'Rombongan instansi kesehatan'
+    noHp: '087760445327'
   },
   {
     id: 'acq-10',
     tanggal: '2026-11-20',
     minggu: 'W3',
     waktu: '17:00 - 20:00',
-    kanal: 'EVENT DEALING',
+    kanal: 'EVENT',
     pic: 'DHIMAS',
     instansi: 'MUKERNAS BMPS 2026',
     program: 'EVENT TEATER 1484',
     pax: 300,
     revenue: 49127180,
     transaksi: 85,
-    noHp: '08133654514',
-    keterangan: 'Puncak acara rombongan besar'
+    noHp: '08133654514'
   }
 ];
 
 const INITIAL_WEEKLY_METRICS = [
-  { minggu: 'W1', label: 'Week 1 (1-7 Nov)', revenue: 16733200, traffic: 750, transaksi: 88 },
-  { minggu: 'W2', label: 'Week 2 (8-14 Nov)', revenue: 43519560, traffic: 640, transaksi: 89 },
-  { minggu: 'W3', label: 'Week 3 (15-21 Nov)', revenue: 57960580, traffic: 890, transaksi: 120 },
-  { minggu: 'W4', label: 'Week 4 (22-28 Nov)', revenue: 38450000, traffic: 710, transaksi: 76 },
-  { minggu: 'W5', label: 'Week 5 (29-30 Nov)', revenue: 14200000, traffic: 340, transaksi: 32 }
-];
-
-const INITIAL_KPI_ROWS = [
-  { id: 'kpi-1', kategori: 'A. GOALS', funnel: 'TRAFFIC', bobot: 30, pic: 'ALL SALES & MARKETING', target: 4500, targetMtd: 3200, actual: 2620 },
-  { id: 'kpi-2', kategori: 'A. GOALS', funnel: 'REVENUE', bobot: 50, pic: 'ECO MUHAMAD RIDWAN', target: 1450000000, targetMtd: 950000000, actual: 170862820 },
-  { id: 'kpi-3', kategori: 'A. GOALS', funnel: 'TRANSAKSI', bobot: 20, pic: 'WINDA ELLYANA PUSPA SARI', target: 1200, targetMtd: 850, actual: 434 },
-  { id: 'kpi-4', kategori: 'B. STRATEGI OBJECTIVE', funnel: 'TRAFFIC SALES RESERVASI', bobot: 40, pic: 'AGNETIA MARIA NADIA SORAYA', target: 1800, targetMtd: 1200, actual: 820 },
-  { id: 'kpi-5', kategori: 'B. STRATEGI OBJECTIVE', funnel: 'TRAFFIC EVENT & DEALING', bobot: 60, pic: 'SILVIA & DHIMAS', target: 2700, targetMtd: 2000, actual: 1800 },
-  { id: 'kpi-6', kategori: 'C. STRATEGI INISIATIF', funnel: 'Optimasi Peningkatan Traffic Guide', bobot: 25, pic: 'AGNETIA MARIA NADIA SORAYA', target: 300, targetMtd: 220, actual: 195 },
-  { id: 'kpi-7', kategori: 'C. STRATEGI INISIATIF', funnel: 'Optimasi Peningkatan Traffic Event', bobot: 25, pic: 'SILVIA', target: 400, targetMtd: 300, actual: 260 },
-  { id: 'kpi-8', kategori: 'C. STRATEGI INISIATIF', funnel: 'Optimasi Event Dealing & B2B', bobot: 25, pic: 'DHIMAS', target: 350, targetMtd: 250, actual: 210 },
-  { id: 'kpi-9', kategori: 'C. STRATEGI INISIATIF', funnel: 'Follow Up Database CRM & Gov', bobot: 25, pic: 'ARVA & LINDA', target: 500, targetMtd: 380, actual: 310 }
+  { minggu: 'W1', label: '1–7 Nov', revenue: 16733200, traffic: 750, transaksi: 88 },
+  { minggu: 'W2', label: '8–14 Nov', revenue: 43519560, traffic: 640, transaksi: 89 },
+  { minggu: 'W3', label: '15–21 Nov', revenue: 57960580, traffic: 890, transaksi: 120 },
+  { minggu: 'W4', label: '22–28 Nov', revenue: 38450000, traffic: 710, transaksi: 76 },
+  { minggu: 'W5', label: '29–30 Nov', revenue: 14200000, traffic: 340, transaksi: 32 }
 ];
 
 const INITIAL_TASKS = [
@@ -239,7 +368,7 @@ const INITIAL_TASKS = [
     id: 'task-1',
     judul: 'Follow Up Proposal Rombongan Event W3 & W4',
     pic: 'DHIMAS',
-    kanal: 'EVENT DEALING',
+    kanal: 'EVENT',
     tanggal: '2026-11-21',
     waktu: '10:00',
     prioritas: 'Critical',
@@ -249,7 +378,7 @@ const INITIAL_TASKS = [
   {
     id: 'task-2',
     judul: 'Blast Database Mitra Guide & Travel Agent Bali',
-    pic: 'AGNETIA MARIA NADIA SORAYA',
+    pic: 'NADIA',
     kanal: 'GUIDE',
     tanggal: '2026-11-22',
     waktu: '09:30',
@@ -260,8 +389,8 @@ const INITIAL_TASKS = [
   {
     id: 'task-3',
     judul: 'Rekapitulasi Transaksi & Invoice Mingguan W3',
-    pic: 'WINDA ELLYANA PUSPA SARI',
-    kanal: 'ADMIN',
+    pic: 'WINDA',
+    kanal: 'ADMIN & ASISTEN',
     tanggal: '2026-11-21',
     waktu: '16:00',
     prioritas: 'Normal',
@@ -276,8 +405,8 @@ const INITIAL_MOMS = [
     tanggal: '2026-11-20',
     minggu: 'W3',
     judul: 'Evaluasi Performa Sales & Marketing Mingguan W3',
-    peserta: 'ECO MUHAMAD RIDWAN, SILVIA, DHIMAS, LINDA, ARVA, WINDA',
-    poinPembahasan: 'Lonjakan transaksi pada rombongan event besar perlu diimbangi dengan pengisian posisi Vacant (Leader, Driver, T&T, B2B) serta percepatan closing leads CRM.',
+    peserta: 'CHOKI DASYAT, SILVIA, DHIMAS, LINDA, ARVA, WINDA',
+    poinPembahasan: 'Lonjakan transaksi pada rombongan event besar perlu diimbangi dengan pengisian posisi Vacant (Leader, T&T, Driver, B2B) serta percepatan closing leads CRM.',
     actionItem: 'Susun daftar prioritas follow up 50 prospek event & government untuk W4',
     picAction: 'DHIMAS',
     deadline: '2026-11-23',
@@ -296,6 +425,13 @@ const formatIDR = (val) => {
 
 const formatNum = (val) => {
   return new Intl.NumberFormat('id-ID').format(Number(val || 0));
+};
+
+const formatCellVal = (val, row) => {
+  const num = Number(val || 0);
+  if (row?.isCurrency) return formatNum(num);
+  if (row?.isPercentValue) return `${num}%`;
+  return formatNum(num);
 };
 
 const calcPctChange = (current, previous) => {
@@ -338,7 +474,7 @@ export default function App() {
 
   const [activeTab, setActiveTab] = useState('dashboard');
   const [periodMode, setPeriodMode] = useState('mingguan');
-  const [weekCountMode, setWeekCountMode] = useState('W5');
+  const [selectedWeek, setSelectedWeek] = useState('ALL');
   const [customStart, setCustomStart] = useState('2026-11-01');
   const [customEnd, setCustomEnd] = useState('2026-11-30');
   const [selectedKanalFilter, setSelectedKanalFilter] = useState('ALL');
@@ -350,6 +486,15 @@ export default function App() {
       return saved?.pics || INITIAL_PICS;
     } catch {
       return INITIAL_PICS;
+    }
+  });
+
+  const [scorecards, setScorecards] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+      return saved?.scorecards || INITIAL_KPI_SCORECARDS;
+    } catch {
+      return INITIAL_KPI_SCORECARDS;
     }
   });
 
@@ -368,15 +513,6 @@ export default function App() {
       return saved?.weeklyMetrics || INITIAL_WEEKLY_METRICS;
     } catch {
       return INITIAL_WEEKLY_METRICS;
-    }
-  });
-
-  const [kpiRows, setKpiRows] = useState(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-      return saved?.kpiRows || INITIAL_KPI_ROWS;
-    } catch {
-      return INITIAL_KPI_ROWS;
     }
   });
 
@@ -405,14 +541,13 @@ export default function App() {
     minggu: 'W3',
     waktu: '14:00',
     kanal: 'GUIDE',
-    pic: 'AGNETIA MARIA NADIA SORAYA',
+    pic: 'NADIA',
     instansi: '',
     program: 'DINNER + SHOPPING',
     pax: 0,
     revenue: 0,
     transaksi: 0,
-    noHp: '',
-    keterangan: ''
+    noHp: ''
   });
 
   const [newPicPos, setNewPicPos] = useState('');
@@ -422,7 +557,7 @@ export default function App() {
 
   const [newTask, setNewTask] = useState({
     judul: '',
-    pic: 'ECO MUHAMAD RIDWAN',
+    pic: 'CHOKI DASYAT',
     kanal: 'MANAGER',
     tanggal: '2026-11-21',
     waktu: '10:00',
@@ -435,10 +570,10 @@ export default function App() {
     tanggal: '2026-11-20',
     minggu: 'W3',
     judul: '',
-    peserta: 'ECO MUHAMAD RIDWAN, WINDA ELLYANA PUSPA SARI',
+    peserta: 'CHOKI DASYAT, WINDA',
     poinPembahasan: '',
     actionItem: '',
-    picAction: 'WINDA ELLYANA PUSPA SARI',
+    picAction: 'WINDA',
     deadline: '2026-11-23'
   });
 
@@ -447,7 +582,7 @@ export default function App() {
   const [aiMessages, setAiMessages] = useState([
     {
       role: 'assistant',
-      text: 'Halo! Saya AI Sales & Marketing Strategist. Tanya saya tentang performa revenue W1–W5, strategi penutupan gap target, optimasi kanal Guide/Event/CRM, atau penanganan posisi VACANT.'
+      text: 'Halo! Saya AI Sales & Marketing Strategist. Tanya saya tentang perbandingan W1–W5, skor KPI per PIC, pencapaian %ACV & %Realisasi, atau posisi VACANT.'
     }
   ]);
 
@@ -455,9 +590,9 @@ export default function App() {
     try {
       const payload = {
         pics,
+        scorecards,
         acquisitions,
         weeklyMetrics,
-        kpiRows,
         tasks,
         moms
       };
@@ -466,7 +601,7 @@ export default function App() {
     } catch (e) {
       console.error('Gagal menyimpan data lokal:', e);
     }
-  }, [pics, acquisitions, weeklyMetrics, kpiRows, tasks, moms]);
+  }, [pics, scorecards, acquisitions, weeklyMetrics, tasks, moms]);
 
   const handleUnlock = (e) => {
     e.preventDefault();
@@ -477,7 +612,7 @@ export default function App() {
       try {
         sessionStorage.setItem(AUTH_SESSION_KEY, 'true');
       } catch {
-        // ignore storage restriction
+        // ignore
       }
     } else {
       setAuthError('Kata sandi salah. Silakan periksa kembali kode akses tim Anda.');
@@ -508,17 +643,18 @@ export default function App() {
     const revNum = Number(formAcq.revenue || 0);
     const trxNum = Number(formAcq.transaksi || 0);
     const paxNum = Number(formAcq.pax || 0);
+    const cleanProgram = formAcq.program.trim() ? formAcq.program.trim().toUpperCase() : '-';
 
     const newItem = {
       id: `acq-${Date.now()}`,
       ...formAcq,
+      program: cleanProgram,
       pax: paxNum,
       revenue: revNum,
       transaksi: trxNum
     };
 
     setAcquisitions((prev) => [newItem, ...prev]);
-
     setWeeklyMetrics((prev) =>
       prev.map((w) =>
         w.minggu === formAcq.minggu
@@ -538,8 +674,7 @@ export default function App() {
       pax: 0,
       revenue: 0,
       transaksi: 0,
-      noHp: '',
-      keterangan: ''
+      noHp: ''
     }));
   };
 
@@ -552,6 +687,8 @@ export default function App() {
       const matchKanal =
         selectedKanalFilter === 'ALL' ||
         row.kanal.toUpperCase() === selectedKanalFilter.toUpperCase();
+      const matchWeek =
+        selectedWeek === 'ALL' || row.minggu.toUpperCase() === selectedWeek.toUpperCase();
       const q = searchQuery.trim().toLowerCase();
       const matchSearch =
         !q ||
@@ -570,16 +707,23 @@ export default function App() {
       } else if (periodMode === 'tahunan') {
         matchDate = row.tanggal.startsWith('2026');
       }
-      return matchKanal && matchSearch && matchDate;
+      return matchKanal && matchWeek && matchSearch && matchDate;
     });
-  }, [acquisitions, selectedKanalFilter, searchQuery, periodMode, customStart, customEnd]);
+  }, [acquisitions, selectedKanalFilter, selectedWeek, searchQuery, periodMode, customStart, customEnd]);
+
+  const comparisonRows = useMemo(() => {
+    return weeklyMetrics.map((item, idx) => {
+      const prev = idx > 0 ? weeklyMetrics[idx - 1] : null;
+      return {
+        ...item,
+        revGrowth: prev ? calcPctChange(item.revenue, prev.revenue) : 0,
+        trafGrowth: prev ? calcPctChange(item.traffic, prev.traffic) : 0,
+        trxGrowth: prev ? calcPctChange(item.transaksi, prev.transaksi) : 0
+      };
+    });
+  }, [weeklyMetrics]);
 
   const mainSummary = useMemo(() => {
-    const activeWeeks =
-      weekCountMode === 'W4'
-        ? weeklyMetrics.filter((w) => ['W1', 'W2', 'W3', 'W4'].includes(w.minggu))
-        : weeklyMetrics;
-
     if (periodMode === 'harian') {
       const dayItems = acquisitions.filter((a) => a.tanggal === customEnd);
       const prevDateObj = new Date(customEnd || '2026-11-20');
@@ -602,7 +746,8 @@ export default function App() {
         revPct: calcPctChange(rev, prevRev),
         trafPct: calcPctChange(traf, prevTraf),
         trxPct: calcPctChange(trx, prevTrx),
-        labelBand: `Harian (${customEnd})`
+        labelBand: `Harian (${customEnd})`,
+        compareNote: 'vs hari sebelumnya'
       };
     }
 
@@ -620,51 +765,51 @@ export default function App() {
         revPct: 12.4,
         trafPct: 8.7,
         trxPct: 10.2,
-        labelBand: `Custom (${customStart} s/d ${customEnd})`
+        labelBand: `Custom (${customStart} s/d ${customEnd})`,
+        compareNote: 'vs rentang sebelumnya'
       };
     }
 
-    const totalRev = activeWeeks.reduce((s, w) => s + Number(w.revenue || 0), 0);
-    const totalTraf = activeWeeks.reduce((s, w) => s + Number(w.traffic || 0), 0);
-    const totalTrx = activeWeeks.reduce((s, w) => s + Number(w.transaksi || 0), 0);
+    if (selectedWeek !== 'ALL') {
+      const idx = weeklyMetrics.findIndex((w) => w.minggu === selectedWeek);
+      const curr = weeklyMetrics[idx] || { minggu: selectedWeek, revenue: 0, traffic: 0, transaksi: 0 };
+      const prev = idx > 0 ? weeklyMetrics[idx - 1] : null;
 
-    const lastW = activeWeeks[activeWeeks.length - 1] || { revenue: 0, traffic: 0, transaksi: 0 };
-    const prevW = activeWeeks[activeWeeks.length - 2] || { revenue: 0, traffic: 0, transaksi: 0 };
+      return {
+        revenue: Number(curr.revenue || 0),
+        traffic: Number(curr.traffic || 0),
+        transaksi: Number(curr.transaksi || 0),
+        revPct: prev ? calcPctChange(curr.revenue, prev.revenue) : 0,
+        trafPct: prev ? calcPctChange(curr.traffic, prev.traffic) : 0,
+        trxPct: prev ? calcPctChange(curr.transaksi, prev.transaksi) : 0,
+        labelBand: `${curr.minggu} (${curr.label || ''})`,
+        compareNote: prev ? `vs ${prev.minggu}` : 'Minggu awal (baseline)'
+      };
+    }
 
+    const totalRev = weeklyMetrics.reduce((s, w) => s + Number(w.revenue || 0), 0);
+    const totalTraf = weeklyMetrics.reduce((s, w) => s + Number(w.traffic || 0), 0);
+    const totalTrx = weeklyMetrics.reduce((s, w) => s + Number(w.transaksi || 0), 0);
+    const w3 = weeklyMetrics[2] || { revenue: 0, traffic: 0, transaksi: 0 };
+    const w2 = weeklyMetrics[1] || { revenue: 0, traffic: 0, transaksi: 0 };
     const multiplier = periodMode === 'tahunan' ? 12 : 1;
 
     return {
       revenue: totalRev * multiplier,
       traffic: totalTraf * multiplier,
       transaksi: totalTrx * multiplier,
-      revPct: calcPctChange(lastW.revenue, prevW.revenue),
-      trafPct: calcPctChange(lastW.traffic, prevW.traffic),
-      trxPct: calcPctChange(lastW.transaksi, prevW.transaksi),
+      revPct: calcPctChange(w3.revenue, w2.revenue),
+      trafPct: calcPctChange(w3.traffic, w2.traffic),
+      trxPct: calcPctChange(w3.transaksi, w2.transaksi),
       labelBand:
         periodMode === 'mingguan'
-          ? `Mingguan (${weekCountMode})`
+          ? 'Total W1–W5'
           : periodMode === 'bulanan'
-          ? `Bulanan (${weekCountMode})`
-          : `Tahunan 2026 (${weekCountMode})`
+          ? 'Bulanan (W1–W5)'
+          : 'Tahunan 2026',
+      compareNote: 'tren W3 vs W2'
     };
-  }, [periodMode, weekCountMode, weeklyMetrics, acquisitions, customStart, customEnd]);
-
-  const comparisonRows = useMemo(() => {
-    const base =
-      weekCountMode === 'W4'
-        ? weeklyMetrics.filter((w) => ['W1', 'W2', 'W3', 'W4'].includes(w.minggu))
-        : weeklyMetrics;
-
-    return base.map((item, idx) => {
-      const prev = idx > 0 ? base[idx - 1] : null;
-      return {
-        ...item,
-        revGrowth: prev ? calcPctChange(item.revenue, prev.revenue) : 0,
-        trafGrowth: prev ? calcPctChange(item.traffic, prev.traffic) : 0,
-        trxGrowth: prev ? calcPctChange(item.transaksi, prev.transaksi) : 0
-      };
-    });
-  }, [weeklyMetrics, weekCountMode]);
+  }, [periodMode, selectedWeek, weeklyMetrics, acquisitions, customStart, customEnd]);
 
   const handleUpdateWeeklyField = (mingguKey, field, val) => {
     setWeeklyMetrics((prev) =>
@@ -672,27 +817,44 @@ export default function App() {
     );
   };
 
-  const computedKpiRows = useMemo(() => {
-    return kpiRows.map((row) => {
-      const targetNum = Number(row.target || 1);
-      const actualNum = Number(row.actual || 0);
-      const achievePct = Number(((actualNum / targetNum) * 100).toFixed(1));
-      const nilaiPerform = Number(((achievePct * Number(row.bobot || 0)) / 100).toFixed(1));
-      const gap = actualNum - Number(row.target || 0);
-      return {
-        ...row,
-        achievePct,
-        nilaiPerform,
-        gap
-      };
-    });
-  }, [kpiRows]);
-
-  const handleUpdateKpiActual = (id, newActual) => {
-    setKpiRows((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, actual: Number(newActual || 0) } : r))
+  const handleUpdateScorecardActual = (cardId, rowId, newActual) => {
+    setScorecards((prev) =>
+      prev.map((card) => {
+        if (card.id !== cardId) return card;
+        return {
+          ...card,
+          rows: card.rows.map((r) =>
+            r.id === rowId ? { ...r, actual: Number(newActual || 0) } : r
+          )
+        };
+      })
     );
   };
+
+  const computedScorecards = useMemo(() => {
+    return scorecards.map((card) => {
+      const rowsCalc = card.rows.map((r) => {
+        const targetVal = Number(r.target || 0);
+        const actualVal = Number(r.actual || 0);
+        const acvPct = targetVal > 0 ? Math.round((actualVal / targetVal) * 100) : 0;
+        const realisasiPct = Math.min(100, acvPct);
+        const skorPct = Math.round((realisasiPct * Number(r.bobot || 0)) / 100);
+        return {
+          ...r,
+          acvPct,
+          realisasiPct,
+          skorPct
+        };
+      });
+
+      const totalSkorPct = rowsCalc.reduce((sum, item) => sum + item.skorPct, 0);
+      return {
+        ...card,
+        rows: rowsCalc,
+        totalSkorPct
+      };
+    });
+  }, [scorecards]);
 
   const handleAddPic = (e) => {
     e.preventDefault();
@@ -777,7 +939,7 @@ export default function App() {
       {
         id: `task-mom-${Date.now()}`,
         judul: `[MOM] ${mom.actionItem}`,
-        pic: mom.picAction || 'WINDA ELLYANA PUSPA SARI',
+        pic: mom.picAction || 'WINDA',
         kanal: 'MOM ACTION',
         tanggal: mom.deadline || '2026-11-23',
         waktu: '10:00',
@@ -797,9 +959,9 @@ export default function App() {
       {
         exportedAt: new Date().toISOString(),
         pics,
+        scorecards,
         acquisitions,
         weeklyMetrics,
-        kpiRows,
         tasks,
         moms
       },
@@ -823,9 +985,9 @@ export default function App() {
       try {
         const parsed = JSON.parse(String(ev.target?.result || '{}'));
         if (parsed.pics) setPics(parsed.pics);
+        if (parsed.scorecards) setScorecards(parsed.scorecards);
         if (parsed.acquisitions) setAcquisitions(parsed.acquisitions);
         if (parsed.weeklyMetrics) setWeeklyMetrics(parsed.weeklyMetrics);
-        if (parsed.kpiRows) setKpiRows(parsed.kpiRows);
         if (parsed.tasks) setTasks(parsed.tasks);
         if (parsed.moms) setMoms(parsed.moms);
       } catch (err) {
@@ -844,15 +1006,12 @@ export default function App() {
 
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
     const vacantPositions = pics.filter((p) => p.nama === 'VACANT').map((p) => p.posisi);
-
-    const contextSummary = `
-Data Sales & Marketing saat ini (${mainSummary.labelBand}):
-- Revenue: ${formatIDR(mainSummary.revenue)} (${mainSummary.revPct >= 0 ? '+' : ''}${mainSummary.revPct}%)
-- Traffic/Pax: ${formatNum(mainSummary.traffic)} (${mainSummary.trafPct >= 0 ? '+' : ''}${mainSummary.trafPct}%)
-- Transaksi: ${formatNum(mainSummary.transaksi)} (${mainSummary.trxPct >= 0 ? '+' : ''}${mainSummary.trxPct}%)
-- Posisi VACANT: ${vacantPositions.join(', ') || 'Tidak ada'}
-- Rekap Mingguan: ${comparisonRows.map((r) => `${r.minggu} rev ${formatIDR(r.revenue)} (${r.revGrowth}%)`).join(' | ')}
-`;
+    const weeklySummaryText = comparisonRows
+      .map((r) => `${r.minggu}: Rev ${formatIDR(r.revenue)} (${r.revGrowth}%), Pax ${r.traffic}`)
+      .join(' | ');
+    const scorecardSummary = computedScorecards
+      .map((sc) => `${sc.picName} (${sc.posisi}): Skor ${sc.totalSkorPct}%`)
+      .join(' | ');
 
     try {
       if (apiKey) {
@@ -866,10 +1025,7 @@ Data Sales & Marketing saat ini (${mainSummary.labelBand}):
                 {
                   parts: [
                     {
-                      text: `Anda adalah konsultan operasional & strategi Sales Marketing yang praktis dan to-the-point dalam Bahasa Indonesia. Jawab berdasarkan konteks berikut:
-${contextSummary}
-
-Pertanyaan user: ${queryText}`
+                      text: `Anda adalah konsultan operasional Sales Marketing. Jawab singkat, jelas, dan actionable dalam Bahasa Indonesia.\nPerbandingan W1-W5: ${weeklySummaryText}\nSkor KPI per PIC: ${scorecardSummary}\nPosisi VACANT: ${vacantPositions.join(', ')}\nPertanyaan: ${queryText}`
                     }
                   ]
                 }
@@ -880,25 +1036,22 @@ Pertanyaan user: ${queryText}`
         const data = await res.json();
         const replyText =
           data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-          'Respons AI diterima, silakan cek data metrik terbaru Anda.';
+          'Respons AI diterima, silakan periksa rekap W1–W5 dan skor KPI per PIC.';
         setAiMessages((prev) => [...prev, { role: 'assistant', text: replyText }]);
       } else {
         const localAdvice = [
-          `Evaluasi Cepat (${mainSummary.labelBand}): Revenue berada di ${formatIDR(mainSummary.revenue)} (${mainSummary.revPct}%), Traffic ${formatNum(mainSummary.traffic)} pax, dan Transaksi ${formatNum(mainSummary.transaksi)}.`,
+          `Perbandingan W1–W5: ${weeklySummaryText}.`,
+          `Ringkasan Skor KPI Bulanan: ${scorecardSummary}.`,
           vacantPositions.length > 0
-            ? `Prioritas SDM: Posisi ${vacantPositions.join(', ')} masih VACANT—segera delegasikan tugas harian ke PIC aktif terdekat (Silvia, Dhimas, Linda, Arva, Agnetia) agar tidak ada lead tertunda.`
-            : 'Semua posisi tim Sales & Marketing sudah terisi.',
-          'Langkah Eksekusi Hari Ini: (1) Follow up rombongan berpotensi tinggi (Event & Government), (2) Dorong konversi pax ke transaksi paket Dinner/Lunch + Shopping, (3) Pastikan input harian masuk sebelum jam tutup operasional.'
+            ? `Posisi VACANT (${vacantPositions.join(', ')}) perlu pembagian tugas sementara ke PIC aktif agar target revenue dan traffic tetap berjalan.`
+            : 'Semua posisi tim sudah terisi.'
         ].join('\n\n');
         setAiMessages((prev) => [...prev, { role: 'assistant', text: localAdvice }]);
       }
     } catch {
       setAiMessages((prev) => [
         ...prev,
-        {
-          role: 'assistant',
-          text: `Analisis cepat: Fokuskan follow up pada kanal dengan nilai transaksi terbesar dan pantau perbandingan mingguan (${weekCountMode}) agar gap target mengecil.`
-        }
+        { role: 'assistant', text: 'Fokuskan eksekusi pada indikator dengan %ACV terendah di tiap blok PIC.' }
       ]);
     } finally {
       setAiLoading(false);
@@ -1016,7 +1169,6 @@ Pertanyaan user: ${queryText}`
               type="button"
               onClick={handleLock}
               className="inline-flex items-center gap-1.5 rounded-md border border-rose-500/40 bg-rose-500/10 hover:bg-rose-500/20 px-2.5 py-1.5 text-xs font-semibold text-rose-300 transition"
-              title="Kunci layar dashboard"
             >
               <LogOut className="w-3.5 h-3.5" /> Kunci
             </button>
@@ -1047,7 +1199,7 @@ Pertanyaan user: ${queryText}`
       </header>
 
       <main className="mx-auto max-w-[1440px] px-3 sm:px-6 pt-5 space-y-5">
-        <section className="rounded-xl border border-slate-800 bg-[#0e131d] p-3.5 sm:p-4">
+        <section className="rounded-xl border border-slate-800 bg-[#0e131d] p-3.5 sm:p-4 space-y-3">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
             <div className="flex flex-wrap items-center gap-1.5">
               {[
@@ -1070,23 +1222,6 @@ Pertanyaan user: ${queryText}`
                   {p.label}
                 </button>
               ))}
-
-              <div className="ml-1 inline-flex rounded-lg border border-slate-800 bg-slate-950 p-0.5">
-                {['W4', 'W5'].map((wc) => (
-                  <button
-                    key={wc}
-                    type="button"
-                    onClick={() => setWeekCountMode(wc)}
-                    className={`px-2.5 py-1 rounded-md text-xs font-bold transition ${
-                      weekCountMode === wc
-                        ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
-                        : 'text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    {wc}
-                  </button>
-                ))}
-              </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-2 text-xs">
@@ -1110,6 +1245,31 @@ Pertanyaan user: ${queryText}`
                 />
               </div>
             </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-800/80">
+            <span className="text-[11px] font-semibold text-slate-400 mr-1 uppercase">
+              Pilih Minggu:
+            </span>
+            {['ALL', 'W1', 'W2', 'W3', 'W4', 'W5'].map((wk) => (
+              <button
+                key={wk}
+                type="button"
+                onClick={() => {
+                  setSelectedWeek(wk);
+                  if (periodMode === 'harian' || periodMode === 'custom') {
+                    setPeriodMode('mingguan');
+                  }
+                }}
+                className={`px-3 py-1 rounded-md text-xs font-bold transition ${
+                  selectedWeek === wk
+                    ? 'bg-cyan-500 text-slate-950 shadow-sm'
+                    : 'bg-slate-950 text-slate-300 border border-slate-800 hover:border-cyan-500/50'
+                }`}
+              >
+                {wk === 'ALL' ? 'SEMUA (W1–W5)' : wk}
+              </button>
+            ))}
           </div>
         </section>
 
@@ -1141,7 +1301,7 @@ Pertanyaan user: ${queryText}`
                     )}
                     {mainSummary.revPct >= 0 ? `+${mainSummary.revPct}%` : `${mainSummary.revPct}%`}
                   </span>
-                  <span className="text-slate-400">vs periode sebelumnya</span>
+                  <span className="text-slate-400">{mainSummary.compareNote}</span>
                 </div>
               </div>
 
@@ -1170,7 +1330,7 @@ Pertanyaan user: ${queryText}`
                     )}
                     {mainSummary.trafPct >= 0 ? `+${mainSummary.trafPct}%` : `${mainSummary.trafPct}%`}
                   </span>
-                  <span className="text-slate-400">vs periode sebelumnya</span>
+                  <span className="text-slate-400">{mainSummary.compareNote}</span>
                 </div>
               </div>
 
@@ -1199,7 +1359,7 @@ Pertanyaan user: ${queryText}`
                     )}
                     {mainSummary.trxPct >= 0 ? `+${mainSummary.trxPct}%` : `${mainSummary.trxPct}%`}
                   </span>
-                  <span className="text-slate-400">vs periode sebelumnya</span>
+                  <span className="text-slate-400">{mainSummary.compareNote}</span>
                 </div>
               </div>
             </div>
@@ -1207,11 +1367,82 @@ Pertanyaan user: ${queryText}`
             <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4">
               <div className="flex items-center justify-between mb-3">
                 <div>
+                  <h2 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
+                    Perbandingan Cepat W1 – W5 (Ketuk Kartu untuk Filter Minggu)
+                  </h2>
+                  <p className="text-[11px] text-slate-400">
+                    Perbandingan langsung Revenue, Traffic, Transaksi, dan % pertumbuhan tiap minggu
+                  </p>
+                </div>
+                {selectedWeek !== 'ALL' && (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedWeek('ALL')}
+                    className="text-xs font-semibold text-cyan-300 hover:underline"
+                  >
+                    Tampilkan Semua (W1–W5)
+                  </button>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 tabular-nums">
+                {comparisonRows.map((item, idx) => {
+                  const isSelected = selectedWeek === item.minggu;
+                  return (
+                    <button
+                      key={item.minggu}
+                      type="button"
+                      onClick={() => setSelectedWeek(isSelected ? 'ALL' : item.minggu)}
+                      className={`text-left rounded-xl border p-3 transition ${
+                        isSelected
+                          ? 'border-cyan-400 bg-cyan-500/10'
+                          : 'border-slate-800 bg-slate-950/80 hover:border-slate-700'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-extrabold text-cyan-300">
+                          {item.minggu}{' '}
+                          <span className="text-[10px] font-normal text-slate-400">({item.label})</span>
+                        </span>
+                        {idx === 0 ? (
+                          <span className="text-[10px] font-semibold text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded">
+                            Baseline
+                          </span>
+                        ) : (
+                          <span
+                            className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                              item.revGrowth >= 0
+                                ? 'bg-emerald-500/20 text-emerald-300'
+                                : 'bg-rose-500/20 text-rose-300'
+                            }`}
+                          >
+                            {item.revGrowth >= 0 ? `+${item.revGrowth}%` : `${item.revGrowth}%`}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="mt-2 text-sm sm:text-base font-extrabold text-white">
+                        {formatIDR(item.revenue)}
+                      </div>
+
+                      <div className="mt-1.5 flex items-center justify-between text-[11px] text-slate-400">
+                        <span>{formatNum(item.traffic)} Pax</span>
+                        <span>{formatNum(item.transaksi)} Trx</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div>
                   <h2 className="text-sm font-bold text-white uppercase tracking-wide">
-                    Grafik Revenue & Traffic Sales ({weekCountMode})
+                    Grafik Perbandingan Revenue & Traffic (W1 – W5)
                   </h2>
                   <p className="text-xs text-slate-400">
-                    Visualisasi performa mingguan divisi Sales & Marketing
+                    Visualisasi tren mingguan W1 sampai W5 divisi Sales & Marketing
                   </p>
                 </div>
               </div>
@@ -1229,7 +1460,9 @@ Pertanyaan user: ${queryText}`
                         fontSize: '12px'
                       }}
                       formatter={(val, name) =>
-                        name === 'revenue' ? [formatIDR(val), 'Revenue'] : [formatNum(val), 'Traffic']
+                        String(name).includes('Revenue')
+                          ? [formatIDR(val), 'Revenue (Rp)']
+                          : [formatNum(val), 'Traffic (Pax)']
                       }
                     />
                     <Legend wrapperStyle={{ fontSize: '12px' }} />
@@ -1310,17 +1543,20 @@ Pertanyaan user: ${queryText}`
                   />
                 </div>
                 <div>
-                  <label className="block text-slate-400 mb-1">Program Paket</label>
-                  <select
+                  <label className="block text-slate-400 mb-1">Program Paket (Ketik Manual)</label>
+                  <input
+                    type="text"
+                    list="program-paket-list"
+                    placeholder="Ketik / pilih program paket..."
                     value={formAcq.program}
-                    onChange={(e) => setFormAcq({ ...formAcq, program: e.target.value })}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-2 text-white"
-                  >
-                    <option value="DINNER + SHOPPING">DINNER + SHOPPING</option>
-                    <option value="LUNCH + SHOPPING">LUNCH + SHOPPING</option>
-                    <option value="SHOPPING ONLY">SHOPPING ONLY</option>
-                    <option value="EVENT TEATER 1484">EVENT TEATER 1484</option>
-                  </select>
+                    onChange={(e) => setFormAcq({ ...formAcq, program: e.target.value.toUpperCase() })}
+                    className="w-full rounded-lg border border-cyan-500/40 bg-slate-950 px-2.5 py-2 text-cyan-200 font-medium"
+                  />
+                  <datalist id="program-paket-list">
+                    {PROGRAM_PAKET_OPTIONS.map((opt) => (
+                      <option key={opt} value={opt} />
+                    ))}
+                  </datalist>
                 </div>
                 <div>
                   <label className="block text-slate-400 mb-1">Traffic / Pax</label>
@@ -1384,11 +1620,9 @@ Pertanyaan user: ${queryText}`
 
             <div className="rounded-xl border border-slate-800 bg-[#0a0d14] overflow-hidden">
               <div className="p-3.5 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 bg-[#0e131d]">
-                <div>
-                  <h3 className="text-xs sm:text-sm font-bold text-amber-300 uppercase tracking-wider">
-                    DAILY REPORT AKUISISI SALES & MARKETING ({filteredAcquisitions.length} Record)
-                  </h3>
-                </div>
+                <h3 className="text-xs sm:text-sm font-bold text-amber-300 uppercase tracking-wider">
+                  DAILY REPORT AKUISISI SALES & MARKETING ({filteredAcquisitions.length} Record)
+                </h3>
                 <div className="flex flex-wrap items-center gap-2 text-xs">
                   <select
                     value={selectedKanalFilter}
@@ -1431,81 +1665,34 @@ Pertanyaan user: ${queryText}`
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredAcquisitions.map((row) => {
-                      const badgeTone =
-                        row.kanal === 'EVENT' || row.kanal === 'EVENT DEALING'
-                          ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
-                          : row.kanal === 'GOVERMENT'
-                          ? 'bg-violet-500/20 text-violet-300 border-violet-500/40'
-                          : row.kanal === 'CRM'
-                          ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
-                          : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
-
-                      const progTone = row.program.includes('EVENT')
-                        ? 'bg-rose-500/20 text-rose-200'
-                        : row.program.includes('LUNCH')
-                        ? 'bg-emerald-500/20 text-emerald-200'
-                        : row.program.includes('DINNER')
-                        ? 'bg-sky-500/20 text-sky-200'
-                        : 'bg-indigo-500/20 text-indigo-200';
-
-                      return (
-                        <tr
-                          key={row.id}
-                          className="hover:bg-slate-900/80 border-b border-slate-800/80"
-                        >
-                          <td className="py-2 px-2.5 border border-slate-800/70">
-                            <span
-                              className={`inline-block rounded px-1.5 py-0.5 text-[10px] font-bold border ${badgeTone}`}
-                            >
-                              {row.kanal}
-                            </span>
-                          </td>
-                          <td className="py-2 px-2.5 border border-slate-800/70 whitespace-nowrap">
-                            {row.tanggal}
-                          </td>
-                          <td className="py-2 px-2.5 border border-slate-800/70 font-semibold text-cyan-300">
-                            {row.minggu}
-                          </td>
-                          <td className="py-2 px-2.5 border border-slate-800/70 whitespace-nowrap">
-                            {row.waktu}
-                          </td>
-                          <td className="py-2 px-2.5 border border-slate-800/70 font-medium text-slate-200">
-                            {row.pic}
-                          </td>
-                          <td className="py-2 px-2.5 border border-slate-800/70 font-semibold text-white">
-                            {row.instansi}
-                          </td>
-                          <td className="py-2 px-2.5 border border-slate-800/70">
-                            <span className={`inline-block rounded px-1.5 py-0.5 text-[10px] font-semibold ${progTone}`}>
-                              {row.program}
-                            </span>
-                          </td>
-                          <td className="py-2 px-2.5 border border-slate-800/70 text-right">
-                            {formatNum(row.pax)}
-                          </td>
-                          <td className="py-2 px-2.5 border border-slate-800/70 text-right font-bold text-emerald-300">
-                            {formatIDR(row.revenue)}
-                          </td>
-                          <td className="py-2 px-2.5 border border-slate-800/70 text-right">
-                            {formatNum(row.transaksi)}
-                          </td>
-                          <td className="py-2 px-2.5 border border-slate-800/70 text-slate-300">
-                            {row.noHp || '-'}
-                          </td>
-                          <td className="py-2 px-2.5 border border-slate-800/70 text-center">
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteAcquisition(row.id)}
-                              className="p-1 text-rose-400 hover:bg-rose-500/15 rounded"
-                              title="Hapus baris"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })}
+                    {filteredAcquisitions.map((row) => (
+                      <tr key={row.id} className="hover:bg-slate-900/80 border-b border-slate-800/80">
+                        <td className="py-2 px-2.5 border border-slate-800/70 font-bold text-emerald-300">
+                          {row.kanal}
+                        </td>
+                        <td className="py-2 px-2.5 border border-slate-800/70 whitespace-nowrap">{row.tanggal}</td>
+                        <td className="py-2 px-2.5 border border-slate-800/70 font-semibold text-cyan-300">{row.minggu}</td>
+                        <td className="py-2 px-2.5 border border-slate-800/70 whitespace-nowrap">{row.waktu}</td>
+                        <td className="py-2 px-2.5 border border-slate-800/70 font-medium text-slate-200">{row.pic}</td>
+                        <td className="py-2 px-2.5 border border-slate-800/70 font-semibold text-white">{row.instansi}</td>
+                        <td className="py-2 px-2.5 border border-slate-800/70 text-sky-200">{row.program}</td>
+                        <td className="py-2 px-2.5 border border-slate-800/70 text-right">{formatNum(row.pax)}</td>
+                        <td className="py-2 px-2.5 border border-slate-800/70 text-right font-bold text-emerald-300">
+                          {formatIDR(row.revenue)}
+                        </td>
+                        <td className="py-2 px-2.5 border border-slate-800/70 text-right">{formatNum(row.transaksi)}</td>
+                        <td className="py-2 px-2.5 border border-slate-800/70 text-slate-300">{row.noHp || '-'}</td>
+                        <td className="py-2 px-2.5 border border-slate-800/70 text-center">
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteAcquisition(row.id)}
+                            className="p-1 text-rose-400 hover:bg-rose-500/15 rounded"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -1519,27 +1706,11 @@ Pertanyaan user: ${queryText}`
               <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
                 <div>
                   <h2 className="text-sm sm:text-base font-bold text-white uppercase">
-                    Perbandingan Mingguan {weekCountMode} (Revenue, Traffic & Transaksi)
+                    Perbandingan Mingguan Lengkap W1 – W5 (Revenue, Traffic & Transaksi)
                   </h2>
                   <p className="text-xs text-slate-400">
-                    Edit angka mingguan secara manual—persentase pertumbuhan Week-over-Week terhitung otomatis
+                    Edit angka W1 sampai W5 secara manual—persentase pertumbuhan Week-over-Week terhitung otomatis
                   </p>
-                </div>
-                <div className="inline-flex rounded-lg border border-slate-800 bg-slate-950 p-0.5">
-                  {['W4', 'W5'].map((wc) => (
-                    <button
-                      key={wc}
-                      type="button"
-                      onClick={() => setWeekCountMode(wc)}
-                      className={`px-3 py-1 rounded-md text-xs font-bold ${
-                        weekCountMode === wc
-                          ? 'bg-emerald-500 text-slate-950'
-                          : 'text-slate-400 hover:text-white'
-                      }`}
-                    >
-                      Mode {wc}
-                    </button>
-                  ))}
                 </div>
               </div>
 
@@ -1557,7 +1728,7 @@ Pertanyaan user: ${queryText}`
                     </tr>
                   </thead>
                   <tbody>
-                    {comparisonRows.map((row) => (
+                    {comparisonRows.map((row, idx) => (
                       <tr key={row.minggu} className="border-b border-slate-800 hover:bg-slate-900/50">
                         <td className="p-2.5 border border-slate-800 font-bold text-cyan-300">
                           {row.minggu} <span className="text-[11px] font-normal text-slate-400">({row.label})</span>
@@ -1571,9 +1742,13 @@ Pertanyaan user: ${queryText}`
                           />
                         </td>
                         <td className="p-2.5 border border-slate-800 font-bold">
-                          <span className={row.revGrowth >= 0 ? 'text-emerald-400' : 'text-rose-400'}>
-                            {row.revGrowth >= 0 ? `+${row.revGrowth}%` : `${row.revGrowth}%`}
-                          </span>
+                          {idx === 0 ? (
+                            <span className="text-slate-400">Baseline</span>
+                          ) : (
+                            <span className={row.revGrowth >= 0 ? 'text-emerald-400' : 'text-rose-400'}>
+                              {row.revGrowth >= 0 ? `+${row.revGrowth}%` : `${row.revGrowth}%`}
+                            </span>
+                          )}
                         </td>
                         <td className="p-2.5 border border-slate-800">
                           <input
@@ -1584,9 +1759,13 @@ Pertanyaan user: ${queryText}`
                           />
                         </td>
                         <td className="p-2.5 border border-slate-800 font-bold">
-                          <span className={row.trafGrowth >= 0 ? 'text-cyan-400' : 'text-rose-400'}>
-                            {row.trafGrowth >= 0 ? `+${row.trafGrowth}%` : `${row.trafGrowth}%`}
-                          </span>
+                          {idx === 0 ? (
+                            <span className="text-slate-400">Baseline</span>
+                          ) : (
+                            <span className={row.trafGrowth >= 0 ? 'text-cyan-400' : 'text-rose-400'}>
+                              {row.trafGrowth >= 0 ? `+${row.trafGrowth}%` : `${row.trafGrowth}%`}
+                            </span>
+                          )}
                         </td>
                         <td className="p-2.5 border border-slate-800">
                           <input
@@ -1597,9 +1776,13 @@ Pertanyaan user: ${queryText}`
                           />
                         </td>
                         <td className="p-2.5 border border-slate-800 font-bold">
-                          <span className={row.trxGrowth >= 0 ? 'text-amber-400' : 'text-rose-400'}>
-                            {row.trxGrowth >= 0 ? `+${row.trxGrowth}%` : `${row.trxGrowth}%`}
-                          </span>
+                          {idx === 0 ? (
+                            <span className="text-slate-400">Baseline</span>
+                          ) : (
+                            <span className={row.trxGrowth >= 0 ? 'text-amber-400' : 'text-rose-400'}>
+                              {row.trxGrowth >= 0 ? `+${row.trxGrowth}%` : `${row.trxGrowth}%`}
+                            </span>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -1620,22 +1803,15 @@ Pertanyaan user: ${queryText}`
                         color: '#f8fafc',
                         fontSize: '12px'
                       }}
+                      formatter={(val, name) =>
+                        String(name).includes('Revenue')
+                          ? [formatIDR(val), 'Revenue (Rp)']
+                          : [formatNum(val), 'Traffic (Pax)']
+                      }
                     />
                     <Legend wrapperStyle={{ fontSize: '12px' }} />
-                    <Line
-                      type="monotone"
-                      dataKey="revenue"
-                      name="Revenue (Rp)"
-                      stroke="#10b981"
-                      strokeWidth={2.5}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="traffic"
-                      name="Traffic (Pax)"
-                      stroke="#38bdf8"
-                      strokeWidth={2.5}
-                    />
+                    <Line type="monotone" dataKey="revenue" name="Revenue (Rp)" stroke="#10b981" strokeWidth={2.5} />
+                    <Line type="monotone" dataKey="traffic" name="Traffic (Pax)" stroke="#38bdf8" strokeWidth={2.5} />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -1644,82 +1820,148 @@ Pertanyaan user: ${queryText}`
         )}
 
         {activeTab === 'kpi' && (
-          <div className="rounded-xl border border-slate-800 bg-[#0a0d14] overflow-hidden">
-            <div className="p-4 border-b border-slate-800 bg-[#0e131d]">
-              <h2 className="text-sm sm:text-base font-bold text-white uppercase">
-                KPI & Funnel Sales Marketing (A. Goals, B. Objective, C. Strategi Inisiatif)
-              </h2>
-              <p className="text-xs text-slate-400">
-                Ubah kolom Actual untuk menghitung % Achievement, Nilai Perform, dan Gap secara otomatis
-              </p>
+          <div className="space-y-6">
+            <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div>
+                <h2 className="text-sm sm:text-base font-bold text-white uppercase tracking-wide">
+                  KPI SCORECARD PER PIC & POSISI (BULANAN)
+                </h2>
+                <p className="text-xs text-slate-400">
+                  Ubah nilai pada kolom <span className="text-cyan-300 font-semibold">Actual</span> untuk menghitung <span className="text-emerald-300 font-semibold">%ACV</span>, <span className="text-amber-300 font-semibold">%Realisasi</span>, dan <span className="text-white font-semibold">Skor</span> secara otomatis.
+                </p>
+              </div>
+              <span className="text-xs font-semibold text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 rounded-lg">
+                {computedScorecards.length} Blok Scorecard PIC
+              </span>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs tabular-nums">
-                <thead>
-                  <tr className="bg-emerald-950/70 text-emerald-200 uppercase">
-                    <th className="p-2.5 border border-slate-800">Kategori</th>
-                    <th className="p-2.5 border border-slate-800">Funnel / Indikator</th>
-                    <th className="p-2.5 border border-slate-800">PIC</th>
-                    <th className="p-2.5 border border-slate-800 text-right">Bobot %</th>
-                    <th className="p-2.5 border border-slate-800 text-right">Target</th>
-                    <th className="p-2.5 border border-slate-800 text-right">Actual (Input)</th>
-                    <th className="p-2.5 border border-slate-800 text-right">Achieve %</th>
-                    <th className="p-2.5 border border-slate-800 text-right">Nilai Perform</th>
-                    <th className="p-2.5 border border-slate-800 text-right">Gap</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {computedKpiRows.map((row) => (
-                    <tr key={row.id} className="border-b border-slate-800 hover:bg-slate-900/60">
-                      <td className="p-2.5 border border-slate-800 font-semibold text-amber-300 whitespace-nowrap">
-                        {row.kategori}
-                      </td>
-                      <td className="p-2.5 border border-slate-800 font-semibold text-white">
-                        {row.funnel}
-                      </td>
-                      <td className="p-2.5 border border-slate-800 text-slate-300">{row.pic}</td>
-                      <td className="p-2.5 border border-slate-800 text-right">{row.bobot}%</td>
-                      <td className="p-2.5 border border-slate-800 text-right">
-                        {row.funnel === 'REVENUE' ? formatIDR(row.target) : formatNum(row.target)}
-                      </td>
-                      <td className="p-2.5 border border-slate-800 text-right">
-                        <input
-                          type="number"
-                          value={row.actual}
-                          onChange={(e) => handleUpdateKpiActual(row.id, e.target.value)}
-                          className="w-32 rounded border border-slate-700 bg-slate-950 px-2 py-1 text-right text-cyan-300 font-semibold"
-                        />
-                      </td>
-                      <td className="p-2.5 border border-slate-800 text-right">
-                        <span
-                          className={`inline-block rounded px-2 py-0.5 font-bold ${
-                            row.achievePct >= 80
-                              ? 'bg-emerald-500/20 text-emerald-300'
-                              : row.achievePct >= 50
-                              ? 'bg-amber-500/20 text-amber-300'
-                              : 'bg-rose-500/20 text-rose-300'
-                          }`}
+
+            {computedScorecards.map((card) => (
+              <div
+                key={card.id}
+                className="rounded-xl border border-slate-800 bg-[#0a0d14] overflow-hidden shadow-lg"
+              >
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left border-collapse text-xs tabular-nums">
+                    <thead>
+                      <tr>
+                        <th className="p-2 border border-slate-800 bg-[#0e131d] text-slate-400 w-36">
+                          PIC / NAMA
+                        </th>
+                        <th
+                          colSpan={2}
+                          className="p-2 border border-slate-800 bg-amber-300 text-slate-950 font-extrabold text-center uppercase"
                         >
-                          {row.achievePct}%
-                        </span>
-                      </td>
-                      <td className="p-2.5 border border-slate-800 text-right font-bold text-white">
-                        {row.nilaiPerform}
-                      </td>
-                      <td
-                        className={`p-2.5 border border-slate-800 text-right font-semibold ${
-                          row.gap >= 0 ? 'text-emerald-400' : 'text-rose-400'
-                        }`}
-                      >
-                        {row.funnel === 'REVENUE'
-                          ? formatIDR(row.gap)
-                          : `${row.gap >= 0 ? '+' : ''}${formatNum(row.gap)}`}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                          {card.picName}
+                        </th>
+                        <th className="p-2 border border-slate-800 bg-emerald-700 text-white font-bold text-center uppercase">
+                          {card.periodeLabel}
+                        </th>
+                        <th colSpan={6} className="p-2 border border-slate-800 bg-[#0e131d]" />
+                      </tr>
+                      <tr className="bg-slate-900 text-slate-200 uppercase text-[11px]">
+                        <th className="p-2 border border-slate-800">Posisi</th>
+                        <th className="p-2 border border-slate-800">Indikator</th>
+                        <th className="p-2 border border-slate-800 text-center">Bobot</th>
+                        <th className="p-2 border border-slate-800 text-right">Target</th>
+                        <th className="p-2 border border-slate-800 text-right">Target MTD</th>
+                        <th className="p-2 border border-slate-800 text-right">Actual</th>
+                        <th className="p-2 border border-slate-800 text-center">%ACV</th>
+                        <th className="p-2 border border-slate-800 text-center">%Realisasi</th>
+                        <th className="p-2 border border-slate-800 text-center">Skor</th>
+                        <th className="p-2 border border-slate-800 text-center">Measurement</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {card.rows.map((row, idx) => (
+                        <tr key={row.id} className="border-b border-slate-800/80 hover:bg-slate-900/50">
+                          {idx === 0 && (
+                            <td
+                              rowSpan={card.rows.length}
+                              className="p-2.5 border border-slate-800 bg-emerald-950/50 text-emerald-200 font-bold uppercase align-middle text-center"
+                            >
+                              {card.posisi}
+                            </td>
+                          )}
+                          <td className="p-2 border border-slate-800 font-semibold text-white">
+                            {row.indikator}
+                          </td>
+                          <td className="p-2 border border-slate-800 text-center font-bold text-slate-200">
+                            {row.bobot}%
+                          </td>
+                          <td className="p-2 border border-slate-800 text-right text-slate-200">
+                            {formatCellVal(row.target, row)}
+                          </td>
+                          <td className="p-2 border border-slate-800 text-right text-slate-300">
+                            {formatCellVal(row.targetMtd, row)}
+                          </td>
+                          <td className="p-2 border border-slate-800 text-right">
+                            <input
+                              type="number"
+                              value={row.actual}
+                              onChange={(e) =>
+                                handleUpdateScorecardActual(card.id, row.id, e.target.value)
+                              }
+                              className="w-32 rounded border border-cyan-500/40 bg-slate-950 px-2 py-1 text-right text-cyan-300 font-semibold focus:border-emerald-400 outline-none"
+                            />
+                          </td>
+                          <td className="p-2 border border-slate-800 text-center font-bold text-amber-300">
+                            {row.acvPct}%
+                          </td>
+                          <td className="p-2 border border-slate-800 text-center font-bold bg-amber-500/15 text-amber-200">
+                            {row.realisasiPct}%
+                          </td>
+                          <td className="p-2 border border-slate-800 text-center font-extrabold text-emerald-300">
+                            {row.skorPct}%
+                          </td>
+                          {idx === 0 && (
+                            <td
+                              rowSpan={card.rows.length}
+                              className="p-0 border border-slate-800 align-middle w-28"
+                            >
+                              <div className="grid grid-cols-2 text-[10px] font-bold">
+                                <div className="p-1 bg-emerald-600/80 text-white text-center border-b border-r border-slate-800">
+                                  4
+                                </div>
+                                <div className="p-1 bg-emerald-900/50 text-emerald-200 text-center border-b border-slate-800">
+                                  &gt;100%
+                                </div>
+                                <div className="p-1 bg-sky-600/80 text-white text-center border-b border-r border-slate-800">
+                                  3
+                                </div>
+                                <div className="p-1 bg-sky-900/40 text-sky-200 text-center border-b border-slate-800">
+                                  90%-99%
+                                </div>
+                                <div className="p-1 bg-amber-500/80 text-slate-950 text-center border-b border-r border-slate-800">
+                                  2
+                                </div>
+                                <div className="p-1 bg-amber-900/40 text-amber-200 text-center border-b border-slate-800">
+                                  75%-89%
+                                </div>
+                                <div className="p-1 bg-rose-600/80 text-white text-center border-r border-slate-800">
+                                  1
+                                </div>
+                                <div className="p-1 bg-rose-900/40 text-rose-200 text-center">
+                                  &lt;75%
+                                </div>
+                              </div>
+                            </td>
+                          )}
+                        </tr>
+                      ))}
+                      <tr className="bg-slate-900/90 font-bold">
+                        <td colSpan={6} className="p-2 border border-slate-800 text-right text-slate-400 text-[11px]">
+                          {card.summaryLabel ? `${card.summaryLabel} SKOR` : 'SKOR PENCAPAIAN'}
+                        </td>
+                        <td colSpan={3} className="p-2 border border-slate-800 text-center bg-cyan-500/20 text-cyan-200 font-extrabold">
+                          {card.totalSkorPct}%
+                        </td>
+                        <td className="p-2 border border-slate-800" />
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
@@ -1886,14 +2128,9 @@ Pertanyaan user: ${queryText}`
                       const isEditing = editingPicId === p.id;
                       const isVacant = p.nama === 'VACANT';
                       return (
-                        <tr
-                          key={p.id}
-                          className="bg-[#07090e] hover:bg-slate-900/70 border-b border-slate-800"
-                        >
+                        <tr key={p.id} className="bg-[#07090e] hover:bg-slate-900/70 border-b border-slate-800">
                           <td className="p-3 border border-slate-800 text-slate-400">{index + 1}</td>
-                          <td className="p-3 border border-slate-800 font-bold text-white uppercase">
-                            {p.posisi}
-                          </td>
+                          <td className="p-3 border border-slate-800 font-bold text-white uppercase">{p.posisi}</td>
                           <td className="p-3 border border-slate-800 uppercase">
                             {isEditing ? (
                               <input
@@ -2052,7 +2289,7 @@ Pertanyaan user: ${queryText}`
                 <button
                   type="button"
                   onClick={() =>
-                    handleAskAi('Buatkan diagnosis masalah revenue & traffic mingguan serta rencana aksi 7 hari ke depan.')
+                    handleAskAi('Buatkan diagnosis masalah revenue & traffic W1–W5 serta rencana aksi 7 hari ke depan.')
                   }
                   className="rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 px-2.5 py-1 text-xs font-semibold text-emerald-300"
                 >
