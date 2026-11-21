@@ -759,14 +759,14 @@ export default function App() {
     );
   };
 
-  const handleUpdateStrategiActual = (groupId, rowId, newActual) => {
+  const handleUpdateStrategiField = (groupId, rowId, field, newValue) => {
     setStrategiInisiatif((prev) =>
       prev.map((group) => {
         if (group.id !== groupId) return group;
         return {
           ...group,
           rows: group.rows.map((r) =>
-            r.id === rowId ? { ...r, actual: Number(newActual || 0) } : r
+            r.id === rowId ? { ...r, [field]: Number(newValue || 0) } : r
           )
         };
       })
@@ -1928,7 +1928,7 @@ export default function App() {
                     C. STRATEGI INISIATIF — BULANAN
                   </h3>
                   <p className="text-xs text-slate-400">
-                    Edit kolom <span className="text-cyan-300 font-semibold">Actual</span> untuk menghitung <span className="text-emerald-300 font-semibold">Presentase</span> dan <span className="text-rose-300 font-semibold">Gap SO</span> secara otomatis.
+                    Edit kolom <span className="text-slate-200 font-semibold">Target</span>, <span className="text-slate-200 font-semibold">Target MTD</span>, dan <span className="text-cyan-300 font-semibold">Actual</span> secara manual untuk menghitung <span className="text-emerald-300 font-semibold">Presentase</span> dan <span className="text-rose-300 font-semibold">Gap SO</span> secara otomatis.
                   </p>
                 </div>
                 <span className="text-xs font-semibold text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 px-3 py-1 rounded-lg">
@@ -1957,6 +1957,7 @@ export default function App() {
                     {strategiInisiatif.map((group) =>
                       group.rows.map((row, idx) => {
                         const targetNum = Number(row.target || 0);
+                        const targetMtdNum = Number(row.targetMtd || 0);
                         const actualNum = Number(row.actual || 0);
                         const pct = targetNum > 0 ? Math.round((actualNum / targetNum) * 100) : 0;
                         const gapSo = actualNum - targetNum;
@@ -1995,20 +1996,34 @@ export default function App() {
                               </>
                             )}
                             <td className="p-2 border border-slate-800 text-slate-200">{row.si}</td>
-                            <td className="p-2 border border-slate-800 text-right text-slate-300">
-                              {formatNum(targetNum)}
+                            <td className="p-2 border border-slate-800 text-right">
+                              <input
+                                type="number"
+                                value={targetNum}
+                                onChange={(e) =>
+                                  handleUpdateStrategiField(group.id, row.id, 'target', e.target.value)
+                                }
+                                className="w-20 rounded border border-slate-700 bg-slate-950 px-2 py-1 text-right text-slate-200 font-medium focus:border-cyan-400 outline-none"
+                              />
                             </td>
-                            <td className="p-2 border border-slate-800 text-right text-slate-300">
-                              {formatNum(row.targetMtd)}
+                            <td className="p-2 border border-slate-800 text-right">
+                              <input
+                                type="number"
+                                value={targetMtdNum}
+                                onChange={(e) =>
+                                  handleUpdateStrategiField(group.id, row.id, 'targetMtd', e.target.value)
+                                }
+                                className="w-20 rounded border border-slate-700 bg-slate-950 px-2 py-1 text-right text-slate-200 font-medium focus:border-cyan-400 outline-none"
+                              />
                             </td>
                             <td className="p-2 border border-slate-800 text-right">
                               <input
                                 type="number"
                                 value={actualNum}
                                 onChange={(e) =>
-                                  handleUpdateStrategiActual(group.id, row.id, e.target.value)
+                                  handleUpdateStrategiField(group.id, row.id, 'actual', e.target.value)
                                 }
-                                className="w-20 rounded border border-cyan-500/40 bg-slate-950 px-2 py-1 text-right text-cyan-300 font-semibold"
+                                className="w-20 rounded border border-cyan-500/40 bg-slate-950 px-2 py-1 text-right text-cyan-300 font-semibold focus:border-emerald-400 outline-none"
                               />
                             </td>
                             <td
