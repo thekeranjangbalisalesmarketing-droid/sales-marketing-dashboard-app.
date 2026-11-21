@@ -26,7 +26,9 @@ import {
   LogOut,
   Eye,
   EyeOff,
-  Printer
+  Printer,
+  Store,
+  Receipt
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -288,6 +290,14 @@ const INITIAL_WEEKLY_METRICS = [
   { minggu: 'W5', label: '29–30 Nov', revenue: 87000000, traffic: 800, transaksi: 145 }
 ];
 
+const INITIAL_POS_METRICS = [
+  { minggu: 'W1', label: '1–7 Nov', revenuePos: 0, trafficPos: 0, transaksiPos: 0 },
+  { minggu: 'W2', label: '8–14 Nov', revenuePos: 0, trafficPos: 0, transaksiPos: 0 },
+  { minggu: 'W3', label: '15–21 Nov', revenuePos: 0, trafficPos: 0, transaksiPos: 0 },
+  { minggu: 'W4', label: '22–28 Nov', revenuePos: 0, trafficPos: 0, transaksiPos: 0 },
+  { minggu: 'W5', label: '29–30 Nov', revenuePos: 0, trafficPos: 0, transaksiPos: 0 }
+];
+
 const INITIAL_TASKS = [
   {
     id: 'task-1',
@@ -353,6 +363,13 @@ const calcPctChange = (current, previous) => {
   const prev = Number(previous || 0);
   if (prev === 0) return curr > 0 ? 100 : 0;
   return Number((((curr - prev) / Math.abs(prev)) * 100).toFixed(1));
+};
+
+const calcBasketSize = (revenueVal, transaksiVal) => {
+  const rev = Number(revenueVal || 0);
+  const trx = Number(transaksiVal || 0);
+  if (trx <= 0) return 0;
+  return Math.round(rev / trx);
 };
 
 const calcStrategiPerform = (actualVal, targetVal, bobotVal) => {
@@ -457,6 +474,22 @@ export default function App() {
     }
   });
 
+  const [posMetrics, setPosMetrics] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+      return saved?.posMetrics || INITIAL_POS_METRICS;
+    } catch {
+      return INITIAL_POS_METRICS;
+    }
+  });
+
+  const [posManualForm, setPosManualForm] = useState({
+    minggu: 'W3',
+    revenuePos: 0,
+    trafficPos: 0,
+    transaksiPos: 0
+  });
+
   const [tasks, setTasks] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
@@ -526,7 +559,7 @@ export default function App() {
   const [aiMessages, setAiMessages] = useState([
     {
       role: 'assistant',
-      text: 'Halo! AI Strategist aktif & siap dipakai. Tanya saya soal perbandingan W1–W5, skor KPI tiap PIC, Strategi Inisiatif (SI) & Nilai Perform, posisi VACANT, atau rencana aksi 7 hari.'
+      text: 'Halo! AI Strategist aktif & siap dipakai. Tanya saya soal perbandingan W1–W5, sales POS & basket size, skor KPI tiap PIC, Strategi Inisiatif (SI) & Nilai Perform, posisi VACANT, atau rencana aksi 7 hari.'
     }
   ]);
 
@@ -538,6 +571,7 @@ export default function App() {
         strategiInisiatif,
         acquisitions,
         weeklyMetrics,
+        posMetrics,
         tasks,
         moms
       };
@@ -546,7 +580,7 @@ export default function App() {
     } catch (e) {
       console.error('Gagal menyimpan data lokal:', e);
     }
-  }, [pics, scorecards, strategiInisiatif, acquisitions, weeklyMetrics, tasks, moms]);
+  }, [pics, scorecards, strategiInisiatif, acquisitions, weeklyMetrics, posMetrics, tasks, moms]);
 
   const handleUnlock = (e) => {
     e.preventDefault();
@@ -572,6 +606,83 @@ export default function App() {
       // ignore
     }
   };
+
+  const handleUpdatePosRow = (mingguKey, field, val) => {
+    setPosMetrics((prev) =>
+      prev.map((w) => (w.minggu === mingguKey ? { ...w, [field]: Number(val || 0) } : w))
+    );
+  };
+
+  const handleApplyPosManualInput = (e) => {
+    e.preventDefault();
+    const addRev = Number(posManualForm.revenuePos || 0);
+    const addTraf = Number(posManualForm.trafficPos || 0);
+    const addTrx = Number(posManualForm.transaksiPos || 0);
+
+    setPosMetrics((prev) =>
+      prev.map((w) =>
+        w.minggu === posManualForm.minggu
+          ? {
+              ...w,
+              revenuePos: Number(w.revenuePos || 0) + addRev,
+              trafficPos: Number(w.trafficPos || 0) + addTraf,
+              transaksiPos: Number(w.transaksiPos || 0) + addTrx
+            }
+          : w
+      )
+    );
+
+    setPosManualForm((prev) => ({
+      ...prev,
+      revenuePos: 0,
+      trafficPos: 0,
+      transaksiPos: 0
+    }));
+  };
+
+  const posSummary = useMemo(() => {
+    if (selectedWeek !== 'ALL') {
+      const curr = posMetrics.find((w) => w.minggu === selectedWeek) || {
+        minggu: selectedWeek,
+        label: '',
+        revenuePos: 0,
+        trafficPos: 0,
+        transaksiPos: 0
+      };
+      const rev = Number(curr.revenuePos || 0);
+      const traf = Number(curr.trafficPos || 0);
+      const trx = Number(curr.transaksiPos || 0);
+      return {
+        revenuePos: rev,
+        trafficPos: traf,
+        transaksiPos: trx,
+        basketSize: calcBasketSize(rev, trx),
+        labelBand: `${curr.minggu} (${curr.label || ''})`
+      };
+    }
+
+    const totalRev = posMetrics.reduce((s, w) => s + Number(w.revenuePos || 0), 0);
+    const totalTraf = posMetrics.reduce((s, w) => s + Number(w.trafficPos || 0), 0);
+    const totalTrx = posMetrics.reduce((s, w) => s + Number(w.transaksiPos || 0), 0);
+    const multiplier = periodMode === 'tahunan' ? 12 : 1;
+    const revFinal = totalRev * multiplier;
+    const trxFinal = totalTrx * multiplier;
+
+    return {
+      revenuePos: revFinal,
+      trafficPos: totalTraf * multiplier,
+      transaksiPos: trxFinal,
+      basketSize: calcBasketSize(revFinal, trxFinal),
+      labelBand:
+        periodMode === 'mingguan'
+          ? 'Total POS W1–W5'
+          : periodMode === 'bulanan'
+          ? 'Bulanan POS (W1–W5)'
+          : periodMode === 'tahunan'
+          ? 'Tahunan POS 2026'
+          : 'POS Periode Aktif'
+    };
+  }, [posMetrics, selectedWeek, periodMode]);
 
   const handleSelectKanal = (kanalVal) => {
     const matchedPic = pics.find((p) => p.posisi.toUpperCase() === kanalVal.toUpperCase());
@@ -961,6 +1072,7 @@ export default function App() {
         strategiInisiatif,
         acquisitions,
         weeklyMetrics,
+        posMetrics,
         tasks,
         moms
       },
@@ -988,6 +1100,7 @@ export default function App() {
         if (parsed.strategiInisiatif) setStrategiInisiatif(parsed.strategiInisiatif);
         if (parsed.acquisitions) setAcquisitions(parsed.acquisitions);
         if (parsed.weeklyMetrics) setWeeklyMetrics(parsed.weeklyMetrics);
+        if (parsed.posMetrics) setPosMetrics(parsed.posMetrics);
         if (parsed.tasks) setTasks(parsed.tasks);
         if (parsed.moms) setMoms(parsed.moms);
       } catch (err) {
@@ -1018,6 +1131,12 @@ export default function App() {
 
     const lines = [];
 
+    if (q.includes('pos') || q.includes('basket')) {
+      lines.push(
+        `Ringkasan Sales POS (${posSummary.labelBand}):\n• Revenue POS: ${formatIDR(posSummary.revenuePos)}\n• Traffic POS: ${formatNum(posSummary.trafficPos)} Pax\n• Transaksi POS: ${formatNum(posSummary.transaksiPos)} Trx\n• Basket Size (Otomatis): ${formatIDR(posSummary.basketSize)}`
+      );
+    }
+
     if (q.includes('vacant') || q.includes('posisi') || q.includes('tim') || q.includes('pic')) {
       lines.push(
         vacantPositions.length > 0
@@ -1044,6 +1163,9 @@ export default function App() {
       lines.push(
         `Ringkasan Performa W1–W5:\n• Tertinggi: ${topWeek?.minggu || '-'} (${formatIDR(topWeek?.revenue || 0)}, ${formatNum(topWeek?.traffic || 0)} Pax)\n• Terendah: ${lowestWeek?.minggu || '-'} (${formatIDR(lowestWeek?.revenue || 0)}, ${formatNum(lowestWeek?.traffic || 0)} Pax)`
       );
+      lines.push(
+        `Sales POS (${posSummary.labelBand}):\n• Revenue POS: ${formatIDR(posSummary.revenuePos)} | Traffic POS: ${formatNum(posSummary.trafficPos)} Pax | Transaksi POS: ${formatNum(posSummary.transaksiPos)} Trx | Basket Size: ${formatIDR(posSummary.basketSize)}`
+      );
       lines.push(`Skor KPI per PIC:\n${scoreList}`);
       if (vacantPositions.length > 0) {
         lines.push(`Perhatian Posisi VACANT: ${vacantPositions.join(', ')} perlu backup eksekusi harian.`);
@@ -1068,6 +1190,7 @@ export default function App() {
     const weeklySummaryText = comparisonRows
       .map((r) => `${r.minggu}: Rev ${formatIDR(r.revenue)} (${r.revGrowth}%), Pax ${r.traffic}`)
       .join(' | ');
+    const posSummaryText = `Revenue POS ${formatIDR(posSummary.revenuePos)}, Traffic POS ${formatNum(posSummary.trafficPos)}, Transaksi POS ${formatNum(posSummary.transaksiPos)}, Basket Size ${formatIDR(posSummary.basketSize)}`;
     const scorecardSummary = computedScorecards
       .map((sc) => `${sc.picName} (${sc.posisi}): Skor ${sc.totalSkorPct}%`)
       .join(' | ');
@@ -1087,7 +1210,7 @@ export default function App() {
                 {
                   parts: [
                     {
-                      text: `Anda adalah konsultan operasional Sales Marketing. Jawab singkat, jelas, dan actionable dalam Bahasa Indonesia.\nPerbandingan W1-W5: ${weeklySummaryText}\nSkor KPI per PIC: ${scorecardSummary}\nStrategi Inisiatif: ${siSummary}\nPosisi VACANT: ${vacantPositions.join(', ')}\nPertanyaan: ${queryText}`
+                      text: `Anda adalah konsultan operasional Sales Marketing. Jawab singkat, jelas, dan actionable dalam Bahasa Indonesia.\nPerbandingan W1-W5: ${weeklySummaryText}\nSales POS: ${posSummaryText}\nSkor KPI per PIC: ${scorecardSummary}\nStrategi Inisiatif: ${siSummary}\nPosisi VACANT: ${vacantPositions.join(', ')}\nPertanyaan: ${queryText}`
                     }
                   ]
                 }
@@ -1434,6 +1557,175 @@ export default function App() {
                   </span>
                   <span className="text-slate-400 print:text-slate-600">{mainSummary.compareNote}</span>
                 </div>
+              </div>
+            </div>
+
+            {/* BLOK DASHBOARD SALES POS + BASKET SIZE OTOMATIS */}
+            <div className="rounded-xl border border-emerald-500/30 bg-[#0e131d] p-4 sm:p-5 space-y-4 print:bg-white print:border-slate-300">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-800 pb-3">
+                <div>
+                  <h2 className="text-xs sm:text-sm font-extrabold text-emerald-300 uppercase tracking-wide flex items-center gap-2 print:text-black">
+                    <Store className="w-4 h-4 text-emerald-400" /> Dashboard Sales POS & Basket Size ({posSummary.labelBand})
+                  </h2>
+                  <p className="text-[11px] text-slate-400 print:text-slate-600">
+                    Input manual <span className="text-white font-semibold">Revenue POS</span>, <span className="text-white font-semibold">Traffic POS</span>, dan <span className="text-white font-semibold">Transaksi POS</span> — <span className="text-amber-300 font-semibold">Basket Size</span> terhitung otomatis (Revenue POS / Transaksi POS).
+                  </p>
+                </div>
+                <span className="inline-flex items-center gap-1 rounded-lg bg-amber-500/15 border border-amber-500/30 px-2.5 py-1 text-[11px] font-bold text-amber-300">
+                  <Receipt className="w-3.5 h-3.5" /> Basket Size Otomatis
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 tabular-nums">
+                <div className="rounded-xl border border-slate-800 bg-slate-950/90 p-3.5 print:bg-white print:border-slate-300">
+                  <span className="text-[11px] font-bold uppercase text-slate-400">Revenue POS</span>
+                  <div className="mt-1.5 text-lg sm:text-xl font-extrabold text-emerald-300 print:text-black">
+                    {formatIDR(posSummary.revenuePos)}
+                  </div>
+                  <span className="text-[11px] text-slate-500">Input manual POS</span>
+                </div>
+
+                <div className="rounded-xl border border-slate-800 bg-slate-950/90 p-3.5 print:bg-white print:border-slate-300">
+                  <span className="text-[11px] font-bold uppercase text-slate-400">Traffic POS</span>
+                  <div className="mt-1.5 text-lg sm:text-xl font-extrabold text-cyan-300 print:text-black">
+                    {formatNum(posSummary.trafficPos)} <span className="text-xs font-normal text-slate-400">Pax</span>
+                  </div>
+                  <span className="text-[11px] text-slate-500">Input manual POS</span>
+                </div>
+
+                <div className="rounded-xl border border-slate-800 bg-slate-950/90 p-3.5 print:bg-white print:border-slate-300">
+                  <span className="text-[11px] font-bold uppercase text-slate-400">Transaksi POS</span>
+                  <div className="mt-1.5 text-lg sm:text-xl font-extrabold text-sky-300 print:text-black">
+                    {formatNum(posSummary.transaksiPos)} <span className="text-xs font-normal text-slate-400">Trx</span>
+                  </div>
+                  <span className="text-[11px] text-slate-500">Input manual POS</span>
+                </div>
+
+                <div className="rounded-xl border border-amber-500/40 bg-amber-500/10 p-3.5 print:bg-white print:border-slate-300">
+                  <span className="text-[11px] font-bold uppercase text-amber-300 print:text-black">Basket Size (Otomatis)</span>
+                  <div className="mt-1.5 text-lg sm:text-xl font-extrabold text-amber-200 print:text-black">
+                    {formatIDR(posSummary.basketSize)}
+                  </div>
+                  <span className="text-[11px] text-amber-200/75 print:text-slate-600">
+                    {posSummary.transaksiPos > 0
+                      ? `${formatIDR(posSummary.revenuePos)} / ${formatNum(posSummary.transaksiPos)} Trx`
+                      : '0 Trx (otomatis Rp 0)'}
+                  </span>
+                </div>
+              </div>
+
+              <form
+                onSubmit={handleApplyPosManualInput}
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 pt-2 border-t border-slate-800/80 text-xs print:hidden"
+              >
+                <div>
+                  <label className="block text-slate-400 mb-1">Minggu POS</label>
+                  <select
+                    value={posManualForm.minggu}
+                    onChange={(e) => setPosManualForm({ ...posManualForm, minggu: e.target.value })}
+                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-2 text-white"
+                  >
+                    {['W1', 'W2', 'W3', 'W4', 'W5'].map((wk) => (
+                      <option key={wk} value={wk}>
+                        {wk}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-slate-400 mb-1">Tambah Revenue POS (Rp)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={posManualForm.revenuePos}
+                    onChange={(e) => setPosManualForm({ ...posManualForm, revenuePos: e.target.value })}
+                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-2 text-emerald-300 font-semibold"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-400 mb-1">Tambah Traffic POS (Pax)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={posManualForm.trafficPos}
+                    onChange={(e) => setPosManualForm({ ...posManualForm, trafficPos: e.target.value })}
+                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-2 text-cyan-300 font-semibold"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-400 mb-1">Tambah Transaksi POS (Trx)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={posManualForm.transaksiPos}
+                    onChange={(e) => setPosManualForm({ ...posManualForm, transaksiPos: e.target.value })}
+                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-2 text-sky-300 font-semibold"
+                  />
+                </div>
+                <div className="flex items-end">
+                  <button
+                    type="submit"
+                    className="w-full rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2 px-3 transition flex items-center justify-center gap-1.5"
+                  >
+                    <Plus className="w-4 h-4" /> Tambah Data POS
+                  </button>
+                </div>
+              </form>
+
+              <div className="overflow-x-auto pt-2">
+                <table className="w-full text-left border-collapse text-[11px] sm:text-xs tabular-nums">
+                  <thead>
+                    <tr className="bg-slate-900 text-slate-300 uppercase">
+                      <th className="p-2 border border-slate-800">Minggu</th>
+                      <th className="p-2 border border-slate-800 text-right">Revenue POS (Edit)</th>
+                      <th className="p-2 border border-slate-800 text-right">Traffic POS (Edit)</th>
+                      <th className="p-2 border border-slate-800 text-right">Transaksi POS (Edit)</th>
+                      <th className="p-2 border border-slate-800 text-right text-amber-300">Basket Size (Otomatis)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {posMetrics.map((row) => {
+                      const basketRow = calcBasketSize(row.revenuePos, row.transaksiPos);
+                      return (
+                        <tr key={row.minggu} className="border-b border-slate-800/80 hover:bg-slate-900/50">
+                          <td className="p-2 border border-slate-800 font-bold text-cyan-300">
+                            {row.minggu} <span className="text-[10px] font-normal text-slate-400">({row.label})</span>
+                          </td>
+                          <td className="p-2 border border-slate-800 text-right">
+                            <input
+                              type="number"
+                              min="0"
+                              value={row.revenuePos}
+                              onChange={(e) => handleUpdatePosRow(row.minggu, 'revenuePos', e.target.value)}
+                              className="w-32 rounded border border-slate-700 bg-slate-950 px-2 py-1 text-right text-emerald-300 font-semibold"
+                            />
+                          </td>
+                          <td className="p-2 border border-slate-800 text-right">
+                            <input
+                              type="number"
+                              min="0"
+                              value={row.trafficPos}
+                              onChange={(e) => handleUpdatePosRow(row.minggu, 'trafficPos', e.target.value)}
+                              className="w-24 rounded border border-slate-700 bg-slate-950 px-2 py-1 text-right text-cyan-300 font-semibold"
+                            />
+                          </td>
+                          <td className="p-2 border border-slate-800 text-right">
+                            <input
+                              type="number"
+                              min="0"
+                              value={row.transaksiPos}
+                              onChange={(e) => handleUpdatePosRow(row.minggu, 'transaksiPos', e.target.value)}
+                              className="w-24 rounded border border-slate-700 bg-slate-950 px-2 py-1 text-right text-sky-300 font-semibold"
+                            />
+                          </td>
+                          <td className="p-2 border border-slate-800 text-right font-extrabold text-amber-300">
+                            {formatIDR(basketRow)}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
             </div>
 
