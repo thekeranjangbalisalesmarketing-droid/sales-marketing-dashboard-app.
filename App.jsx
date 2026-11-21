@@ -25,7 +25,8 @@ import {
   Lock,
   LogOut,
   Eye,
-  EyeOff
+  EyeOff,
+  Printer
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -507,7 +508,7 @@ export default function App() {
   const [aiMessages, setAiMessages] = useState([
     {
       role: 'assistant',
-      text: 'Halo! Saya AI Admin Sales & Marketing Strategist. Tanya saya tentang jadwal rombongan & event, perbandingan W1–W5, skor KPI, Strategi Inisiatif (SI), atau posisi VACANT.'
+      text: 'Halo! AI Strategist aktif & siap dipakai. Tanya saya soal perbandingan W1–W5, skor KPI tiap PIC, Strategi Inisiatif (SI) & Gap SO, posisi VACANT, atau rencana aksi 7 hari.'
     }
   ]);
 
@@ -896,6 +897,10 @@ export default function App() {
     );
   };
 
+  const handleExportPdf = () => {
+    window.print();
+  };
+
   const handleExportBackup = () => {
     const dataStr = JSON.stringify(
       {
@@ -941,6 +946,64 @@ export default function App() {
     reader.readAsText(file);
   };
 
+  const buildLocalStrategistReply = (question) => {
+    const q = question.toLowerCase();
+    const vacantPositions = pics.filter((p) => p.nama === 'VACANT').map((p) => p.posisi);
+    const topWeek = [...comparisonRows].sort((a, b) => Number(b.revenue || 0) - Number(a.revenue || 0))[0];
+    const lowestWeek = [...comparisonRows].sort((a, b) => Number(a.revenue || 0) - Number(b.revenue || 0))[0];
+
+    const scoreList = computedScorecards
+      .map((sc) => `• ${sc.picName} (${sc.posisi}): Skor ${sc.totalSkorPct}%`)
+      .join('\n');
+
+    const negativeGaps = [];
+    strategiInisiatif.forEach((group) => {
+      group.rows.forEach((r) => {
+        const gap = Number(r.actual || 0) - Number(r.target || 0);
+        if (gap < 0) {
+          negativeGaps.push(`${group.no} ${r.si} (${group.pic}): gap ${gap}`);
+        }
+      });
+    });
+
+    const lines = [];
+
+    if (q.includes('vacant') || q.includes('posisi') || q.includes('tim') || q.includes('pic')) {
+      lines.push(
+        vacantPositions.length > 0
+          ? `Posisi VACANT saat ini: ${vacantPositions.join(', ')}. Rekomendasi: tugaskan PIC terdekat secara sementara (mis. Travel/B2B ke Nadia & Fahmi, Driver ke Dharma/Nadia) dan prioritaskan rekrutmen untuk posisi yang berdampak langsung ke traffic.`
+          : 'Seluruh posisi pada struktur tim saat ini sudah terisi.'
+      );
+    }
+
+    if (q.includes('kpi') || q.includes('skor')) {
+      lines.push(`Ringkasan Skor KPI Bulanan per PIC:\n${scoreList}`);
+    }
+
+    if (q.includes('si') || q.includes('strategi') || q.includes('gap') || q.includes('so')) {
+      lines.push(
+        negativeGaps.length > 0
+          ? `Item Strategi Inisiatif dengan Gap negatif:\n• ${negativeGaps.slice(0, 6).join('\n• ')}`
+          : 'Belum ada gap negatif tercatat pada Strategi Inisiatif (Target & Actual masih 0 atau sudah tercapai).'
+      );
+    }
+
+    if (lines.length === 0) {
+      lines.push(
+        `Ringkasan Performa W1–W5:\n• Tertinggi: ${topWeek?.minggu || '-'} (${formatIDR(topWeek?.revenue || 0)}, ${formatNum(topWeek?.traffic || 0)} Pax)\n• Terendah: ${lowestWeek?.minggu || '-'} (${formatIDR(lowestWeek?.revenue || 0)}, ${formatNum(lowestWeek?.traffic || 0)} Pax)`
+      );
+      lines.push(`Skor KPI per PIC:\n${scoreList}`);
+      if (vacantPositions.length > 0) {
+        lines.push(`Perhatian Posisi VACANT: ${vacantPositions.join(', ')} perlu backup eksekusi harian.`);
+      }
+      lines.push(
+        `Rencana Aksi 7 Hari:\n1. Update Target, Target MTD, dan Actual harian di tab KPI & FUNNEL.\n2. Kunci jadwal rombongan & event masuk ke Schedule dan Google Calendar.\n3. Follow up mitra aktif (Guide, Travel, EO, Pemerintahan) serta tutup action item di MOM.`
+      );
+    }
+
+    return lines.join('\n\n');
+  };
+
   const handleAskAi = async (customQuery) => {
     const queryText = (customQuery ?? aiPrompt).trim();
     if (!queryText) return;
@@ -980,25 +1043,21 @@ export default function App() {
             })
           }
         );
+        if (!res.ok) throw new Error('API error');
         const data = await res.json();
-        const replyText =
-          data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-          'Respons AI diterima, silakan periksa rekap W1–W5, skor KPI, dan Strategi Inisiatif.';
+        const replyText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!replyText) throw new Error('Empty response');
         setAiMessages((prev) => [...prev, { role: 'assistant', text: replyText }]);
       } else {
-        const localAdvice = [
-          `Perbandingan W1–W5: ${weeklySummaryText}.`,
-          `Ringkasan Skor KPI Bulanan: ${scorecardSummary}.`,
-          vacantPositions.length > 0
-            ? `Posisi VACANT (${vacantPositions.join(', ')}) perlu pembagian tugas sementara ke PIC aktif agar target revenue, traffic, dan Strategi Inisiatif tetap berjalan.`
-            : 'Semua posisi tim sudah terisi.'
-        ].join('\n\n');
-        setAiMessages((prev) => [...prev, { role: 'assistant', text: localAdvice }]);
+        setAiMessages((prev) => [
+          ...prev,
+          { role: 'assistant', text: buildLocalStrategistReply(queryText) }
+        ]);
       }
     } catch {
       setAiMessages((prev) => [
         ...prev,
-        { role: 'assistant', text: 'Fokuskan eksekusi pada indikator dengan %ACV atau Gap SO terbesar di tiap blok PIC.' }
+        { role: 'assistant', text: buildLocalStrategistReply(queryText) }
       ]);
     } finally {
       setAiLoading(false);
@@ -1079,19 +1138,27 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#07090e] text-slate-100 pb-20 md:pb-10">
-      <header className="sticky top-0 z-30 border-b border-slate-800 bg-[#0b0f17]/95 backdrop-blur">
+    <div className="min-h-screen bg-[#07090e] text-slate-100 pb-20 md:pb-10 print:bg-white print:text-black print:pb-0">
+      <style>{`
+        @media print {
+          body { background: #ffffff !important; color: #000000 !important; }
+          .print\\:hidden { display: none !important; }
+          input, select, textarea { border: none !important; background: transparent !important; color: #000000 !important; padding: 0 !important; }
+        }
+      `}</style>
+
+      <header className="sticky top-0 z-30 border-b border-slate-800 bg-[#0b0f17]/95 backdrop-blur print:static print:bg-white print:border-slate-300">
         <div className="mx-auto max-w-[1440px] px-3 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className="h-9 w-9 rounded-lg bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold">
+            <div className="h-9 w-9 rounded-lg bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-bold print:border-slate-400 print:text-black">
               SM
             </div>
             <div>
-              <h1 className="text-sm sm:text-base font-bold tracking-wide text-white uppercase">
+              <h1 className="text-sm sm:text-base font-bold tracking-wide text-white uppercase print:text-black">
                 Sales & Marketing Command Center
               </h1>
-              <div className="flex items-center gap-2 text-[11px] text-slate-400">
-                <span className="inline-flex items-center gap-1 text-emerald-400">
+              <div className="flex items-center gap-2 text-[11px] text-slate-400 print:text-slate-600">
+                <span className="inline-flex items-center gap-1 text-emerald-400 print:text-black">
                   <ShieldCheck className="w-3.5 h-3.5" /> Auto-Backup Aktif ({lastSavedAt})
                 </span>
                 <span>•</span>
@@ -1100,7 +1167,14 @@ export default function App() {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2 print:hidden">
+            <button
+              type="button"
+              onClick={handleExportPdf}
+              className="inline-flex items-center gap-1.5 rounded-md border border-emerald-500/40 bg-emerald-500/15 hover:bg-emerald-500/25 px-2.5 py-1.5 text-xs font-semibold text-emerald-300 transition"
+            >
+              <Printer className="w-3.5 h-3.5" /> Convert to PDF
+            </button>
             <button
               type="button"
               onClick={handleExportBackup}
@@ -1122,7 +1196,7 @@ export default function App() {
           </div>
         </div>
 
-        <nav className="hidden md:flex border-t border-slate-800/80 bg-[#090c12] px-6 gap-1 overflow-x-auto">
+        <nav className="hidden md:flex border-t border-slate-800/80 bg-[#090c12] px-6 gap-1 overflow-x-auto print:hidden">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = activeTab === item.id;
@@ -1146,7 +1220,7 @@ export default function App() {
       </header>
 
       <main className="mx-auto max-w-[1440px] px-3 sm:px-6 pt-5 space-y-5">
-        <section className="rounded-xl border border-slate-800 bg-[#0e131d] p-3.5 sm:p-4 space-y-3">
+        <section className="rounded-xl border border-slate-800 bg-[#0e131d] p-3.5 sm:p-4 space-y-3 print:hidden">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
             <div className="flex flex-wrap items-center gap-1.5">
               {[
@@ -1223,14 +1297,14 @@ export default function App() {
         {activeTab === 'dashboard' && (
           <div className="space-y-5">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 sm:p-5">
+              <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 sm:p-5 print:bg-white print:border-slate-300">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold tracking-wider text-slate-400 uppercase">
+                  <span className="text-xs font-bold tracking-wider text-slate-400 uppercase print:text-slate-700">
                     REVENUE ({mainSummary.labelBand})
                   </span>
                   <TrendingUp className="w-4 h-4 text-emerald-400" />
                 </div>
-                <div className="mt-2 text-2xl sm:text-3xl font-extrabold text-white tabular-nums">
+                <div className="mt-2 text-2xl sm:text-3xl font-extrabold text-white tabular-nums print:text-black">
                   {formatIDR(mainSummary.revenue)}
                 </div>
                 <div className="mt-2 flex items-center gap-2 text-xs">
@@ -1248,18 +1322,18 @@ export default function App() {
                     )}
                     {mainSummary.revPct >= 0 ? `+${mainSummary.revPct}%` : `${mainSummary.revPct}%`}
                   </span>
-                  <span className="text-slate-400">{mainSummary.compareNote}</span>
+                  <span className="text-slate-400 print:text-slate-600">{mainSummary.compareNote}</span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 sm:p-5">
+              <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 sm:p-5 print:bg-white print:border-slate-300">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold tracking-wider text-slate-400 uppercase">
+                  <span className="text-xs font-bold tracking-wider text-slate-400 uppercase print:text-slate-700">
                     TRAFFIC / PAX ({mainSummary.labelBand})
                   </span>
                   <Users className="w-4 h-4 text-cyan-400" />
                 </div>
-                <div className="mt-2 text-2xl sm:text-3xl font-extrabold text-white tabular-nums">
+                <div className="mt-2 text-2xl sm:text-3xl font-extrabold text-white tabular-nums print:text-black">
                   {formatNum(mainSummary.traffic)} <span className="text-sm font-normal text-slate-400">Pax</span>
                 </div>
                 <div className="mt-2 flex items-center gap-2 text-xs">
@@ -1277,18 +1351,18 @@ export default function App() {
                     )}
                     {mainSummary.trafPct >= 0 ? `+${mainSummary.trafPct}%` : `${mainSummary.trafPct}%`}
                   </span>
-                  <span className="text-slate-400">{mainSummary.compareNote}</span>
+                  <span className="text-slate-400 print:text-slate-600">{mainSummary.compareNote}</span>
                 </div>
               </div>
 
-              <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 sm:p-5">
+              <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 sm:p-5 print:bg-white print:border-slate-300">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold tracking-wider text-slate-400 uppercase">
+                  <span className="text-xs font-bold tracking-wider text-slate-400 uppercase print:text-slate-700">
                     TRANSAKSI ({mainSummary.labelBand})
                   </span>
                   <ShoppingBag className="w-4 h-4 text-amber-400" />
                 </div>
-                <div className="mt-2 text-2xl sm:text-3xl font-extrabold text-white tabular-nums">
+                <div className="mt-2 text-2xl sm:text-3xl font-extrabold text-white tabular-nums print:text-black">
                   {formatNum(mainSummary.transaksi)} <span className="text-sm font-normal text-slate-400">Trx</span>
                 </div>
                 <div className="mt-2 flex items-center gap-2 text-xs">
@@ -1306,18 +1380,18 @@ export default function App() {
                     )}
                     {mainSummary.trxPct >= 0 ? `+${mainSummary.trxPct}%` : `${mainSummary.trxPct}%`}
                   </span>
-                  <span className="text-slate-400">{mainSummary.compareNote}</span>
+                  <span className="text-slate-400 print:text-slate-600">{mainSummary.compareNote}</span>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4">
+            <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 print:bg-white print:border-slate-300">
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <h2 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
+                  <h2 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide print:text-black">
                     Perbandingan Cepat W1 – W5 (Ketuk Kartu untuk Filter Minggu)
                   </h2>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-slate-400 print:text-slate-600">
                     Perbandingan langsung Revenue, Traffic, Transaksi, dan % pertumbuhan tiap minggu
                   </p>
                 </div>
@@ -1325,7 +1399,7 @@ export default function App() {
                   <button
                     type="button"
                     onClick={() => setSelectedWeek('ALL')}
-                    className="text-xs font-semibold text-cyan-300 hover:underline"
+                    className="text-xs font-semibold text-cyan-300 hover:underline print:hidden"
                   >
                     Tampilkan Semua (W1–W5)
                   </button>
@@ -1382,7 +1456,7 @@ export default function App() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4">
+            <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 print:hidden">
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <h2 className="text-sm font-bold text-white uppercase tracking-wide">
@@ -1422,7 +1496,7 @@ export default function App() {
 
             <form
               onSubmit={handleAddAcquisition}
-              className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 space-y-3"
+              className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 space-y-3 print:hidden"
             >
               <div className="flex items-center justify-between">
                 <h2 className="text-sm font-bold text-white uppercase tracking-wide flex items-center gap-2">
@@ -1565,12 +1639,12 @@ export default function App() {
               </div>
             </form>
 
-            <div className="rounded-xl border border-slate-800 bg-[#0a0d14] overflow-hidden">
-              <div className="p-3.5 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 bg-[#0e131d]">
-                <h3 className="text-xs sm:text-sm font-bold text-amber-300 uppercase tracking-wider">
+            <div className="rounded-xl border border-slate-800 bg-[#0a0d14] overflow-hidden print:bg-white print:border-slate-300">
+              <div className="p-3.5 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 bg-[#0e131d] print:bg-white">
+                <h3 className="text-xs sm:text-sm font-bold text-amber-300 uppercase tracking-wider print:text-black">
                   SCHEDULE ROMBONGAN EVENT & GUIDE ({filteredAcquisitions.length} Record)
                 </h3>
-                <div className="flex flex-wrap items-center gap-2 text-xs">
+                <div className="flex flex-wrap items-center gap-2 text-xs print:hidden">
                   <select
                     value={selectedKanalFilter}
                     onChange={(e) => setSelectedKanalFilter(e.target.value)}
@@ -1608,7 +1682,7 @@ export default function App() {
                       <th className="py-2 px-2.5 border border-slate-800">Partner</th>
                       <th className="py-2 px-2.5 border border-slate-800 text-right">Pax</th>
                       <th className="py-2 px-2.5 border border-slate-800 text-right">Revenue</th>
-                      <th className="py-2 px-2.5 border border-slate-800 text-center">Aksi</th>
+                      <th className="py-2 px-2.5 border border-slate-800 text-center print:hidden">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -1639,7 +1713,7 @@ export default function App() {
                           <td className="py-2 px-2.5 border border-slate-800/70 text-right font-bold text-emerald-300">
                             {formatIDR(row.revenue)}
                           </td>
-                          <td className="py-2 px-2.5 border border-slate-800/70 text-center">
+                          <td className="py-2 px-2.5 border border-slate-800/70 text-center print:hidden">
                             <button
                               type="button"
                               onClick={() => handleDeleteAcquisition(row.id)}
@@ -1748,7 +1822,7 @@ export default function App() {
                 </table>
               </div>
 
-              <div className="h-64 w-full mt-5">
+              <div className="h-64 w-full mt-5 print:hidden">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={comparisonRows}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
@@ -2058,7 +2132,7 @@ export default function App() {
           <div className="space-y-5">
             <form
               onSubmit={handleAddTask}
-              className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5 text-xs"
+              className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5 text-xs print:hidden"
             >
               <input
                 type="text"
@@ -2134,7 +2208,7 @@ export default function App() {
                       </p>
                     </div>
 
-                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-800/80">
+                    <div className="flex items-center justify-between gap-2 pt-2 border-t border-slate-800/80 print:hidden">
                       <button
                         type="button"
                         onClick={() => handleToggleTaskStatus(t.id)}
@@ -2164,7 +2238,7 @@ export default function App() {
           <div className="space-y-5">
             <form
               onSubmit={handleAddPic}
-              className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs"
+              className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs print:hidden"
             >
               <div>
                 <label className="block text-slate-400 mb-1">Posisi Baru</label>
@@ -2209,7 +2283,7 @@ export default function App() {
                       <th className="p-3 border border-slate-800 w-12">No</th>
                       <th className="p-3 border border-slate-800">Posisi</th>
                       <th className="p-3 border border-slate-800">Nama</th>
-                      <th className="p-3 border border-slate-800 text-right w-36">Aksi</th>
+                      <th className="p-3 border border-slate-800 text-right w-36 print:hidden">Aksi</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -2240,7 +2314,7 @@ export default function App() {
                               </span>
                             )}
                           </td>
-                          <td className="p-3 border border-slate-800 text-right">
+                          <td className="p-3 border border-slate-800 text-right print:hidden">
                             {isEditing ? (
                               <button
                                 type="button"
@@ -2277,7 +2351,7 @@ export default function App() {
             <div className="space-y-4">
               <form
                 onSubmit={handleAddMom}
-                className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 space-y-3 text-xs"
+                className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 space-y-3 text-xs print:hidden"
               >
                 <h2 className="text-sm font-bold text-white uppercase flex items-center gap-2">
                   <FileText className="w-4 h-4 text-amber-400" /> Pencatat MOM / Notulensi Rapat
@@ -2352,7 +2426,7 @@ export default function App() {
                           type="button"
                           disabled={m.convertedToTask}
                           onClick={() => handleConvertMomToTask(m)}
-                          className={`rounded px-2.5 py-1 font-semibold ${
+                          className={`rounded px-2.5 py-1 font-semibold print:hidden ${
                             m.convertedToTask
                               ? 'bg-emerald-500/20 text-emerald-300'
                               : 'bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30'
@@ -2380,7 +2454,7 @@ export default function App() {
                   onClick={() =>
                     handleAskAi('Buatkan diagnosis masalah revenue & traffic W1–W5 serta rencana aksi 7 hari ke depan.')
                   }
-                  className="rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 px-2.5 py-1 text-xs font-semibold text-emerald-300"
+                  className="rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 px-2.5 py-1 text-xs font-semibold text-emerald-300 print:hidden"
                 >
                   Auto-Diagnosa Sekarang
                 </button>
@@ -2411,7 +2485,7 @@ export default function App() {
                   e.preventDefault();
                   handleAskAi();
                 }}
-                className="pt-3 border-t border-slate-800 flex items-center gap-2"
+                className="pt-3 border-t border-slate-800 flex items-center gap-2 print:hidden"
               >
                 <input
                   type="text"
@@ -2432,7 +2506,7 @@ export default function App() {
         )}
       </main>
 
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 border-t border-slate-800 bg-[#090c12]/95 backdrop-blur grid grid-cols-6">
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 border-t border-slate-800 bg-[#090c12]/95 backdrop-blur grid grid-cols-6 print:hidden">
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = activeTab === item.id;
