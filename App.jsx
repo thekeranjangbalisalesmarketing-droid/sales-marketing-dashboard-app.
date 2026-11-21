@@ -180,9 +180,9 @@ const INITIAL_STRATEGI_INISIATIF = [
     bobot: 20,
     pic: 'Nadia',
     rows: [
-      { id: '1-1-a', si: 'WhatsApp Personal Mitra Guide', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
-      { id: '1-1-b', si: 'Talk to Guide Bali', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
-      { id: '1-1-c', si: 'Blast Mitra Visit To Bali', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 }
+      { id: '1-1-a', si: 'WhatsApp Personal Mitra Guide', target: 0, targetMtd: 0, actual: 0 },
+      { id: '1-1-b', si: 'Talk to Guide Bali', target: 0, targetMtd: 0, actual: 0 },
+      { id: '1-1-c', si: 'Blast Mitra Visit To Bali', target: 0, targetMtd: 0, actual: 0 }
     ]
   },
   {
@@ -192,9 +192,9 @@ const INITIAL_STRATEGI_INISIATIF = [
     bobot: 25,
     pic: 'Vacant',
     rows: [
-      { id: '1-2-a', si: 'WhatsApp Personal Mitra', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
-      { id: '1-2-b', si: 'New Database', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
-      { id: '1-2-c', si: 'Meeting Mitra', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 }
+      { id: '1-2-a', si: 'WhatsApp Personal Mitra', target: 0, targetMtd: 0, actual: 0 },
+      { id: '1-2-b', si: 'New Database', target: 0, targetMtd: 0, actual: 0 },
+      { id: '1-2-c', si: 'Meeting Mitra', target: 0, targetMtd: 0, actual: 0 }
     ]
   },
   {
@@ -204,8 +204,8 @@ const INITIAL_STRATEGI_INISIATIF = [
     bobot: 20,
     pic: 'Vacant',
     rows: [
-      { id: '1-3-a', si: 'WhatsApp Personal Mitra Driver', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
-      { id: '1-3-b', si: 'Talk To Driver', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 }
+      { id: '1-3-a', si: 'WhatsApp Personal Mitra Driver', target: 0, targetMtd: 0, actual: 0 },
+      { id: '1-3-b', si: 'Talk To Driver', target: 0, targetMtd: 0, actual: 0 }
     ]
   },
   {
@@ -215,8 +215,8 @@ const INITIAL_STRATEGI_INISIATIF = [
     bobot: 20,
     pic: 'Selvia',
     rows: [
-      { id: '1-4-a', si: 'Blast Database Event', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
-      { id: '1-4-b', si: 'Penyelenggaraan Event', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 }
+      { id: '1-4-a', si: 'Blast Database Event', target: 0, targetMtd: 0, actual: 0 },
+      { id: '1-4-b', si: 'Penyelenggaraan Event', target: 0, targetMtd: 0, actual: 0 }
     ]
   },
   {
@@ -226,8 +226,8 @@ const INITIAL_STRATEGI_INISIATIF = [
     bobot: 25,
     pic: 'Dhimas',
     rows: [
-      { id: '1-5-a', si: 'New Database event', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
-      { id: '1-5-b', si: 'Meeting EO', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 }
+      { id: '1-5-a', si: 'New Database event', target: 0, targetMtd: 0, actual: 0 },
+      { id: '1-5-b', si: 'Meeting EO', target: 0, targetMtd: 0, actual: 0 }
     ]
   },
   {
@@ -237,9 +237,9 @@ const INITIAL_STRATEGI_INISIATIF = [
     bobot: 25,
     pic: 'Vacant',
     rows: [
-      { id: '1-6-a', si: 'WhatsApp Personal Mitra', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
-      { id: '1-6-b', si: 'New Database', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
-      { id: '1-6-c', si: 'Meeting Mitra', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 }
+      { id: '1-6-a', si: 'WhatsApp Personal Mitra', target: 0, targetMtd: 0, actual: 0 },
+      { id: '1-6-b', si: 'New Database', target: 0, targetMtd: 0, actual: 0 },
+      { id: '1-6-c', si: 'Meeting Mitra', target: 0, targetMtd: 0, actual: 0 }
     ]
   },
   {
@@ -249,8 +249,8 @@ const INITIAL_STRATEGI_INISIATIF = [
     bobot: 25,
     pic: 'Linda',
     rows: [
-      { id: '1-7-a', si: 'WhatsApp Personal Mitra Pemerintahan', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
-      { id: '1-7-b', si: 'Meeting Pemerintahan', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 }
+      { id: '1-7-a', si: 'WhatsApp Personal Mitra Pemerintahan', target: 0, targetMtd: 0, actual: 0 },
+      { id: '1-7-b', si: 'Meeting Pemerintahan', target: 0, targetMtd: 0, actual: 0 }
     ]
   },
   {
@@ -260,9 +260,9 @@ const INITIAL_STRATEGI_INISIATIF = [
     bobot: 20,
     pic: 'Dharma',
     rows: [
-      { id: '1-8-a', si: 'Check Trailing', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
-      { id: '1-8-b', si: 'Service Trailing', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
-      { id: '1-8-c', si: 'Foto bus rombongan', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 }
+      { id: '1-8-a', si: 'Check Trailing', target: 0, targetMtd: 0, actual: 0 },
+      { id: '1-8-b', si: 'Service Trailing', target: 0, targetMtd: 0, actual: 0 },
+      { id: '1-8-c', si: 'Foto bus rombongan', target: 0, targetMtd: 0, actual: 0 }
     ]
   },
   {
@@ -272,8 +272,8 @@ const INITIAL_STRATEGI_INISIATIF = [
     bobot: 25,
     pic: 'MAGANG',
     rows: [
-      { id: '1-9-a', si: 'New Database Travel (Fahmi Magang)', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
-      { id: '1-9-b', si: 'Share Voucher Daybus (Fahmi Magang)', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 }
+      { id: '1-9-a', si: 'New Database Travel (Fahmi Magang)', target: 0, targetMtd: 0, actual: 0 },
+      { id: '1-9-b', si: 'Share Voucher Daybus (Fahmi Magang)', target: 0, targetMtd: 0, actual: 0 }
     ]
   }
 ];
@@ -353,6 +353,24 @@ const calcPctChange = (current, previous) => {
   const prev = Number(previous || 0);
   if (prev === 0) return curr > 0 ? 100 : 0;
   return Number((((curr - prev) / Math.abs(prev)) * 100).toFixed(1));
+};
+
+const calcStrategiPerform = (actualVal, targetVal, bobotVal) => {
+  const act = Number(actualVal || 0);
+  const tgt = Number(targetVal || 0);
+  const bbt = Number(bobotVal || 0);
+
+  if (tgt > 0) {
+    const ratioPct = (act / tgt) * 100;
+    let factor = 0;
+    if (ratioPct >= 100) factor = 1;
+    else if (ratioPct >= 90) factor = 0.75;
+    else if (ratioPct >= 75) factor = 0.5;
+    else if (act > 0) factor = 0.25;
+    return Math.round(bbt * factor);
+  }
+
+  return act > 0 ? bbt : 0;
 };
 
 const buildGoogleCalendarUrl = (title, dateStr, timeStr, details, location = 'Teater Saba & Belanja') => {
@@ -508,7 +526,7 @@ export default function App() {
   const [aiMessages, setAiMessages] = useState([
     {
       role: 'assistant',
-      text: 'Halo! AI Strategist aktif & siap dipakai. Tanya saya soal perbandingan W1–W5, skor KPI tiap PIC, Strategi Inisiatif (SI) & Gap SO, posisi VACANT, atau rencana aksi 7 hari.'
+      text: 'Halo! AI Strategist aktif & siap dipakai. Tanya saya soal perbandingan W1–W5, skor KPI tiap PIC, Strategi Inisiatif (SI) & Nilai Perform, posisi VACANT, atau rencana aksi 7 hari.'
     }
   ]);
 
@@ -799,6 +817,39 @@ export default function App() {
     });
   }, [scorecards]);
 
+  const computedStrategi = useMemo(() => {
+    return strategiInisiatif.map((group) => {
+      const rowsCalc = group.rows.map((row) => {
+        const targetNum = Number(row.target || 0);
+        const targetMtdNum = Number(row.targetMtd || 0);
+        const actualNum = Number(row.actual || 0);
+        const pct = targetNum > 0 ? Math.round((actualNum / targetNum) * 100) : 0;
+        const nilaiPerform = calcStrategiPerform(actualNum, targetNum, group.bobot);
+        const gapSo = actualNum - targetNum;
+        return {
+          ...row,
+          target: targetNum,
+          targetMtd: targetMtdNum,
+          actual: actualNum,
+          pct,
+          nilaiPerform,
+          gapSo
+        };
+      });
+
+      const avgPerform =
+        rowsCalc.length > 0
+          ? Math.round(rowsCalc.reduce((acc, item) => acc + item.nilaiPerform, 0) / rowsCalc.length)
+          : 0;
+
+      return {
+        ...group,
+        rows: rowsCalc,
+        avgPerform
+      };
+    });
+  }, [strategiInisiatif]);
+
   const handleAddPic = (e) => {
     e.preventDefault();
     if (!newPicPos.trim()) return;
@@ -957,11 +1008,10 @@ export default function App() {
       .join('\n');
 
     const negativeGaps = [];
-    strategiInisiatif.forEach((group) => {
+    computedStrategi.forEach((group) => {
       group.rows.forEach((r) => {
-        const gap = Number(r.actual || 0) - Number(r.target || 0);
-        if (gap < 0) {
-          negativeGaps.push(`${group.no} ${r.si} (${group.pic}): gap ${gap}`);
+        if (r.gapSo < 0) {
+          negativeGaps.push(`${group.no} ${r.si} (${group.pic}): gap ${r.gapSo}, Nilai Perform ${r.nilaiPerform}%`);
         }
       });
     });
@@ -980,12 +1030,14 @@ export default function App() {
       lines.push(`Ringkasan Skor KPI Bulanan per PIC:\n${scoreList}`);
     }
 
-    if (q.includes('si') || q.includes('strategi') || q.includes('gap') || q.includes('so')) {
-      lines.push(
-        negativeGaps.length > 0
-          ? `Item Strategi Inisiatif dengan Gap negatif:\n• ${negativeGaps.slice(0, 6).join('\n• ')}`
-          : 'Belum ada gap negatif tercatat pada Strategi Inisiatif (Target & Actual masih 0 atau sudah tercapai).'
-      );
+    if (q.includes('si') || q.includes('strategi') || q.includes('gap') || q.includes('so') || q.includes('perform')) {
+      const performSummary = computedStrategi
+        .map((g) => `• ${g.no} ${g.pic}: Avg Nilai Perform ${g.avgPerform}%`)
+        .join('\n');
+      lines.push(`Rata-rata Nilai Perform per SO:\n${performSummary}`);
+      if (negativeGaps.length > 0) {
+        lines.push(`Item Strategi Inisiatif dengan Gap negatif:\n• ${negativeGaps.slice(0, 6).join('\n• ')}`);
+      }
     }
 
     if (lines.length === 0) {
@@ -1019,8 +1071,8 @@ export default function App() {
     const scorecardSummary = computedScorecards
       .map((sc) => `${sc.picName} (${sc.posisi}): Skor ${sc.totalSkorPct}%`)
       .join(' | ');
-    const siSummary = strategiInisiatif
-      .map((g) => `${g.no} ${g.pic}: ${g.rows.map((r) => `${r.si} (${r.actual}/${r.target})`).join(', ')}`)
+    const siSummary = computedStrategi
+      .map((g) => `${g.no} ${g.pic} (Avg Perform ${g.avgPerform}%): ${g.rows.map((r) => `${r.si} (${r.actual}/${r.target}, Perform ${r.nilaiPerform}%)`).join(', ')}`)
       .join(' || ');
 
     try {
@@ -2002,11 +2054,11 @@ export default function App() {
                     C. STRATEGI INISIATIF — BULANAN
                   </h3>
                   <p className="text-xs text-slate-400">
-                    Edit kolom <span className="text-slate-200 font-semibold">Target</span>, <span className="text-slate-200 font-semibold">Target MTD</span>, dan <span className="text-cyan-300 font-semibold">Actual</span> secara manual untuk menghitung <span className="text-emerald-300 font-semibold">Presentase</span> dan <span className="text-rose-300 font-semibold">Gap SO</span> secara otomatis.
+                    Edit kolom <span className="text-slate-200 font-semibold">Target</span>, <span className="text-slate-200 font-semibold">Target MTD</span>, dan <span className="text-cyan-300 font-semibold">Actual</span> secara manual untuk menghitung <span className="text-emerald-300 font-semibold">Presentase</span>, <span className="text-amber-300 font-semibold">Nilai Perform</span>, dan <span className="text-rose-300 font-semibold">Gap SO</span> secara otomatis.
                   </p>
                 </div>
                 <span className="text-xs font-semibold text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 px-3 py-1 rounded-lg">
-                  {strategiInisiatif.length} Kelompok SO
+                  {computedStrategi.length} Kelompok SO
                 </span>
               </div>
 
@@ -2028,99 +2080,105 @@ export default function App() {
                     </tr>
                   </thead>
                   <tbody>
-                    {strategiInisiatif.map((group) =>
-                      group.rows.map((row, idx) => {
-                        const targetNum = Number(row.target || 0);
-                        const targetMtdNum = Number(row.targetMtd || 0);
-                        const actualNum = Number(row.actual || 0);
-                        const pct = targetNum > 0 ? Math.round((actualNum / targetNum) * 100) : 0;
-                        const gapSo = actualNum - targetNum;
-                        const isVacant = group.pic.toLowerCase() === 'vacant';
+                    {computedStrategi.map((group) => (
+                      <React.Fragment key={group.id}>
+                        {group.rows.map((row, idx) => {
+                          const isVacant = group.pic.toLowerCase() === 'vacant';
 
-                        return (
-                          <tr key={row.id} className="border-b border-slate-800/80 hover:bg-slate-900/60">
-                            {idx === 0 && (
-                              <>
-                                <td
-                                  rowSpan={group.rows.length}
-                                  className="p-2 border border-slate-800 text-center font-bold text-slate-200 align-middle"
-                                >
-                                  {group.no}
-                                </td>
-                                <td
-                                  rowSpan={group.rows.length}
-                                  className="p-2 border border-slate-800 font-semibold text-white align-middle"
-                                >
-                                  {group.so}
-                                </td>
-                                <td
-                                  rowSpan={group.rows.length}
-                                  className="p-2 border border-slate-800 text-center font-bold text-cyan-200 align-middle"
-                                >
-                                  {group.bobot}%
-                                </td>
-                                <td
-                                  rowSpan={group.rows.length}
-                                  className={`p-2 border border-slate-800 text-center font-bold align-middle ${
-                                    isVacant ? 'text-rose-400' : 'text-emerald-200'
-                                  }`}
-                                >
-                                  {group.pic}
-                                </td>
-                              </>
-                            )}
-                            <td className="p-2 border border-slate-800 text-slate-200">{row.si}</td>
-                            <td className="p-2 border border-slate-800 text-right">
-                              <input
-                                type="number"
-                                value={targetNum}
-                                onChange={(e) =>
-                                  handleUpdateStrategiField(group.id, row.id, 'target', e.target.value)
-                                }
-                                className="w-20 rounded border border-slate-700 bg-slate-950 px-2 py-1 text-right text-slate-200 font-medium focus:border-cyan-400 outline-none"
-                              />
-                            </td>
-                            <td className="p-2 border border-slate-800 text-right">
-                              <input
-                                type="number"
-                                value={targetMtdNum}
-                                onChange={(e) =>
-                                  handleUpdateStrategiField(group.id, row.id, 'targetMtd', e.target.value)
-                                }
-                                className="w-20 rounded border border-slate-700 bg-slate-950 px-2 py-1 text-right text-slate-200 font-medium focus:border-cyan-400 outline-none"
-                              />
-                            </td>
-                            <td className="p-2 border border-slate-800 text-right">
-                              <input
-                                type="number"
-                                value={actualNum}
-                                onChange={(e) =>
-                                  handleUpdateStrategiField(group.id, row.id, 'actual', e.target.value)
-                                }
-                                className="w-20 rounded border border-cyan-500/40 bg-slate-950 px-2 py-1 text-right text-cyan-300 font-semibold focus:border-emerald-400 outline-none"
-                              />
-                            </td>
-                            <td
-                              className={`p-2 border border-slate-800 text-center font-bold ${
-                                pct >= 100 ? 'bg-emerald-500/20 text-emerald-300' : 'text-slate-200'
-                              }`}
-                            >
-                              {pct}%
-                            </td>
-                            <td className="p-2 border border-slate-800 text-center font-semibold text-amber-300">
-                              {row.nilaiPerform}%
-                            </td>
-                            <td
-                              className={`p-2 border border-slate-800 text-right font-bold ${
-                                gapSo < 0 ? 'text-rose-400' : 'text-emerald-400'
-                              }`}
-                            >
-                              {gapSo > 0 ? `+${formatNum(gapSo)}` : formatNum(gapSo)}
-                            </td>
-                          </tr>
-                        );
-                      })
-                    )}
+                          return (
+                            <tr key={row.id} className="border-b border-slate-800/80 hover:bg-slate-900/60">
+                              {idx === 0 && (
+                                <>
+                                  <td
+                                    rowSpan={group.rows.length + 1}
+                                    className="p-2 border border-slate-800 text-center font-bold text-slate-200 align-middle"
+                                  >
+                                    {group.no}
+                                  </td>
+                                  <td
+                                    rowSpan={group.rows.length + 1}
+                                    className="p-2 border border-slate-800 font-semibold text-white align-middle"
+                                  >
+                                    {group.so}
+                                  </td>
+                                  <td
+                                    rowSpan={group.rows.length + 1}
+                                    className="p-2 border border-slate-800 text-center font-bold text-cyan-200 align-middle"
+                                  >
+                                    {group.bobot}%
+                                  </td>
+                                  <td
+                                    rowSpan={group.rows.length + 1}
+                                    className={`p-2 border border-slate-800 text-center font-bold align-middle ${
+                                      isVacant ? 'text-rose-400' : 'text-emerald-200'
+                                    }`}
+                                  >
+                                    {group.pic}
+                                  </td>
+                                </>
+                              )}
+                              <td className="p-2 border border-slate-800 text-slate-200">{row.si}</td>
+                              <td className="p-2 border border-slate-800 text-right">
+                                <input
+                                  type="number"
+                                  value={row.target}
+                                  onChange={(e) =>
+                                    handleUpdateStrategiField(group.id, row.id, 'target', e.target.value)
+                                  }
+                                  className="w-20 rounded border border-slate-700 bg-slate-950 px-2 py-1 text-right text-slate-200 font-medium focus:border-cyan-400 outline-none"
+                                />
+                              </td>
+                              <td className="p-2 border border-slate-800 text-right">
+                                <input
+                                  type="number"
+                                  value={row.targetMtd}
+                                  onChange={(e) =>
+                                    handleUpdateStrategiField(group.id, row.id, 'targetMtd', e.target.value)
+                                  }
+                                  className="w-20 rounded border border-slate-700 bg-slate-950 px-2 py-1 text-right text-slate-200 font-medium focus:border-cyan-400 outline-none"
+                                />
+                              </td>
+                              <td className="p-2 border border-slate-800 text-right">
+                                <input
+                                  type="number"
+                                  value={row.actual}
+                                  onChange={(e) =>
+                                    handleUpdateStrategiField(group.id, row.id, 'actual', e.target.value)
+                                  }
+                                  className="w-20 rounded border border-cyan-500/40 bg-slate-950 px-2 py-1 text-right text-cyan-300 font-semibold focus:border-emerald-400 outline-none"
+                                />
+                              </td>
+                              <td
+                                className={`p-2 border border-slate-800 text-center font-bold ${
+                                  row.pct >= 100 ? 'bg-emerald-500/20 text-emerald-300' : 'text-slate-200'
+                                }`}
+                              >
+                                {row.pct}%
+                              </td>
+                              <td className="p-2 border border-slate-800 text-center font-extrabold text-amber-300">
+                                {row.nilaiPerform}%
+                              </td>
+                              <td
+                                className={`p-2 border border-slate-800 text-right font-bold ${
+                                  row.gapSo < 0 ? 'text-rose-400' : 'text-emerald-400'
+                                }`}
+                              >
+                                {row.gapSo > 0 ? `+${formatNum(row.gapSo)}` : formatNum(row.gapSo)}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                        <tr className="bg-slate-900/90 border-b border-slate-800 text-[11px] font-bold">
+                          <td colSpan={4} className="p-1.5 border border-slate-800 text-right text-slate-400">
+                            Rata-rata Nilai Perform SO {group.no}
+                          </td>
+                          <td className="p-1.5 border border-slate-800 text-center text-amber-200 bg-amber-500/10">
+                            {group.avgPerform}%
+                          </td>
+                          <td className="p-1.5 border border-slate-800" />
+                        </tr>
+                      </React.Fragment>
+                    ))}
                   </tbody>
                 </table>
               </div>
