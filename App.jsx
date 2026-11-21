@@ -40,7 +40,7 @@ import {
   Legend
 } from 'recharts';
 
-const STORAGE_KEY = 'sm_command_center_v3';
+const STORAGE_KEY = 'sm_command_center_v4';
 const AUTH_SESSION_KEY = 'sm_command_center_unlocked_v1';
 const ACCESS_PASSCODE = import.meta.env.VITE_APP_PASSCODE || 'SM2026';
 
@@ -171,42 +171,113 @@ const INITIAL_KPI_SCORECARDS = [
   }
 ];
 
-const INITIAL_ACQUISITIONS = [
+const INITIAL_STRATEGI_INISIATIF = [
   {
-    id: 'acq-3',
-    tanggal: '2026-11-14',
-    minggu: 'W2',
-    waktu: 'TENTATIF',
-    kanal: 'GUIDE',
-    pic: 'NADIA',
-    instansi: 'YYK PRIMA TOUR',
-    program: 'LUNCH + SHOPPING',
-    venue: 'RESTO & BELANJA',
-    partner: 'MITRA TOUR',
-    transport: 'BUS',
-    pax: 120,
-    revenue: 18000000,
-    transaksi: 32,
-    noHp: '-'
+    id: 'si-1-1',
+    no: '1.1',
+    so: 'Optimasi Peningkatan Traffic Saran Dari Guide',
+    bobot: 20,
+    pic: 'Nadia',
+    rows: [
+      { id: '1-1-a', si: 'WhatsApp Personal Mitra Guide', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
+      { id: '1-1-b', si: 'Talk to Guide Bali', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
+      { id: '1-1-c', si: 'Blast Mitra Visit To Bali', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 }
+    ]
   },
   {
-    id: 'acq-4',
-    tanggal: '2026-11-29',
-    minggu: 'W5',
-    waktu: '15:00 - 19:00',
-    kanal: 'EVENT',
-    pic: 'DHIMAS',
-    instansi: 'A CELEBRATION OF CONFIDENCE & CREATIVITY',
-    program: 'EVENT + BELANJA',
-    venue: 'TEATER SABA & BELANJA',
-    partner: 'AWAN',
-    transport: 'MOBIL',
-    pax: 400,
-    revenue: 45000000,
-    transaksi: 75,
-    noHp: '-'
+    id: 'si-1-2',
+    no: '1.2',
+    so: 'Optimasi Peningkatan Traffic Saran Dari Travel',
+    bobot: 25,
+    pic: 'Vacant',
+    rows: [
+      { id: '1-2-a', si: 'WhatsApp Personal Mitra', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
+      { id: '1-2-b', si: 'New Database', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
+      { id: '1-2-c', si: 'Meeting Mitra', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 }
+    ]
   },
+  {
+    id: 'si-1-3',
+    no: '1.3',
+    so: 'Optimasi Peningkatan Traffic Saran Dari Driver',
+    bobot: 20,
+    pic: 'Vacant',
+    rows: [
+      { id: '1-3-a', si: 'WhatsApp Personal Mitra Driver', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
+      { id: '1-3-b', si: 'Talk To Driver', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 }
+    ]
+  },
+  {
+    id: 'si-1-4',
+    no: '1.4',
+    so: 'Optimasi Peningkatan Traffic Event',
+    bobot: 20,
+    pic: 'Selvia',
+    rows: [
+      { id: '1-4-a', si: 'Blast Database Event', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
+      { id: '1-4-b', si: 'Penyelenggaraan Event', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 }
+    ]
+  },
+  {
+    id: 'si-1-5',
+    no: '1.5',
+    so: 'Optimasi Peningkatan Traffic Event',
+    bobot: 25,
+    pic: 'Dhimas',
+    rows: [
+      { id: '1-5-a', si: 'New Database event', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
+      { id: '1-5-b', si: 'Meeting EO', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 }
+    ]
+  },
+  {
+    id: 'si-1-6',
+    no: '1.6',
+    so: 'Optimasi Peningkatan Traffic Saran Dari B2B',
+    bobot: 25,
+    pic: 'Vacant',
+    rows: [
+      { id: '1-6-a', si: 'WhatsApp Personal Mitra', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
+      { id: '1-6-b', si: 'New Database', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
+      { id: '1-6-c', si: 'Meeting Mitra', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 }
+    ]
+  },
+  {
+    id: 'si-1-7',
+    no: '1.7',
+    so: 'Optimasi Peningkatan Traffic Saran Dari Goverment',
+    bobot: 25,
+    pic: 'Linda',
+    rows: [
+      { id: '1-7-a', si: 'WhatsApp Personal Mitra Pemerintahan', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
+      { id: '1-7-b', si: 'Meeting Pemerintahan', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 }
+    ]
+  },
+  {
+    id: 'si-1-8',
+    no: '1.8',
+    so: 'Optimasi Peningkatan Traffic Lihat Trailing',
+    bobot: 20,
+    pic: 'Dharma',
+    rows: [
+      { id: '1-8-a', si: 'Check Trailing', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
+      { id: '1-8-b', si: 'Service Trailing', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
+      { id: '1-8-c', si: 'Foto bus rombongan', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 }
+    ]
+  },
+  {
+    id: 'si-1-9',
+    no: '1.9',
+    so: 'Optimasi Peningkatan Traffic Saran Dari Travel',
+    bobot: 25,
+    pic: 'MAGANG',
+    rows: [
+      { id: '1-9-a', si: 'New Database Travel (Fahmi Magang)', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 },
+      { id: '1-9-b', si: 'Share Voucher Daybus (Fahmi Magang)', target: 0, targetMtd: 0, actual: 0, nilaiPerform: 0 }
+    ]
+  }
 ];
+
+const INITIAL_ACQUISITIONS = [];
 
 const INITIAL_WEEKLY_METRICS = [
   { minggu: 'W1', label: '1–7 Nov', revenue: 30000000, traffic: 200, transaksi: 53 },
@@ -219,7 +290,18 @@ const INITIAL_WEEKLY_METRICS = [
 const INITIAL_TASKS = [
   {
     id: 'task-1',
-    judul: 'Follow Up Event A Celebration of Confidence & Creativity (29 Nov)',
+    judul: 'Rekap capaian harian & mingguan (W3), update progres Goals, SO, dan SI',
+    pic: 'WINDA',
+    kanal: 'ADMIN & ASISTEN',
+    tanggal: '2026-11-21',
+    waktu: '09:00',
+    prioritas: 'High',
+    status: 'In Progress',
+    progress: 40
+  },
+  {
+    id: 'task-2',
+    judul: 'Follow up teknis & venue A Celebration of Confidence & Creativity (29 Nov)',
     pic: 'DHIMAS',
     kanal: 'EVENT',
     tanggal: '2026-11-29',
@@ -227,17 +309,6 @@ const INITIAL_TASKS = [
     prioritas: 'Critical',
     status: 'In Progress',
     progress: 70
-  },
-  {
-    id: 'task-2',
-    judul: 'Follow Up Rombongan YYK Prima Tour',
-    pic: 'NADIA',
-    kanal: 'GUIDE',
-    tanggal: '2026-11-14',
-    waktu: '10:00',
-    prioritas: 'Done',
-    status: 'Done',
-    progress: 100
   }
 ];
 
@@ -246,9 +317,9 @@ const INITIAL_MOMS = [
     id: 'mom-1',
     tanggal: '2026-11-20',
     minggu: 'W3',
-    judul: 'Evaluasi Schedule Rombongan & Event November 2026',
+    judul: 'Evaluasi Schedule Rombongan & Strategi Inisiatif November 2026',
     peserta: 'CHOKI DASYAT, NADIA, SELVIA, DHIMAS, LINDA, ARVA, FAHMI, DHARMA, WINDA',
-    poinPembahasan: 'Koordinasi jadwal rombongan, kesiapan venue Teater Saba & Belanja, serta percepatan pencapaian target KPI per PIC.',
+    poinPembahasan: 'Koordinasi jadwal rombongan, kesiapan venue Teater Saba & Belanja, serta percepatan pencapaian target KPI dan Strategi Inisiatif.',
     actionItem: 'Konfirmasi teknis event tanggal 29 November & update capaian actual mingguan',
     picAction: 'WINDA',
     deadline: '2026-11-23',
@@ -340,6 +411,15 @@ export default function App() {
     }
   });
 
+  const [strategiInisiatif, setStrategiInisiatif] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+      return saved?.strategiInisiatif || INITIAL_STRATEGI_INISIATIF;
+    } catch {
+      return INITIAL_STRATEGI_INISIATIF;
+    }
+  });
+
   const [acquisitions, setAcquisitions] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
@@ -427,7 +507,7 @@ export default function App() {
   const [aiMessages, setAiMessages] = useState([
     {
       role: 'assistant',
-      text: 'Halo! Saya AI Admin Sales & Marketing Strategist. Tanya saya tentang jadwal rombongan & event, perbandingan W1–W5, skor KPI per PIC, atau posisi VACANT.'
+      text: 'Halo! Saya AI Admin Sales & Marketing Strategist. Tanya saya tentang jadwal rombongan & event, perbandingan W1–W5, skor KPI, Strategi Inisiatif (SI), atau posisi VACANT.'
     }
   ]);
 
@@ -436,6 +516,7 @@ export default function App() {
       const payload = {
         pics,
         scorecards,
+        strategiInisiatif,
         acquisitions,
         weeklyMetrics,
         tasks,
@@ -446,7 +527,7 @@ export default function App() {
     } catch (e) {
       console.error('Gagal menyimpan data lokal:', e);
     }
-  }, [pics, scorecards, acquisitions, weeklyMetrics, tasks, moms]);
+  }, [pics, scorecards, strategiInisiatif, acquisitions, weeklyMetrics, tasks, moms]);
 
   const handleUnlock = (e) => {
     e.preventDefault();
@@ -678,6 +759,20 @@ export default function App() {
     );
   };
 
+  const handleUpdateStrategiActual = (groupId, rowId, newActual) => {
+    setStrategiInisiatif((prev) =>
+      prev.map((group) => {
+        if (group.id !== groupId) return group;
+        return {
+          ...group,
+          rows: group.rows.map((r) =>
+            r.id === rowId ? { ...r, actual: Number(newActual || 0) } : r
+          )
+        };
+      })
+    );
+  };
+
   const computedScorecards = useMemo(() => {
     return scorecards.map((card) => {
       const rowsCalc = card.rows.map((r) => {
@@ -807,6 +902,7 @@ export default function App() {
         exportedAt: new Date().toISOString(),
         pics,
         scorecards,
+        strategiInisiatif,
         acquisitions,
         weeklyMetrics,
         tasks,
@@ -833,6 +929,7 @@ export default function App() {
         const parsed = JSON.parse(String(ev.target?.result || '{}'));
         if (parsed.pics) setPics(parsed.pics);
         if (parsed.scorecards) setScorecards(parsed.scorecards);
+        if (parsed.strategiInisiatif) setStrategiInisiatif(parsed.strategiInisiatif);
         if (parsed.acquisitions) setAcquisitions(parsed.acquisitions);
         if (parsed.weeklyMetrics) setWeeklyMetrics(parsed.weeklyMetrics);
         if (parsed.tasks) setTasks(parsed.tasks);
@@ -859,6 +956,9 @@ export default function App() {
     const scorecardSummary = computedScorecards
       .map((sc) => `${sc.picName} (${sc.posisi}): Skor ${sc.totalSkorPct}%`)
       .join(' | ');
+    const siSummary = strategiInisiatif
+      .map((g) => `${g.no} ${g.pic}: ${g.rows.map((r) => `${r.si} (${r.actual}/${r.target})`).join(', ')}`)
+      .join(' || ');
 
     try {
       if (apiKey) {
@@ -872,7 +972,7 @@ export default function App() {
                 {
                   parts: [
                     {
-                      text: `Anda adalah konsultan operasional Sales Marketing. Jawab singkat, jelas, dan actionable dalam Bahasa Indonesia.\nPerbandingan W1-W5: ${weeklySummaryText}\nSkor KPI per PIC: ${scorecardSummary}\nPosisi VACANT: ${vacantPositions.join(', ')}\nPertanyaan: ${queryText}`
+                      text: `Anda adalah konsultan operasional Sales Marketing. Jawab singkat, jelas, dan actionable dalam Bahasa Indonesia.\nPerbandingan W1-W5: ${weeklySummaryText}\nSkor KPI per PIC: ${scorecardSummary}\nStrategi Inisiatif: ${siSummary}\nPosisi VACANT: ${vacantPositions.join(', ')}\nPertanyaan: ${queryText}`
                     }
                   ]
                 }
@@ -883,14 +983,14 @@ export default function App() {
         const data = await res.json();
         const replyText =
           data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-          'Respons AI diterima, silakan periksa rekap W1–W5 dan skor KPI per PIC.';
+          'Respons AI diterima, silakan periksa rekap W1–W5, skor KPI, dan Strategi Inisiatif.';
         setAiMessages((prev) => [...prev, { role: 'assistant', text: replyText }]);
       } else {
         const localAdvice = [
           `Perbandingan W1–W5: ${weeklySummaryText}.`,
           `Ringkasan Skor KPI Bulanan: ${scorecardSummary}.`,
           vacantPositions.length > 0
-            ? `Posisi VACANT (${vacantPositions.join(', ')}) perlu pembagian tugas sementara ke PIC aktif agar target revenue dan traffic tetap berjalan.`
+            ? `Posisi VACANT (${vacantPositions.join(', ')}) perlu pembagian tugas sementara ke PIC aktif agar target revenue, traffic, dan Strategi Inisiatif tetap berjalan.`
             : 'Semua posisi tim sudah terisi.'
         ].join('\n\n');
         setAiMessages((prev) => [...prev, { role: 'assistant', text: localAdvice }]);
@@ -898,7 +998,7 @@ export default function App() {
     } catch {
       setAiMessages((prev) => [
         ...prev,
-        { role: 'assistant', text: 'Fokuskan eksekusi pada indikator dengan %ACV terendah di tiap blok PIC.' }
+        { role: 'assistant', text: 'Fokuskan eksekusi pada indikator dengan %ACV atau Gap SO terbesar di tiap blok PIC.' }
       ]);
     } finally {
       setAiLoading(false);
@@ -1512,34 +1612,45 @@ export default function App() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredAcquisitions.map((row) => (
-                      <tr key={row.id} className="hover:bg-slate-900/80 border-b border-slate-800/80">
-                        <td className="py-2 px-2.5 border border-slate-800/70 font-bold text-emerald-300">
-                          {row.kanal}
-                        </td>
-                        <td className="py-2 px-2.5 border border-slate-800/70 whitespace-nowrap">{row.tanggal}</td>
-                        <td className="py-2 px-2.5 border border-slate-800/70 font-semibold text-cyan-300">{row.minggu}</td>
-                        <td className="py-2 px-2.5 border border-slate-800/70 whitespace-nowrap">{row.waktu}</td>
-                        <td className="py-2 px-2.5 border border-slate-800/70 font-medium text-slate-200">{row.pic}</td>
-                        <td className="py-2 px-2.5 border border-slate-800/70 font-semibold text-white">{row.instansi}</td>
-                        <td className="py-2 px-2.5 border border-slate-800/70 text-sky-200">{row.program}</td>
-                        <td className="py-2 px-2.5 border border-slate-800/70 text-slate-300">{row.venue || '-'}</td>
-                        <td className="py-2 px-2.5 border border-slate-800/70 text-slate-300">{row.partner || '-'}</td>
-                        <td className="py-2 px-2.5 border border-slate-800/70 text-right">{formatNum(row.pax)}</td>
-                        <td className="py-2 px-2.5 border border-slate-800/70 text-right font-bold text-emerald-300">
-                          {formatIDR(row.revenue)}
-                        </td>
-                        <td className="py-2 px-2.5 border border-slate-800/70 text-center">
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteAcquisition(row.id)}
-                            className="p-1 text-rose-400 hover:bg-rose-500/15 rounded"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
+                    {filteredAcquisitions.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan={12}
+                          className="py-6 px-3 text-center text-slate-500 border border-slate-800/70"
+                        >
+                          Belum ada data schedule rombongan/event. Silakan input pada form di atas.
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      filteredAcquisitions.map((row) => (
+                        <tr key={row.id} className="hover:bg-slate-900/80 border-b border-slate-800/80">
+                          <td className="py-2 px-2.5 border border-slate-800/70 font-bold text-emerald-300">
+                            {row.kanal}
+                          </td>
+                          <td className="py-2 px-2.5 border border-slate-800/70 whitespace-nowrap">{row.tanggal}</td>
+                          <td className="py-2 px-2.5 border border-slate-800/70 font-semibold text-cyan-300">{row.minggu}</td>
+                          <td className="py-2 px-2.5 border border-slate-800/70 whitespace-nowrap">{row.waktu}</td>
+                          <td className="py-2 px-2.5 border border-slate-800/70 font-medium text-slate-200">{row.pic}</td>
+                          <td className="py-2 px-2.5 border border-slate-800/70 font-semibold text-white">{row.instansi}</td>
+                          <td className="py-2 px-2.5 border border-slate-800/70 text-sky-200">{row.program}</td>
+                          <td className="py-2 px-2.5 border border-slate-800/70 text-slate-300">{row.venue || '-'}</td>
+                          <td className="py-2 px-2.5 border border-slate-800/70 text-slate-300">{row.partner || '-'}</td>
+                          <td className="py-2 px-2.5 border border-slate-800/70 text-right">{formatNum(row.pax)}</td>
+                          <td className="py-2 px-2.5 border border-slate-800/70 text-right font-bold text-emerald-300">
+                            {formatIDR(row.revenue)}
+                          </td>
+                          <td className="py-2 px-2.5 border border-slate-800/70 text-center">
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteAcquisition(row.id)}
+                              className="p-1 text-rose-400 hover:bg-rose-500/15 rounded"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -1809,6 +1920,122 @@ export default function App() {
                 </div>
               </div>
             ))}
+
+            <div className="rounded-xl border border-slate-800 bg-[#0a0d14] overflow-hidden shadow-lg">
+              <div className="p-3.5 bg-[#0e131d] border-b border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div>
+                  <h3 className="text-xs sm:text-sm font-extrabold text-cyan-300 uppercase tracking-wide">
+                    C. STRATEGI INISIATIF — BULANAN
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Edit kolom <span className="text-cyan-300 font-semibold">Actual</span> untuk menghitung <span className="text-emerald-300 font-semibold">Presentase</span> dan <span className="text-rose-300 font-semibold">Gap SO</span> secara otomatis.
+                  </p>
+                </div>
+                <span className="text-xs font-semibold text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 px-3 py-1 rounded-lg">
+                  {strategiInisiatif.length} Kelompok SO
+                </span>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-[11px] sm:text-xs tabular-nums">
+                  <thead>
+                    <tr className="bg-[#0f2942] text-white uppercase">
+                      <th className="p-2 border border-slate-800 w-12 text-center">NO</th>
+                      <th className="p-2 border border-slate-800">SO</th>
+                      <th className="p-2 border border-slate-800 text-center w-16">BOBOT</th>
+                      <th className="p-2 border border-slate-800 text-center w-24">PIC</th>
+                      <th className="p-2 border border-slate-800">SI</th>
+                      <th className="p-2 border border-slate-800 text-right">Target</th>
+                      <th className="p-2 border border-slate-800 text-right">Target MTD</th>
+                      <th className="p-2 border border-slate-800 text-right">Actual</th>
+                      <th className="p-2 border border-slate-800 text-center">Presentase</th>
+                      <th className="p-2 border border-slate-800 text-center">Nilai Perform</th>
+                      <th className="p-2 border border-slate-800 text-right bg-rose-950/60 text-rose-200">Gap SO</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {strategiInisiatif.map((group) =>
+                      group.rows.map((row, idx) => {
+                        const targetNum = Number(row.target || 0);
+                        const actualNum = Number(row.actual || 0);
+                        const pct = targetNum > 0 ? Math.round((actualNum / targetNum) * 100) : 0;
+                        const gapSo = actualNum - targetNum;
+                        const isVacant = group.pic.toLowerCase() === 'vacant';
+
+                        return (
+                          <tr key={row.id} className="border-b border-slate-800/80 hover:bg-slate-900/60">
+                            {idx === 0 && (
+                              <>
+                                <td
+                                  rowSpan={group.rows.length}
+                                  className="p-2 border border-slate-800 text-center font-bold text-slate-200 align-middle"
+                                >
+                                  {group.no}
+                                </td>
+                                <td
+                                  rowSpan={group.rows.length}
+                                  className="p-2 border border-slate-800 font-semibold text-white align-middle"
+                                >
+                                  {group.so}
+                                </td>
+                                <td
+                                  rowSpan={group.rows.length}
+                                  className="p-2 border border-slate-800 text-center font-bold text-cyan-200 align-middle"
+                                >
+                                  {group.bobot}%
+                                </td>
+                                <td
+                                  rowSpan={group.rows.length}
+                                  className={`p-2 border border-slate-800 text-center font-bold align-middle ${
+                                    isVacant ? 'text-rose-400' : 'text-emerald-200'
+                                  }`}
+                                >
+                                  {group.pic}
+                                </td>
+                              </>
+                            )}
+                            <td className="p-2 border border-slate-800 text-slate-200">{row.si}</td>
+                            <td className="p-2 border border-slate-800 text-right text-slate-300">
+                              {formatNum(targetNum)}
+                            </td>
+                            <td className="p-2 border border-slate-800 text-right text-slate-300">
+                              {formatNum(row.targetMtd)}
+                            </td>
+                            <td className="p-2 border border-slate-800 text-right">
+                              <input
+                                type="number"
+                                value={actualNum}
+                                onChange={(e) =>
+                                  handleUpdateStrategiActual(group.id, row.id, e.target.value)
+                                }
+                                className="w-20 rounded border border-cyan-500/40 bg-slate-950 px-2 py-1 text-right text-cyan-300 font-semibold"
+                              />
+                            </td>
+                            <td
+                              className={`p-2 border border-slate-800 text-center font-bold ${
+                                pct >= 100 ? 'bg-emerald-500/20 text-emerald-300' : 'text-slate-200'
+                              }`}
+                            >
+                              {pct}%
+                            </td>
+                            <td className="p-2 border border-slate-800 text-center font-semibold text-amber-300">
+                              {row.nilaiPerform}%
+                            </td>
+                            <td
+                              className={`p-2 border border-slate-800 text-right font-bold ${
+                                gapSo < 0 ? 'text-rose-400' : 'text-emerald-400'
+                              }`}
+                            >
+                              {gapSo > 0 ? `+${formatNum(gapSo)}` : formatNum(gapSo)}
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         )}
 
