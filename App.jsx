@@ -45,9 +45,11 @@ import {
   Legend
 } from 'recharts';
 
-const STORAGE_KEY = 'sm_command_center_v6';
+const STORAGE_KEY = 'sm_command_center_v7';
 const AUTH_SESSION_KEY = 'sm_command_center_unlocked_v1';
 const ACCESS_PASSCODE = import.meta.env.VITE_APP_PASSCODE || 'SM2026';
+
+const ANNUAL_YEARS = [2024, 2025, 2026, 2027, 2028];
 
 const DEFAULT_WEEK_LABELS = {
   W1: '1–7 Nov',
@@ -57,7 +59,7 @@ const DEFAULT_WEEK_LABELS = {
   W5: '29–30 Nov'
 };
 
-const MONTHS_2026 = [
+const MONTHS_TEMPLATE = [
   { key: 'jan', label: 'JANUARY', days: 31 },
   { key: 'feb', label: 'FEBRUARY', days: 28 },
   { key: 'mar', label: 'MARET', days: 31 },
@@ -306,103 +308,43 @@ const INITIAL_STRATEGI_INISIATIF = [
 ];
 
 const createEmptyMonthMap = (defaultVal = 0) =>
-  MONTHS_2026.reduce((acc, m) => ({ ...acc, [m.key]: defaultVal }), {});
+  MONTHS_TEMPLATE.reduce((acc, m) => ({ ...acc, [m.key]: defaultVal }), {});
 
-const INITIAL_ANNUAL_REPORT = [
+const buildYearRows = (customOverrides = {}) => [
   {
     id: 'ar-1',
     item: 'TARGET SALES STORE',
     type: 'input',
     format: 'currency',
-    values: {
-      ...createEmptyMonthMap(0),
-      jan: 11035508986,
-      feb: 6131785266,
-      mar: 12965918988,
-      apr: 4923923445,
-      may: 9371184304,
-      jun: 10405273316,
-      jul: 11253511071,
-      aug: 9213309267,
-      sep: 9449338312,
-      oct: 9077991691
-    }
+    values: { ...createEmptyMonthMap(0), ...(customOverrides['ar-1'] || {}) }
   },
   {
     id: 'ar-2',
     item: 'ACTUAL SALES STORE',
     type: 'input',
     format: 'currency',
-    values: {
-      ...createEmptyMonthMap(0),
-      jan: 6065185960,
-      feb: 3288294648,
-      mar: 5272968813,
-      apr: 3903394090,
-      may: 4861314523,
-      jun: 4431189141,
-      jul: 4372321694,
-      aug: 4354220796,
-      sep: 3223215545715,
-      oct: 3544965525
-    }
+    values: { ...createEmptyMonthMap(0), ...(customOverrides['ar-2'] || {}) }
   },
   {
     id: 'ar-3',
     item: 'TRAFFIC PENGUNJUNG',
     type: 'input',
     format: 'number',
-    values: {
-      ...createEmptyMonthMap(0),
-      jan: 35393,
-      feb: 316464,
-      mar: 21304,
-      apr: 23071,
-      may: 25424,
-      jun: 23705,
-      jul: 21510,
-      aug: 21920,
-      sep: 18306,
-      oct: 19473
-    }
+    values: { ...createEmptyMonthMap(0), ...(customOverrides['ar-3'] || {}) }
   },
   {
     id: 'ar-4',
     item: 'TRANSAKSI',
     type: 'input',
     format: 'number',
-    values: {
-      ...createEmptyMonthMap(0),
-      jan: 14809,
-      feb: 8697,
-      mar: 10315,
-      apr: 10242,
-      may: 11323,
-      jun: 10445,
-      jul: 9357,
-      aug: 10409,
-      sep: 8032,
-      oct: 8597
-    }
+    values: { ...createEmptyMonthMap(0), ...(customOverrides['ar-4'] || {}) }
   },
   {
     id: 'ar-5',
     item: 'TRANSAKSI ROMBONGAN',
     type: 'input',
     format: 'number',
-    values: {
-      ...createEmptyMonthMap(0),
-      jan: 5348,
-      feb: 2841,
-      mar: 1265,
-      apr: 2457,
-      may: 2191,
-      jun: 1036,
-      jul: 902,
-      aug: 685,
-      sep: 902,
-      oct: 981
-    }
+    values: { ...createEmptyMonthMap(0), ...(customOverrides['ar-5'] || {}) }
   },
   {
     id: 'ar-6',
@@ -417,19 +359,7 @@ const INITIAL_ANNUAL_REPORT = [
     item: 'ALL BUDGET SALES',
     type: 'input',
     format: 'currency',
-    values: {
-      ...createEmptyMonthMap(0),
-      jan: 450367,
-      feb: 433114,
-      mar: 455030,
-      apr: 480451,
-      may: 492815,
-      jun: 421598,
-      jul: 448102,
-      aug: 416992,
-      sep: 39380289,
-      oct: 422255
-    }
+    values: { ...createEmptyMonthMap(0), ...(customOverrides['ar-7'] || {}) }
   },
   {
     id: 'ar-8',
@@ -452,57 +382,21 @@ const INITIAL_ANNUAL_REPORT = [
     item: 'REGISTRASI DRIVER',
     type: 'input',
     format: 'number',
-    values: {
-      ...createEmptyMonthMap(0),
-      jan: 1121,
-      feb: 925,
-      mar: 1091,
-      apr: 925,
-      may: 1001,
-      jun: 1039,
-      jul: 1087,
-      aug: 1230,
-      sep: 919,
-      oct: 945
-    }
+    values: { ...createEmptyMonthMap(0), ...(customOverrides['ar-10'] || {}) }
   },
   {
     id: 'ar-11',
     item: 'ACTUAL SALES ROMBONGAN',
     type: 'input',
     format: 'currency',
-    values: {
-      ...createEmptyMonthMap(0),
-      jan: 146409550,
-      feb: 221472600,
-      mar: 34234060,
-      apr: 423411910,
-      may: 241965065,
-      jun: 754629764,
-      jul: 111769180,
-      aug: 182784680,
-      sep: 229540881,
-      oct: 206788981
-    }
+    values: { ...createEmptyMonthMap(0), ...(customOverrides['ar-11'] || {}) }
   },
   {
     id: 'ar-12',
     item: 'ACTUAL KOMISI TRAVEL',
     type: 'input',
     format: 'currency',
-    values: {
-      ...createEmptyMonthMap(0),
-      jan: 173568522,
-      feb: 120288848,
-      mar: 113004602,
-      apr: 118124181,
-      may: 148083838,
-      jun: 114415838,
-      jul: 117114861,
-      aug: 155105131,
-      sep: 281480347,
-      oct: 272328841
-    }
+    values: { ...createEmptyMonthMap(0), ...(customOverrides['ar-12'] || {}) }
   },
   {
     id: 'ar-13',
@@ -525,38 +419,14 @@ const INITIAL_ANNUAL_REPORT = [
     item: 'TARGET SALES OFFLINE',
     type: 'input',
     format: 'currency',
-    values: {
-      ...createEmptyMonthMap(0),
-      jan: 2948509222,
-      feb: 1532940291,
-      mar: 3940828192,
-      apr: 1223721117,
-      may: 2494405914,
-      jun: 2746277944,
-      jul: 2914413707,
-      aug: 2461987532,
-      sep: 2526254720,
-      oct: 2327273673
-    }
+    values: { ...createEmptyMonthMap(0), ...(customOverrides['ar-15'] || {}) }
   },
   {
     id: 'ar-16',
     item: 'ACHIEVEMENT SALES OFFLINE',
     type: 'input',
     format: 'currency',
-    values: {
-      ...createEmptyMonthMap(0),
-      jan: 1479333485,
-      feb: 1090915359,
-      mar: 949222612,
-      apr: 1113726802,
-      may: 1712738531,
-      jun: 934150247,
-      jul: 926823839,
-      aug: 1232462729,
-      sep: 808285720,
-      oct: 1025251987
-    }
+    values: { ...createEmptyMonthMap(0), ...(customOverrides['ar-16'] || {}) }
   },
   {
     id: 'ar-17',
@@ -575,6 +445,147 @@ const INITIAL_ANNUAL_REPORT = [
     values: createEmptyMonthMap(0)
   }
 ];
+
+const INITIAL_ANNUAL_BY_YEAR = {
+  2024: buildYearRows(),
+  2025: buildYearRows(),
+  2026: buildYearRows({
+    'ar-1': {
+      jan: 11035508986,
+      feb: 6131785266,
+      mar: 12965918988,
+      apr: 4923923445,
+      may: 9371184304,
+      jun: 10405273316,
+      jul: 11253511071,
+      aug: 9213309267,
+      sep: 9449338312,
+      oct: 9077991691
+    },
+    'ar-2': {
+      jan: 6065185960,
+      feb: 3288294648,
+      mar: 5272968813,
+      apr: 3903394090,
+      may: 4861314523,
+      jun: 4431189141,
+      jul: 4372321694,
+      aug: 4354220796,
+      sep: 3223215545715,
+      oct: 3544965525
+    },
+    'ar-3': {
+      jan: 35393,
+      feb: 316464,
+      mar: 21304,
+      apr: 23071,
+      may: 25424,
+      jun: 23705,
+      jul: 21510,
+      aug: 21920,
+      sep: 18306,
+      oct: 19473
+    },
+    'ar-4': {
+      jan: 14809,
+      feb: 8697,
+      mar: 10315,
+      apr: 10242,
+      may: 11323,
+      jun: 10445,
+      jul: 9357,
+      aug: 10409,
+      sep: 8032,
+      oct: 8597
+    },
+    'ar-5': {
+      jan: 5348,
+      feb: 2841,
+      mar: 1265,
+      apr: 2457,
+      may: 2191,
+      jun: 1036,
+      jul: 902,
+      aug: 685,
+      sep: 902,
+      oct: 981
+    },
+    'ar-7': {
+      jan: 450367,
+      feb: 433114,
+      mar: 455030,
+      apr: 480451,
+      may: 492815,
+      jun: 421598,
+      jul: 448102,
+      aug: 416992,
+      sep: 39380289,
+      oct: 422255
+    },
+    'ar-10': {
+      jan: 1121,
+      feb: 925,
+      mar: 1091,
+      apr: 925,
+      may: 1001,
+      jun: 1039,
+      jul: 1087,
+      aug: 1230,
+      sep: 919,
+      oct: 945
+    },
+    'ar-11': {
+      jan: 146409550,
+      feb: 221472600,
+      mar: 34234060,
+      apr: 423411910,
+      may: 241965065,
+      jun: 754629764,
+      jul: 111769180,
+      aug: 182784680,
+      sep: 229540881,
+      oct: 206788981
+    },
+    'ar-12': {
+      jan: 173568522,
+      feb: 120288848,
+      mar: 113004602,
+      apr: 118124181,
+      may: 148083838,
+      jun: 114415838,
+      jul: 117114861,
+      aug: 155105131,
+      sep: 281480347,
+      oct: 272328841
+    },
+    'ar-15': {
+      jan: 2948509222,
+      feb: 1532940291,
+      mar: 3940828192,
+      apr: 1223721117,
+      may: 2494405914,
+      jun: 2746277944,
+      jul: 2914413707,
+      aug: 2461987532,
+      sep: 2526254720,
+      oct: 2327273673
+    },
+    'ar-16': {
+      jan: 1479333485,
+      feb: 1090915359,
+      mar: 949222612,
+      apr: 1113726802,
+      may: 1712738531,
+      jun: 934150247,
+      jul: 926823839,
+      aug: 1232462729,
+      sep: 808285720,
+      oct: 1025251987
+    }
+  }),
+  2027: buildYearRows(),
+  2028: buildYearRows()
+};
 
 const INITIAL_ACQUISITIONS = [];
 
@@ -742,6 +753,7 @@ export default function App() {
   const [mtdDaysInMonth, setMtdDaysInMonth] = useState(30);
   const [mtdCurrentDay, setMtdCurrentDay] = useState(23);
 
+  const [selectedAnnualYear, setSelectedAnnualYear] = useState(2026);
   const [selectedAnnualChartRowId, setSelectedAnnualChartRowId] = useState('ar-2');
   const [selectedAnnualCompareRowId, setSelectedAnnualCompareRowId] = useState('ar-1');
 
@@ -772,12 +784,16 @@ export default function App() {
     }
   });
 
-  const [annualReportRows, setAnnualReportRows] = useState(() => {
+  const [annualByYear, setAnnualByYear] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-      return saved?.annualReportRows || INITIAL_ANNUAL_REPORT;
+      if (saved?.annualByYear) return saved.annualByYear;
+      if (saved?.annualReportRows) {
+        return { ...INITIAL_ANNUAL_BY_YEAR, 2026: saved.annualReportRows };
+      }
+      return INITIAL_ANNUAL_BY_YEAR;
     } catch {
-      return INITIAL_ANNUAL_REPORT;
+      return INITIAL_ANNUAL_BY_YEAR;
     }
   });
 
@@ -884,7 +900,7 @@ export default function App() {
   const [aiMessages, setAiMessages] = useState([
     {
       role: 'assistant',
-      text: 'Halo! AI Strategist aktif & siap dipakai. Tanya saya soal perbandingan W1–W5, annual report 2026, sales POS & basket size, target MTD harian, skor KPI tiap PIC, Strategi Inisiatif (SI) & Nilai Perform, posisi VACANT, atau rencana aksi 7 hari.'
+      text: 'Halo! AI Strategist aktif & siap dipakai. Tanya saya soal perbandingan W1–W5, annual report 2024–2028, sales POS & basket size, target MTD harian, skor KPI tiap PIC, Strategi Inisiatif (SI) & Nilai Perform, posisi VACANT, atau rencana aksi 7 hari.'
     }
   ]);
 
@@ -894,7 +910,7 @@ export default function App() {
         pics,
         scorecards,
         strategiInisiatif,
-        annualReportRows,
+        annualByYear,
         acquisitions,
         weeklyMetrics,
         posMetrics,
@@ -910,7 +926,7 @@ export default function App() {
     pics,
     scorecards,
     strategiInisiatif,
-    annualReportRows,
+    annualByYear,
     acquisitions,
     weeklyMetrics,
     posMetrics,
@@ -961,9 +977,23 @@ export default function App() {
     );
   };
 
+  const currentYearMonths = useMemo(() => {
+    const isLeap =
+      (selectedAnnualYear % 4 === 0 && selectedAnnualYear % 100 !== 0) ||
+      selectedAnnualYear % 400 === 0;
+    return MONTHS_TEMPLATE.map((m) =>
+      m.key === 'feb' ? { ...m, days: isLeap ? 29 : 28 } : m
+    );
+  }, [selectedAnnualYear]);
+
+  const activeAnnualRows = useMemo(() => {
+    return annualByYear[selectedAnnualYear] || buildYearRows();
+  }, [annualByYear, selectedAnnualYear]);
+
   const handleUpdateAnnualCell = (rowId, monthKey, val) => {
-    setAnnualReportRows((prev) =>
-      prev.map((r) =>
+    setAnnualByYear((prev) => {
+      const yearRows = prev[selectedAnnualYear] || buildYearRows();
+      const updatedRows = yearRows.map((r) =>
         r.id === rowId
           ? {
               ...r,
@@ -973,19 +1003,23 @@ export default function App() {
               }
             }
           : r
-      )
-    );
+      );
+      return {
+        ...prev,
+        [selectedAnnualYear]: updatedRows
+      };
+    });
   };
 
   const computedAnnualReport = useMemo(() => {
     const getVal = (id, mKey) => {
-      const found = annualReportRows.find((r) => r.id === id);
+      const found = activeAnnualRows.find((r) => r.id === id);
       return Number(found?.values?.[mKey] || 0);
     };
 
-    return annualReportRows.map((row) => {
+    return activeAnnualRows.map((row) => {
       const monthComputed = {};
-      MONTHS_2026.forEach((m) => {
+      currentYearMonths.forEach((m) => {
         const mk = m.key;
         if (row.type === 'input') {
           monthComputed[mk] = Number(row.values?.[mk] || 0);
@@ -1020,8 +1054,8 @@ export default function App() {
         }
       });
 
-      const sumAllMonths = MONTHS_2026.reduce((s, m) => s + Number(monthComputed[m.key] || 0), 0);
-      const countActiveMonths = MONTHS_2026.filter((m) => Number(monthComputed[m.key] || 0) !== 0).length;
+      const sumAllMonths = currentYearMonths.reduce((s, m) => s + Number(monthComputed[m.key] || 0), 0);
+      const countActiveMonths = currentYearMonths.filter((m) => Number(monthComputed[m.key] || 0) !== 0).length;
       const totalColValue =
         row.format === 'percent'
           ? countActiveMonths > 0
@@ -1039,7 +1073,7 @@ export default function App() {
         totalValue: totalColValue
       };
     });
-  }, [annualReportRows]);
+  }, [activeAnnualRows, currentYearMonths]);
 
   const annualChartData = useMemo(() => {
     const primaryRow =
@@ -1052,14 +1086,14 @@ export default function App() {
     return {
       primaryRow,
       secondaryRow,
-      series: MONTHS_2026.map((m) => ({
+      series: currentYearMonths.map((m) => ({
         bulan: m.label.slice(0, 3),
         bulanPenuh: m.label,
         primaryVal: Number(primaryRow?.computedValues?.[m.key] || 0),
         secondaryVal: secondaryRow ? Number(secondaryRow?.computedValues?.[m.key] || 0) : 0
       }))
     };
-  }, [computedAnnualReport, selectedAnnualChartRowId, selectedAnnualCompareRowId]);
+  }, [computedAnnualReport, selectedAnnualChartRowId, selectedAnnualCompareRowId, currentYearMonths]);
 
   const handleUpdatePosRow = (mingguKey, field, val) => {
     setPosMetrics((prev) =>
@@ -1133,10 +1167,10 @@ export default function App() {
           : periodMode === 'bulanan'
           ? 'Bulanan POS (W1–W5)'
           : periodMode === 'tahunan'
-          ? 'Tahunan POS 2026'
+          ? `Tahunan POS ${selectedAnnualYear}`
           : 'POS Periode Aktif'
     };
-  }, [posMetrics, selectedWeek, periodMode]);
+  }, [posMetrics, selectedWeek, periodMode, selectedAnnualYear]);
 
   const handleSelectKanal = (kanalVal) => {
     const matchedPic = pics.find((p) => p.posisi.toUpperCase() === kanalVal.toUpperCase());
@@ -1217,11 +1251,11 @@ export default function App() {
       } else if (periodMode === 'bulanan') {
         matchDate = row.tanggal.startsWith('2026-11');
       } else if (periodMode === 'tahunan') {
-        matchDate = row.tanggal.startsWith('2026');
+        matchDate = row.tanggal.startsWith(String(selectedAnnualYear));
       }
       return matchKanal && matchWeek && matchSearch && matchDate;
     });
-  }, [acquisitions, selectedKanalFilter, selectedWeek, searchQuery, periodMode, customStart, customEnd]);
+  }, [acquisitions, selectedKanalFilter, selectedWeek, searchQuery, periodMode, customStart, customEnd, selectedAnnualYear]);
 
   const comparisonRows = useMemo(() => {
     return weeklyMetrics.map((item, idx) => {
@@ -1318,10 +1352,10 @@ export default function App() {
           ? 'Total W1–W5'
           : periodMode === 'bulanan'
           ? 'Bulanan (W1–W5)'
-          : 'Tahunan 2026',
+          : `Tahunan ${selectedAnnualYear}`,
       compareNote: 'tren W3 vs W2'
     };
-  }, [periodMode, selectedWeek, weeklyMetrics, acquisitions, customStart, customEnd]);
+  }, [periodMode, selectedWeek, weeklyMetrics, acquisitions, customStart, customEnd, selectedAnnualYear]);
 
   const handleUpdateWeeklyField = (mingguKey, field, val) => {
     setWeeklyMetrics((prev) =>
@@ -1526,7 +1560,7 @@ export default function App() {
         pics,
         scorecards,
         strategiInisiatif,
-        annualReportRows,
+        annualByYear,
         acquisitions,
         weeklyMetrics,
         posMetrics,
@@ -1555,7 +1589,10 @@ export default function App() {
         if (parsed.pics) setPics(parsed.pics);
         if (parsed.scorecards) setScorecards(parsed.scorecards);
         if (parsed.strategiInisiatif) setStrategiInisiatif(parsed.strategiInisiatif);
-        if (parsed.annualReportRows) setAnnualReportRows(parsed.annualReportRows);
+        if (parsed.annualByYear) setAnnualByYear(parsed.annualByYear);
+        else if (parsed.annualReportRows) {
+          setAnnualByYear((prev) => ({ ...prev, 2026: parsed.annualReportRows }));
+        }
         if (parsed.acquisitions) setAcquisitions(parsed.acquisitions);
         if (parsed.weeklyMetrics) setWeeklyMetrics(parsed.weeklyMetrics);
         if (parsed.posMetrics) setPosMetrics(parsed.posMetrics);
@@ -1705,7 +1742,7 @@ export default function App() {
 
   const navItems = [
     { id: 'dashboard', label: 'DASHBOARD', icon: BarChart3 },
-    { id: 'annual', label: 'ANNUAL 2026', icon: Table2 },
+    { id: 'annual', label: 'ANNUAL 2024–2028', icon: Table2 },
     { id: 'perbandingan', label: 'W1–W5 & PERIODE', icon: Layers },
     { id: 'kpi', label: 'KPI & FUNNEL', icon: Target },
     { id: 'schedule', label: 'SCHEDULE & KALENDER', icon: Calendar },
@@ -2584,28 +2621,41 @@ export default function App() {
 
         {activeTab === 'annual' && (
           <div className="space-y-4">
-            <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
               <div>
                 <h2 className="text-sm sm:text-base font-bold text-white uppercase tracking-wide">
-                  ANNUAL REPORT SALES & MARKETING DEPARTMENT 2026
+                  ANNUAL REPORT SALES & MARKETING DEPARTMENT ({selectedAnnualYear})
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Semua kolom bulan (<span className="text-emerald-300 font-semibold">JANUARY – DESEMBER</span>) bisa diedit manual dan kolom <span className="text-amber-300 font-semibold">TOTAL</span>, rasio/basket size, serta grafik terhitung otomatis oleh sistem.
+                  Tersedia data tahun <span className="text-cyan-300 font-semibold">2024 – 2028</span>. Semua kolom bulan (<span className="text-emerald-300 font-semibold">JANUARY – DESEMBER</span>) bisa diedit manual dan kolom <span className="text-amber-300 font-semibold">TOTAL</span>, rasio/basket size, serta grafik terhitung otomatis oleh sistem.
                 </p>
               </div>
-              <span className="text-xs font-semibold text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 rounded-lg">
-                THE KERANJANG BALI • 2026
-              </span>
+              <div className="flex flex-wrap items-center gap-1.5 print:hidden">
+                {ANNUAL_YEARS.map((yr) => (
+                  <button
+                    key={yr}
+                    type="button"
+                    onClick={() => setSelectedAnnualYear(yr)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-extrabold transition ${
+                      selectedAnnualYear === yr
+                        ? 'bg-emerald-500 text-slate-950'
+                        : 'bg-slate-950 text-slate-300 border border-slate-800 hover:border-emerald-500/50'
+                    }`}
+                  >
+                    {yr}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 space-y-3 print:hidden">
               <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
                 <div>
                   <h3 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
-                    Grafik Otomatis Tahunan 2026 (Jan – Des)
+                    Grafik Otomatis Tahunan {selectedAnnualYear} (Jan – Des)
                   </h3>
                   <p className="text-xs text-slate-400">
-                    Otomatis berubah mengikuti perubahan angka pada tabel Annual Report 2026 di bawah
+                    Otomatis berubah mengikuti perubahan angka pada tabel Annual Report {selectedAnnualYear} di bawah
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 text-xs">
@@ -2693,9 +2743,9 @@ export default function App() {
                   <thead>
                     <tr className="bg-slate-900 text-slate-200 uppercase">
                       <th className="p-2 border border-slate-800 sticky left-0 z-10 bg-slate-900 min-w-[240px]">
-                        ITEM
+                        ITEM ({selectedAnnualYear})
                       </th>
-                      {MONTHS_2026.map((m) => (
+                      {currentYearMonths.map((m) => (
                         <th key={m.key} className="p-2 border border-slate-800 text-right min-w-[115px]">
                           {m.label}
                         </th>
@@ -2722,7 +2772,7 @@ export default function App() {
                           >
                             {row.item}
                           </td>
-                          {MONTHS_2026.map((m) => {
+                          {currentYearMonths.map((m) => {
                             const val = row.computedValues[m.key];
                             if (isFormula) {
                               return (
