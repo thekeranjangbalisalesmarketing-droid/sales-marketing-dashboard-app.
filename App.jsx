@@ -45,7 +45,7 @@ import {
   Legend
 } from 'recharts';
 
-const STORAGE_KEY = 'sm_command_center_v8';
+const STORAGE_KEY = 'sm_command_center_v9';
 const AUTH_SESSION_KEY = 'sm_command_center_unlocked_v1';
 const ACCESS_PASSCODE = import.meta.env.VITE_APP_PASSCODE || 'SM2026';
 
@@ -741,6 +741,24 @@ const evaluateAnnualFormula = (formulaKey, getMetric) => {
   }
 };
 
+const shiftIsoDate = (isoDateStr, deltaDays) => {
+  const base = new Date(`${isoDateStr || '2026-11-23'}T00:00:00`);
+  if (Number.isNaN(base.getTime())) return '2026-11-22';
+  base.setDate(base.getDate() + deltaDays);
+  const y = base.getFullYear();
+  const m = String(base.getMonth() + 1).padStart(2, '0');
+  const d = String(base.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+};
+
+const diffDaysInclusive = (startStr, endStr) => {
+  const s = new Date(`${startStr || '2026-11-01'}T00:00:00`);
+  const e = new Date(`${endStr || '2026-11-23'}T00:00:00`);
+  if (Number.isNaN(s.getTime()) || Number.isNaN(e.getTime())) return 1;
+  const ms = e.getTime() - s.getTime();
+  return Math.max(1, Math.floor(ms / (1000 * 60 * 60 * 24)) + 1);
+};
+
 const buildGoogleCalendarUrl = (title, dateStr, timeStr, details, location = 'Teater Saba & Belanja') => {
   const cleanDate = (dateStr || '2026-11-23').replace(/-/g, '');
   const rawTime = (timeStr || '09:00').split('-')[0].trim().replace('.', ':');
@@ -1004,6 +1022,13 @@ export default function App() {
     );
   };
 
+  const handleResetDashboardMetrics = () => {
+    setWeeklyMetrics(INITIAL_WEEKLY_METRICS);
+    setPosMetrics(INITIAL_POS_METRICS);
+    setAcquisitions(INITIAL_ACQUISITIONS);
+    setSelectedWeek('ALL');
+  };
+
   const currentYearMonths = useMemo(() => {
     const isLeap =
       (selectedAnnualYear % 4 === 0 && selectedAnnualYear % 100 !== 0) ||
@@ -1087,6 +1112,13 @@ export default function App() {
     });
   }, [activeAnnualRows, currentYearMonths]);
 
+  const annualTotalsMap = useMemo(() => {
+    return computedAnnualReport.reduce((acc, r) => {
+      acc[r.id] = Number(r.totalValue || 0);
+      return acc;
+    }, {});
+  }, [computedAnnualReport]);
+
   const annualChartData = useMemo(() => {
     const primaryRow =
       computedAnnualReport.find((r) => r.id === selectedAnnualChartRowId) || computedAnnualReport[1];
@@ -1141,6 +1173,19 @@ export default function App() {
   };
 
   const posSummary = useMemo(() => {
+    if (periodMode === 'tahunan') {
+      const revAnnual = Number(annualTotalsMap['ar-2'] || 0);
+      const trafAnnual = Number(annualTotalsMap['ar-3'] || 0);
+      const trxAnnual = Number(annualTotalsMap['ar-4'] || 0);
+      return {
+        revenuePos: revAnnual,
+        trafficPos: trafAnnual,
+        transaksiPos: trxAnnual,
+        basketSize: calcBasketSize(revAnnual, trxAnnual),
+        labelBand: `Annual Store ${selectedAnnualYear}`
+      };
+    }
+
     if (selectedWeek !== 'ALL') {
       const curr = posMetrics.find((w) => w.minggu === selectedWeek) || {
         minggu: selectedWeek,
@@ -1164,25 +1209,20 @@ export default function App() {
     const totalRev = posMetrics.reduce((s, w) => s + Number(w.revenuePos || 0), 0);
     const totalTraf = posMetrics.reduce((s, w) => s + Number(w.trafficPos || 0), 0);
     const totalTrx = posMetrics.reduce((s, w) => s + Number(w.transaksiPos || 0), 0);
-    const multiplier = periodMode === 'tahunan' ? 12 : 1;
-    const revFinal = totalRev * multiplier;
-    const trxFinal = totalTrx * multiplier;
 
     return {
-      revenuePos: revFinal,
-      trafficPos: totalTraf * multiplier,
-      transaksiPos: trxFinal,
-      basketSize: calcBasketSize(revFinal, trxFinal),
+      revenuePos: totalRev,
+      trafficPos: totalTraf,
+      transaksiPos: totalTrx,
+      basketSize: calcBasketSize(totalRev, totalTrx),
       labelBand:
-        periodMode === 'mingguan'
-          ? 'Total POS W1–W5'
-          : periodMode === 'bulanan'
+        periodMode === 'bulanan'
           ? 'Bulanan POS (W1–W5)'
-          : periodMode === 'tahunan'
-          ? `Tahunan POS ${selectedAnnualYear}`
+          : periodMode === 'mingguan'
+          ? 'Total POS W1–W5'
           : 'POS Periode Aktif'
     };
-  }, [posMetrics, selectedWeek, periodMode, selectedAnnualYear]);
+  }, [posMetrics, selectedWeek, periodMode, annualTotalsMap, selectedAnnualYear]);
 
   const handleSelectKanal = (kanalVal) => {
     const matchedPic = pics.find((p) => p.posisi.toUpperCase() === kanalVal.toUpperCase());
@@ -1236,7 +1276,22 @@ export default function App() {
   };
 
   const handleDeleteAcquisition = (id) => {
+    const targetItem = acquisitions.find((item) => item.id === id);
     setAcquisitions((prev) => prev.filter((item) => item.id !== id));
+    if (targetItem) {
+      setWeeklyMetrics((prev) =>
+        prev.map((w) =>
+          w.minggu === targetItem.minggu
+            ? {
+                ...w,
+                revenue: Math.max(0, Number(w.revenue || 0) - Number(targetItem.revenue || 0)),
+                traffic: Math.max(0, Number(w.traffic || 0) - Number(targetItem.pax || 0)),
+                transaksi: Math.max(0, Number(w.transaksi || 0) - Number(targetItem.transaksi || 0))
+              }
+            : w
+        )
+      );
+    }
   };
 
   const filteredAcquisitions = useMemo(() => {
@@ -1255,13 +1310,14 @@ export default function App() {
         row.program.toLowerCase().includes(q) ||
         (row.partner || '').toLowerCase().includes(q);
 
+      const activeMonthPrefix = (customEnd || '2026-11-23').slice(0, 7);
       let matchDate = true;
       if (periodMode === 'harian') {
         matchDate = row.tanggal === customEnd;
       } else if (periodMode === 'custom') {
         matchDate = row.tanggal >= customStart && row.tanggal <= customEnd;
       } else if (periodMode === 'bulanan') {
-        matchDate = row.tanggal.startsWith('2026-11');
+        matchDate = row.tanggal.startsWith(activeMonthPrefix);
       } else if (periodMode === 'tahunan') {
         matchDate = row.tanggal.startsWith(String(selectedAnnualYear));
       }
@@ -1283,10 +1339,9 @@ export default function App() {
 
   const mainSummary = useMemo(() => {
     if (periodMode === 'harian') {
-      const dayItems = acquisitions.filter((a) => a.tanggal === customEnd);
-      const prevDateObj = new Date(customEnd || '2026-11-23');
-      prevDateObj.setDate(prevDateObj.getDate() - 1);
-      const prevDateStr = prevDateObj.toISOString().split('T')[0];
+      const targetDate = customEnd || '2026-11-23';
+      const prevDateStr = shiftIsoDate(targetDate, -1);
+      const dayItems = acquisitions.filter((a) => a.tanggal === targetDate);
       const prevItems = acquisitions.filter((a) => a.tanggal === prevDateStr);
 
       const rev = dayItems.reduce((s, x) => s + Number(x.revenue || 0), 0);
@@ -1304,27 +1359,70 @@ export default function App() {
         revPct: calcPctChange(rev, prevRev),
         trafPct: calcPctChange(traf, prevTraf),
         trxPct: calcPctChange(trx, prevTrx),
-        labelBand: `Harian (${customEnd})`,
-        compareNote: 'vs hari sebelumnya'
+        labelBand: `Harian (${targetDate})`,
+        compareNote: `vs ${prevDateStr}`
       };
     }
 
     if (periodMode === 'custom') {
+      const rangeDays = diffDaysInclusive(customStart, customEnd);
+      const prevEnd = shiftIsoDate(customStart, -1);
+      const prevStart = shiftIsoDate(prevEnd, -(rangeDays - 1));
+
       const rangeItems = acquisitions.filter(
         (a) => a.tanggal >= customStart && a.tanggal <= customEnd
       );
+      const prevRangeItems = acquisitions.filter(
+        (a) => a.tanggal >= prevStart && a.tanggal <= prevEnd
+      );
+
       const rev = rangeItems.reduce((s, x) => s + Number(x.revenue || 0), 0);
       const traf = rangeItems.reduce((s, x) => s + Number(x.pax || 0), 0);
       const trx = rangeItems.reduce((s, x) => s + Number(x.transaksi || 0), 0);
+
+      const prevRev = prevRangeItems.reduce((s, x) => s + Number(x.revenue || 0), 0);
+      const prevTraf = prevRangeItems.reduce((s, x) => s + Number(x.pax || 0), 0);
+      const prevTrx = prevRangeItems.reduce((s, x) => s + Number(x.transaksi || 0), 0);
+
       return {
         revenue: rev,
         traffic: traf,
         transaksi: trx,
-        revPct: 12.4,
-        trafPct: 8.7,
-        trxPct: 10.2,
+        revPct: calcPctChange(rev, prevRev),
+        trafPct: calcPctChange(traf, prevTraf),
+        trxPct: calcPctChange(trx, prevTrx),
         labelBand: `Custom (${customStart} s/d ${customEnd})`,
-        compareNote: 'vs rentang sebelumnya'
+        compareNote: `vs ${prevStart} s/d ${prevEnd}`
+      };
+    }
+
+    if (periodMode === 'tahunan') {
+      const revYear = Number(annualTotalsMap['ar-2'] || 0);
+      const trafYear = Number(annualTotalsMap['ar-3'] || 0);
+      const trxYear = Number(annualTotalsMap['ar-4'] || 0);
+
+      const prevYearRows = annualByYear[selectedAnnualYear - 1] || [];
+      const sumPrev = (id) => {
+        const row = prevYearRows.find((r) => r.id === id);
+        if (!row) return 0;
+        return MONTHS_TEMPLATE.reduce((s, m) => s + Number(row.values?.[m.key] || 0), 0);
+      };
+      const prevRevYear = sumPrev('ar-2');
+      const prevTrafYear = sumPrev('ar-3');
+      const prevTrxYear = sumPrev('ar-4');
+
+      return {
+        revenue: revYear,
+        traffic: trafYear,
+        transaksi: trxYear,
+        revPct: calcPctChange(revYear, prevRevYear),
+        trafPct: calcPctChange(trafYear, prevTrafYear),
+        trxPct: calcPctChange(trxYear, prevTrxYear),
+        labelBand: `Annual ${selectedAnnualYear}`,
+        compareNote:
+          prevRevYear > 0 || prevTrafYear > 0
+            ? `vs Annual ${selectedAnnualYear - 1}`
+            : `Data Annual ${selectedAnnualYear}`
       };
     }
 
@@ -1348,26 +1446,39 @@ export default function App() {
     const totalRev = weeklyMetrics.reduce((s, w) => s + Number(w.revenue || 0), 0);
     const totalTraf = weeklyMetrics.reduce((s, w) => s + Number(w.traffic || 0), 0);
     const totalTrx = weeklyMetrics.reduce((s, w) => s + Number(w.transaksi || 0), 0);
-    const w3 = weeklyMetrics[2] || { revenue: 0, traffic: 0, transaksi: 0 };
-    const w2 = weeklyMetrics[1] || { revenue: 0, traffic: 0, transaksi: 0 };
-    const multiplier = periodMode === 'tahunan' ? 12 : 1;
+
+    let lastActiveIdx = weeklyMetrics.length - 1;
+    while (
+      lastActiveIdx > 0 &&
+      Number(weeklyMetrics[lastActiveIdx]?.revenue || 0) === 0 &&
+      Number(weeklyMetrics[lastActiveIdx]?.traffic || 0) === 0
+    ) {
+      lastActiveIdx -= 1;
+    }
+    const currWk = weeklyMetrics[lastActiveIdx] || { minggu: 'W1', revenue: 0, traffic: 0, transaksi: 0 };
+    const prevWk = lastActiveIdx > 0 ? weeklyMetrics[lastActiveIdx - 1] : null;
 
     return {
-      revenue: totalRev * multiplier,
-      traffic: totalTraf * multiplier,
-      transaksi: totalTrx * multiplier,
-      revPct: calcPctChange(w3.revenue, w2.revenue),
-      trafPct: calcPctChange(w3.traffic, w2.traffic),
-      trxPct: calcPctChange(w3.transaksi, w2.transaksi),
-      labelBand:
-        periodMode === 'mingguan'
-          ? 'Total W1–W5'
-          : periodMode === 'bulanan'
-          ? 'Bulanan (W1–W5)'
-          : `Tahunan ${selectedAnnualYear}`,
-      compareNote: 'tren W3 vs W2'
+      revenue: totalRev,
+      traffic: totalTraf,
+      transaksi: totalTrx,
+      revPct: prevWk ? calcPctChange(currWk.revenue, prevWk.revenue) : 0,
+      trafPct: prevWk ? calcPctChange(currWk.traffic, prevWk.traffic) : 0,
+      trxPct: prevWk ? calcPctChange(currWk.transaksi, prevWk.transaksi) : 0,
+      labelBand: periodMode === 'bulanan' ? 'Bulanan (W1–W5)' : 'Total W1–W5',
+      compareNote: prevWk ? `tren ${currWk.minggu} vs ${prevWk.minggu}` : 'Minggu awal'
     };
-  }, [periodMode, selectedWeek, weeklyMetrics, acquisitions, customStart, customEnd, selectedAnnualYear]);
+  }, [
+    periodMode,
+    selectedWeek,
+    weeklyMetrics,
+    acquisitions,
+    customStart,
+    customEnd,
+    annualTotalsMap,
+    annualByYear,
+    selectedAnnualYear
+  ]);
 
   const handleUpdateWeeklyField = (mingguKey, field, val) => {
     setWeeklyMetrics((prev) =>
@@ -1996,13 +2107,22 @@ export default function App() {
               })}
             </div>
 
-            <button
-              type="button"
-              onClick={handleResetWeekLabels}
-              className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-400 hover:text-cyan-300 transition self-start sm:self-auto"
-            >
-              <RotateCcw className="w-3 h-3" /> Reset Label Week
-            </button>
+            <div className="flex flex-wrap items-center gap-3 self-start sm:self-auto">
+              <button
+                type="button"
+                onClick={handleResetWeekLabels}
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-400 hover:text-cyan-300 transition"
+              >
+                <RotateCcw className="w-3 h-3" /> Reset Label Week
+              </button>
+              <button
+                type="button"
+                onClick={handleResetDashboardMetrics}
+                className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-300 hover:text-amber-200 transition"
+              >
+                <RefreshCw className="w-3 h-3" /> Reset Angka Dashboard
+              </button>
+            </div>
           </div>
         </section>
 
