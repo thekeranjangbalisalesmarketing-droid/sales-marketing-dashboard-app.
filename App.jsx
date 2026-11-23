@@ -45,7 +45,7 @@ import {
   Legend
 } from 'recharts';
 
-const STORAGE_KEY = 'sm_command_center_v7';
+const STORAGE_KEY = 'sm_command_center_v8';
 const AUTH_SESSION_KEY = 'sm_command_center_unlocked_v1';
 const ACCESS_PASSCODE = import.meta.env.VITE_APP_PASSCODE || 'SM2026';
 
@@ -99,7 +99,7 @@ const INITIAL_PICS = [
   { id: 'pic-11', posisi: 'CRM', nama: 'ARVA', status: 'Active' },
   { id: 'pic-12', posisi: 'MAGANG', nama: 'FAHMI', status: 'Active' },
   { id: 'pic-13', posisi: 'HELPER', nama: 'DHARMA', status: 'Active' },
-  { id: 'pic-14', posisi: 'ADMIN & ASISTEN', nama: 'WINDA', status: 'Active' },
+  { id: 'pic-14', posisi: 'ADMIN & ASISTEN', nama: 'WINDA', status: 'Active' }
 ];
 
 const INITIAL_KPI_SCORECARDS = [
@@ -471,12 +471,12 @@ const INITIAL_ANNUAL_BY_YEAR = {
       jun: 4431189141,
       jul: 4372321694,
       aug: 4354220796,
-      sep: 3223215545715,
+      sep: 3223215545,
       oct: 3544965525
     },
     'ar-3': {
       jan: 35393,
-      feb: 316464,
+      feb: 31646,
       mar: 21304,
       apr: 23071,
       may: 25424,
@@ -511,16 +511,16 @@ const INITIAL_ANNUAL_BY_YEAR = {
       oct: 981
     },
     'ar-7': {
-      jan: 450367,
-      feb: 433114,
-      mar: 455030,
-      apr: 480451,
-      may: 492815,
-      jun: 421598,
-      jul: 448102,
-      aug: 416992,
-      sep: 39380289,
-      oct: 422255
+      jan: 450367000,
+      feb: 433114000,
+      mar: 455030000,
+      apr: 480451000,
+      may: 492815000,
+      jun: 421598000,
+      jul: 448102000,
+      aug: 416992000,
+      sep: 393802000,
+      oct: 422255000
     },
     'ar-10': {
       jan: 1121,
@@ -668,7 +668,7 @@ const formatCellVal = (val, row) => {
 const formatAnnualCell = (val, fmt) => {
   const num = Number(val || 0);
   if (fmt === 'currency') return formatNum(num);
-  if (fmt === 'percent') return `${num.toFixed(1)}%`;
+  if (fmt === 'percent') return `${num.toFixed(2)}%`;
   return formatNum(num);
 };
 
@@ -705,10 +705,40 @@ const calcStrategiPerform = (actualVal, targetVal, bobotVal) => {
     else if (ratioPct >= 90) factor = 0.75;
     else if (ratioPct >= 75) factor = 0.5;
     else if (act > 0) factor = 0.25;
-    return Math.round(bbt * factor);
+    return Number((bbt * factor).toFixed(1));
   }
 
   return act > 0 ? bbt : 0;
+};
+
+const evaluateAnnualFormula = (formulaKey, getMetric) => {
+  const actualStore = getMetric('ar-2');
+  const trxAll = getMetric('ar-4');
+  const trxRombongan = getMetric('ar-5');
+  const budgetSales = getMetric('ar-7');
+  const salesRombongan = getMetric('ar-11');
+  const komisiTravel = getMetric('ar-12');
+  const targetOffline = getMetric('ar-15');
+  const achOffline = getMetric('ar-16');
+
+  switch (formulaKey) {
+    case 'basket_size_all':
+      return trxAll > 0 ? Math.round(actualStore / trxAll) : 0;
+    case 'budget_impact':
+      return actualStore > 0 ? Number(((budgetSales / actualStore) * 100).toFixed(2)) : 0;
+    case 'contrib_trx_rombongan':
+      return trxAll > 0 ? Number(((trxRombongan / trxAll) * 100).toFixed(2)) : 0;
+    case 'komisi_vs_driver':
+      return salesRombongan > 0 ? Number(((komisiTravel / salesRombongan) * 100).toFixed(2)) : 0;
+    case 'contrib_rombongan_vs_sales':
+      return actualStore > 0 ? Number(((salesRombongan / actualStore) * 100).toFixed(2)) : 0;
+    case 'pct_offline':
+      return targetOffline > 0 ? Number(((achOffline / targetOffline) * 100).toFixed(2)) : 0;
+    case 'contrib_offline_vs_store':
+      return actualStore > 0 ? Number(((achOffline / actualStore) * 100).toFixed(2)) : 0;
+    default:
+      return 0;
+  }
 };
 
 const buildGoogleCalendarUrl = (title, dateStr, timeStr, details, location = 'Teater Saba & Belanja') => {
@@ -788,9 +818,6 @@ export default function App() {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
       if (saved?.annualByYear) return saved.annualByYear;
-      if (saved?.annualReportRows) {
-        return { ...INITIAL_ANNUAL_BY_YEAR, 2026: saved.annualReportRows };
-      }
       return INITIAL_ANNUAL_BY_YEAR;
     } catch {
       return INITIAL_ANNUAL_BY_YEAR;
@@ -1011,11 +1038,30 @@ export default function App() {
     });
   };
 
+  const handleResetActiveYear = () => {
+    setAnnualByYear((prev) => ({
+      ...prev,
+      [selectedAnnualYear]: INITIAL_ANNUAL_BY_YEAR[selectedAnnualYear] || buildYearRows()
+    }));
+  };
+
   const computedAnnualReport = useMemo(() => {
-    const getVal = (id, mKey) => {
+    const getMonthVal = (id, mKey) => {
       const found = activeAnnualRows.find((r) => r.id === id);
       return Number(found?.values?.[mKey] || 0);
     };
+
+    const annualInputTotals = {};
+    activeAnnualRows.forEach((r) => {
+      if (r.type === 'input') {
+        annualInputTotals[r.id] = currentYearMonths.reduce(
+          (sum, m) => sum + Number(r.values?.[m.key] || 0),
+          0
+        );
+      }
+    });
+
+    const getAnnualSum = (id) => Number(annualInputTotals[id] || 0);
 
     return activeAnnualRows.map((row) => {
       const monthComputed = {};
@@ -1023,49 +1069,15 @@ export default function App() {
         const mk = m.key;
         if (row.type === 'input') {
           monthComputed[mk] = Number(row.values?.[mk] || 0);
-          return;
-        }
-
-        const actualStore = getVal('ar-2', mk);
-        const trxAll = getVal('ar-4', mk);
-        const trxRombongan = getVal('ar-5', mk);
-        const budgetSales = getVal('ar-7', mk);
-        const salesRombongan = getVal('ar-11', mk);
-        const komisiTravel = getVal('ar-12', mk);
-        const achOffline = getVal('ar-16', mk);
-
-        if (row.formula === 'basket_size_all') {
-          monthComputed[mk] = trxAll > 0 ? Math.round(actualStore / trxAll) : 0;
-        } else if (row.formula === 'budget_impact') {
-          monthComputed[mk] = actualStore > 0 ? Number(((budgetSales / actualStore) * 100).toFixed(1)) : 0;
-        } else if (row.formula === 'contrib_trx_rombongan') {
-          monthComputed[mk] = trxAll > 0 ? Number(((trxRombongan / trxAll) * 100).toFixed(1)) : 0;
-        } else if (row.formula === 'komisi_vs_driver') {
-          monthComputed[mk] = salesRombongan > 0 ? Number(((komisiTravel / salesRombongan) * 100).toFixed(1)) : 0;
-        } else if (row.formula === 'contrib_rombongan_vs_sales') {
-          monthComputed[mk] = actualStore > 0 ? Number(((salesRombongan / actualStore) * 100).toFixed(1)) : 0;
-        } else if (row.formula === 'pct_offline') {
-          const targetOff = getVal('ar-15', mk);
-          monthComputed[mk] = targetOff > 0 ? Number(((achOffline / targetOff) * 100).toFixed(1)) : 0;
-        } else if (row.formula === 'contrib_offline_vs_store') {
-          monthComputed[mk] = actualStore > 0 ? Number(((achOffline / actualStore) * 100).toFixed(1)) : 0;
         } else {
-          monthComputed[mk] = 0;
+          monthComputed[mk] = evaluateAnnualFormula(row.formula, (id) => getMonthVal(id, mk));
         }
       });
 
-      const sumAllMonths = currentYearMonths.reduce((s, m) => s + Number(monthComputed[m.key] || 0), 0);
-      const countActiveMonths = currentYearMonths.filter((m) => Number(monthComputed[m.key] || 0) !== 0).length;
       const totalColValue =
-        row.format === 'percent'
-          ? countActiveMonths > 0
-            ? Number((sumAllMonths / countActiveMonths).toFixed(1))
-            : 0
-          : row.formula === 'basket_size_all'
-          ? countActiveMonths > 0
-            ? Math.round(sumAllMonths / countActiveMonths)
-            : 0
-          : sumAllMonths;
+        row.type === 'input'
+          ? getAnnualSum(row.id)
+          : evaluateAnnualFormula(row.formula, getAnnualSum);
 
       return {
         ...row,
@@ -1397,9 +1409,9 @@ export default function App() {
         const targetVal = Number(r.target || 0);
         const targetMtdAuto = calcAutoTargetMtd(targetVal, mtdDaysInMonth, mtdCurrentDay);
         const actualVal = Number(r.actual || 0);
-        const acvPct = targetVal > 0 ? Math.round((actualVal / targetVal) * 100) : 0;
-        const realisasiPct = Math.min(100, acvPct);
-        const skorPct = Math.round((realisasiPct * Number(r.bobot || 0)) / 100);
+        const acvPct = targetVal > 0 ? Number(((actualVal / targetVal) * 100).toFixed(1)) : 0;
+        const realisasiPct = acvPct;
+        const skorPct = Number(((realisasiPct * Number(r.bobot || 0)) / 100).toFixed(1));
         return {
           ...r,
           targetMtd: targetMtdAuto,
@@ -1409,7 +1421,9 @@ export default function App() {
         };
       });
 
-      const totalSkorPct = rowsCalc.reduce((sum, item) => sum + item.skorPct, 0);
+      const totalSkorPct = Number(
+        rowsCalc.reduce((sum, item) => sum + item.skorPct, 0).toFixed(1)
+      );
       return {
         ...card,
         rows: rowsCalc,
@@ -1424,7 +1438,7 @@ export default function App() {
         const targetNum = Number(row.target || 0);
         const targetMtdNum = calcAutoTargetMtd(targetNum, mtdDaysInMonth, mtdCurrentDay);
         const actualNum = Number(row.actual || 0);
-        const pct = targetNum > 0 ? Math.round((actualNum / targetNum) * 100) : 0;
+        const pct = targetNum > 0 ? Number(((actualNum / targetNum) * 100).toFixed(1)) : 0;
         const nilaiPerform = calcStrategiPerform(actualNum, targetNum, group.bobot);
         const gapSo = actualNum - targetNum;
         return {
@@ -1440,7 +1454,11 @@ export default function App() {
 
       const avgPerform =
         rowsCalc.length > 0
-          ? Math.round(rowsCalc.reduce((acc, item) => acc + item.nilaiPerform, 0) / rowsCalc.length)
+          ? Number(
+              (
+                rowsCalc.reduce((acc, item) => acc + item.nilaiPerform, 0) / rowsCalc.length
+              ).toFixed(1)
+            )
           : 0;
 
       return {
@@ -2627,7 +2645,7 @@ export default function App() {
                   ANNUAL REPORT SALES & MARKETING DEPARTMENT ({selectedAnnualYear})
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Tersedia data tahun <span className="text-cyan-300 font-semibold">2024 – 2028</span>. Semua kolom bulan (<span className="text-emerald-300 font-semibold">JANUARY – DESEMBER</span>) bisa diedit manual dan kolom <span className="text-amber-300 font-semibold">TOTAL</span>, rasio/basket size, serta grafik terhitung otomatis oleh sistem.
+                  Pilih tahun <span className="text-cyan-300 font-semibold">2024 – 2028</span>. Semua kolom bulan (<span className="text-emerald-300 font-semibold">JANUARY – DESEMBER</span>) bisa diedit manual. Kolom <span className="text-amber-300 font-semibold">TOTAL</span> untuk baris rasio & basket size dihitung langsung dari total setahun (Pembilang Total ÷ Penyebut Total).
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-1.5 print:hidden">
@@ -2645,6 +2663,13 @@ export default function App() {
                     {yr}
                   </button>
                 ))}
+                <button
+                  type="button"
+                  onClick={handleResetActiveYear}
+                  className="ml-1 inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-900 hover:bg-slate-800 px-2.5 py-1.5 text-xs font-semibold text-slate-300 transition"
+                >
+                  <RotateCcw className="w-3.5 h-3.5 text-amber-400" /> Reset {selectedAnnualYear}
+                </button>
               </div>
             </div>
 
@@ -2655,7 +2680,7 @@ export default function App() {
                     Grafik Otomatis Tahunan {selectedAnnualYear} (Jan – Des)
                   </h3>
                   <p className="text-xs text-slate-400">
-                    Otomatis berubah mengikuti perubahan angka pada tabel Annual Report {selectedAnnualYear} di bawah
+                    Otomatis mengikuti perubahan angka pada tabel Annual Report {selectedAnnualYear} di bawah
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2 text-xs">
@@ -2750,7 +2775,7 @@ export default function App() {
                           {m.label}
                         </th>
                       ))}
-                      <th className="p-2 border border-slate-800 text-right bg-emerald-950 text-emerald-200 min-w-[125px]">
+                      <th className="p-2 border border-slate-800 text-right bg-emerald-950 text-emerald-200 min-w-[130px]">
                         TOTAL
                       </th>
                     </tr>
