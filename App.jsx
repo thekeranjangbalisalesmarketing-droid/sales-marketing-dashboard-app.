@@ -29,7 +29,8 @@ import {
   Printer,
   Store,
   Receipt,
-  Table2
+  Table2,
+  RotateCcw
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -44,9 +45,17 @@ import {
   Legend
 } from 'recharts';
 
-const STORAGE_KEY = 'sm_command_center_v5';
+const STORAGE_KEY = 'sm_command_center_v6';
 const AUTH_SESSION_KEY = 'sm_command_center_unlocked_v1';
 const ACCESS_PASSCODE = import.meta.env.VITE_APP_PASSCODE || 'SM2026';
+
+const DEFAULT_WEEK_LABELS = {
+  W1: '1–7 Nov',
+  W2: '8–14 Nov',
+  W3: '15–21 Nov',
+  W4: '22–28 Nov',
+  W5: '29–30 Nov'
+};
 
 const MONTHS_2026 = [
   { key: 'jan', label: 'JANUARY', days: 31 },
@@ -666,7 +675,6 @@ const calcBasketSize = (revenueVal, transaksiVal) => {
   return Math.round(rev / trx);
 };
 
-// Rumus Target MTD harian: target / jumlah hari per bulan * hari ke-
 const calcAutoTargetMtd = (targetVal, daysInMonth, dayNumber) => {
   const tgt = Number(targetVal || 0);
   const days = Math.max(1, Number(daysInMonth || 30));
@@ -731,9 +739,11 @@ export default function App() {
   const [selectedKanalFilter, setSelectedKanalFilter] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Pengaturan Target MTD Otomatis Harian: target / jumlah hari bulan * hari ke-
   const [mtdDaysInMonth, setMtdDaysInMonth] = useState(30);
   const [mtdCurrentDay, setMtdCurrentDay] = useState(23);
+
+  const [selectedAnnualChartRowId, setSelectedAnnualChartRowId] = useState('ar-2');
+  const [selectedAnnualCompareRowId, setSelectedAnnualCompareRowId] = useState('ar-1');
 
   const [pics, setPics] = useState(() => {
     try {
@@ -933,6 +943,24 @@ export default function App() {
     }
   };
 
+  const handleUpdateWeekLabel = (mingguKey, newLabel) => {
+    setWeeklyMetrics((prev) =>
+      prev.map((w) => (w.minggu === mingguKey ? { ...w, label: newLabel } : w))
+    );
+    setPosMetrics((prev) =>
+      prev.map((w) => (w.minggu === mingguKey ? { ...w, label: newLabel } : w))
+    );
+  };
+
+  const handleResetWeekLabels = () => {
+    setWeeklyMetrics((prev) =>
+      prev.map((w) => ({ ...w, label: DEFAULT_WEEK_LABELS[w.minggu] || w.label }))
+    );
+    setPosMetrics((prev) =>
+      prev.map((w) => ({ ...w, label: DEFAULT_WEEK_LABELS[w.minggu] || w.label }))
+    );
+  };
+
   const handleUpdateAnnualCell = (rowId, monthKey, val) => {
     setAnnualReportRows((prev) =>
       prev.map((r) =>
@@ -1013,6 +1041,26 @@ export default function App() {
     });
   }, [annualReportRows]);
 
+  const annualChartData = useMemo(() => {
+    const primaryRow =
+      computedAnnualReport.find((r) => r.id === selectedAnnualChartRowId) || computedAnnualReport[1];
+    const secondaryRow =
+      selectedAnnualCompareRowId === 'NONE'
+        ? null
+        : computedAnnualReport.find((r) => r.id === selectedAnnualCompareRowId) || null;
+
+    return {
+      primaryRow,
+      secondaryRow,
+      series: MONTHS_2026.map((m) => ({
+        bulan: m.label.slice(0, 3),
+        bulanPenuh: m.label,
+        primaryVal: Number(primaryRow?.computedValues?.[m.key] || 0),
+        secondaryVal: secondaryRow ? Number(secondaryRow?.computedValues?.[m.key] || 0) : 0
+      }))
+    };
+  }, [computedAnnualReport, selectedAnnualChartRowId, selectedAnnualCompareRowId]);
+
   const handleUpdatePosRow = (mingguKey, field, val) => {
     setPosMetrics((prev) =>
       prev.map((w) => (w.minggu === mingguKey ? { ...w, [field]: Number(val || 0) } : w))
@@ -1063,7 +1111,7 @@ export default function App() {
         trafficPos: traf,
         transaksiPos: trx,
         basketSize: calcBasketSize(rev, trx),
-        labelBand: `${curr.minggu} (${curr.label || ''})`
+        labelBand: curr.label ? `${curr.minggu} • ${curr.label}` : curr.minggu
       };
     }
 
@@ -1246,7 +1294,7 @@ export default function App() {
         revPct: prev ? calcPctChange(curr.revenue, prev.revenue) : 0,
         trafPct: prev ? calcPctChange(curr.traffic, prev.traffic) : 0,
         trxPct: prev ? calcPctChange(curr.transaksi, prev.transaksi) : 0,
-        labelBand: `${curr.minggu} (${curr.label || ''})`,
+        labelBand: curr.label ? `${curr.minggu} • ${curr.label}` : curr.minggu,
         compareNote: prev ? `vs ${prev.minggu}` : 'Minggu awal (baseline)'
       };
     }
@@ -1604,7 +1652,7 @@ export default function App() {
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
     const vacantPositions = pics.filter((p) => p.nama === 'VACANT').map((p) => p.posisi);
     const weeklySummaryText = comparisonRows
-      .map((r) => `${r.minggu}: Rev ${formatIDR(r.revenue)} (${r.revGrowth}%), Pax ${r.traffic}`)
+      .map((r) => `${r.minggu} (${r.label}): Rev ${formatIDR(r.revenue)} (${r.revGrowth}%), Pax ${r.traffic}`)
       .join(' | ');
     const posSummaryText = `Revenue POS ${formatIDR(posSummary.revenuePos)}, Traffic POS ${formatNum(posSummary.trafficPos)}, Transaksi POS ${formatNum(posSummary.transaksiPos)}, Basket Size ${formatIDR(posSummary.basketSize)}`;
     const scorecardSummary = computedScorecards
@@ -1860,29 +1908,46 @@ export default function App() {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-800/80">
-            <span className="text-[11px] font-semibold text-slate-400 mr-1 uppercase">
-              Pilih Minggu:
-            </span>
-            {['ALL', 'W1', 'W2', 'W3', 'W4', 'W5'].map((wk) => (
-              <button
-                key={wk}
-                type="button"
-                onClick={() => {
-                  setSelectedWeek(wk);
-                  if (periodMode === 'harian' || periodMode === 'custom') {
-                    setPeriodMode('mingguan');
-                  }
-                }}
-                className={`px-3 py-1 rounded-md text-xs font-bold transition ${
-                  selectedWeek === wk
-                    ? 'bg-cyan-500 text-slate-950 shadow-sm'
-                    : 'bg-slate-950 text-slate-300 border border-slate-800 hover:border-cyan-500/50'
-                }`}
-              >
-                {wk === 'ALL' ? 'SEMUA (W1–W5)' : wk}
-              </button>
-            ))}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pt-2 border-t border-slate-800/80">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-[11px] font-semibold text-slate-400 mr-1 uppercase">
+                Pilih Minggu:
+              </span>
+              {['ALL', 'W1', 'W2', 'W3', 'W4', 'W5'].map((wk) => {
+                const weekMeta = weeklyMetrics.find((m) => m.minggu === wk);
+                return (
+                  <button
+                    key={wk}
+                    type="button"
+                    onClick={() => {
+                      setSelectedWeek(wk);
+                      if (periodMode === 'harian' || periodMode === 'custom') {
+                        setPeriodMode('mingguan');
+                      }
+                    }}
+                    className={`px-3 py-1 rounded-md text-xs font-bold transition ${
+                      selectedWeek === wk
+                        ? 'bg-cyan-500 text-slate-950 shadow-sm'
+                        : 'bg-slate-950 text-slate-300 border border-slate-800 hover:border-cyan-500/50'
+                    }`}
+                  >
+                    {wk === 'ALL'
+                      ? 'SEMUA (W1–W5)'
+                      : weekMeta?.label
+                      ? `${wk} (${weekMeta.label})`
+                      : wk}
+                  </button>
+                );
+              })}
+            </div>
+
+            <button
+              type="button"
+              onClick={handleResetWeekLabels}
+              className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-400 hover:text-cyan-300 transition self-start sm:self-auto"
+            >
+              <RotateCcw className="w-3 h-3" /> Reset Label Week
+            </button>
           </div>
         </section>
 
@@ -2041,9 +2106,9 @@ export default function App() {
                     onChange={(e) => setPosManualForm({ ...posManualForm, minggu: e.target.value })}
                     className="w-full rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-2 text-white"
                   >
-                    {['W1', 'W2', 'W3', 'W4', 'W5'].map((wk) => (
-                      <option key={wk} value={wk}>
-                        {wk}
+                    {posMetrics.map((w) => (
+                      <option key={w.minggu} value={w.minggu}>
+                        {w.minggu} {w.label ? `(${w.label})` : ''}
                       </option>
                     ))}
                   </select>
@@ -2093,6 +2158,7 @@ export default function App() {
                   <thead>
                     <tr className="bg-slate-900 text-slate-300 uppercase">
                       <th className="p-2 border border-slate-800">Minggu</th>
+                      <th className="p-2 border border-slate-800">Rentang / Label Week (Custom)</th>
                       <th className="p-2 border border-slate-800 text-right">Revenue POS (Edit)</th>
                       <th className="p-2 border border-slate-800 text-right">Traffic POS (Edit)</th>
                       <th className="p-2 border border-slate-800 text-right">Transaksi POS (Edit)</th>
@@ -2105,7 +2171,16 @@ export default function App() {
                       return (
                         <tr key={row.minggu} className="border-b border-slate-800/80 hover:bg-slate-900/50">
                           <td className="p-2 border border-slate-800 font-bold text-cyan-300">
-                            {row.minggu} <span className="text-[10px] font-normal text-slate-400">({row.label})</span>
+                            {row.minggu}
+                          </td>
+                          <td className="p-2 border border-slate-800">
+                            <input
+                              type="text"
+                              value={row.label || ''}
+                              placeholder="Contoh: 1–7 Nov"
+                              onChange={(e) => handleUpdateWeekLabel(row.minggu, e.target.value)}
+                              className="w-36 rounded border border-cyan-500/35 bg-slate-950 px-2 py-1 text-cyan-200 font-medium outline-none focus:border-cyan-400"
+                            />
                           </td>
                           <td className="p-2 border border-slate-800 text-right">
                             <input
@@ -2145,14 +2220,14 @@ export default function App() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 print:bg-white print:border-slate-300">
-              <div className="flex items-center justify-between mb-3">
+            <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 space-y-3 print:bg-white print:border-slate-300">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div>
                   <h2 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide print:text-black">
-                    Perbandingan Cepat W1 – W5 (Ketuk Kartu untuk Filter Minggu)
+                    Perbandingan Cepat W1 – W5 (Custom Rentang Week & Filter Minggu)
                   </h2>
                   <p className="text-[11px] text-slate-400 print:text-slate-600">
-                    Perbandingan langsung Revenue, Traffic, Transaksi, dan % pertumbuhan tiap minggu
+                    Anda bisa ketik rentang/label tiap week secara manual lalu klik kartu untuk memfilter dashboard
                   </p>
                 </div>
                 {selectedWeek !== 'ALL' && (
@@ -2170,21 +2245,22 @@ export default function App() {
                 {comparisonRows.map((item, idx) => {
                   const isSelected = selectedWeek === item.minggu;
                   return (
-                    <button
+                    <div
                       key={item.minggu}
-                      type="button"
-                      onClick={() => setSelectedWeek(isSelected ? 'ALL' : item.minggu)}
-                      className={`text-left rounded-xl border p-3 transition ${
+                      className={`rounded-xl border p-3 transition space-y-2 ${
                         isSelected
                           ? 'border-cyan-400 bg-cyan-500/10'
                           : 'border-slate-800 bg-slate-950/80 hover:border-slate-700'
                       }`}
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-extrabold text-cyan-300">
-                          {item.minggu}{' '}
-                          <span className="text-[10px] font-normal text-slate-400">({item.label})</span>
-                        </span>
+                      <div className="flex items-center justify-between gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedWeek(isSelected ? 'ALL' : item.minggu)}
+                          className="text-xs font-extrabold text-cyan-300 hover:underline text-left"
+                        >
+                          {item.minggu}
+                        </button>
                         {idx === 0 ? (
                           <span className="text-[10px] font-semibold text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded">
                             Baseline
@@ -2202,15 +2278,29 @@ export default function App() {
                         )}
                       </div>
 
-                      <div className="mt-2 text-sm sm:text-base font-extrabold text-white">
-                        {formatIDR(item.revenue)}
-                      </div>
+                      <input
+                        type="text"
+                        value={item.label || ''}
+                        placeholder="Rentang / label week..."
+                        onChange={(e) => handleUpdateWeekLabel(item.minggu, e.target.value)}
+                        className="w-full rounded border border-slate-800 bg-[#0b0f17] px-2 py-1 text-[11px] text-slate-200 outline-none focus:border-cyan-400"
+                      />
 
-                      <div className="mt-1.5 flex items-center justify-between text-[11px] text-slate-400">
-                        <span>{formatNum(item.traffic)} Pax</span>
-                        <span>{formatNum(item.transaksi)} Trx</span>
-                      </div>
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedWeek(isSelected ? 'ALL' : item.minggu)}
+                        className="w-full text-left"
+                      >
+                        <div className="text-sm sm:text-base font-extrabold text-white">
+                          {formatIDR(item.revenue)}
+                        </div>
+
+                        <div className="mt-1 flex items-center justify-between text-[11px] text-slate-400">
+                          <span>{formatNum(item.traffic)} Pax</span>
+                          <span>{formatNum(item.transaksi)} Trx</span>
+                        </div>
+                      </button>
+                    </div>
                   );
                 })}
               </div>
@@ -2282,9 +2372,9 @@ export default function App() {
                     onChange={(e) => setFormAcq({ ...formAcq, minggu: e.target.value })}
                     className="w-full rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-2 text-white"
                   >
-                    {['W1', 'W2', 'W3', 'W4', 'W5'].map((wk) => (
-                      <option key={wk} value={wk}>
-                        {wk}
+                    {weeklyMetrics.map((w) => (
+                      <option key={w.minggu} value={w.minggu}>
+                        {w.minggu} {w.label ? `(${w.label})` : ''}
                       </option>
                     ))}
                   </select>
@@ -2500,12 +2590,101 @@ export default function App() {
                   ANNUAL REPORT SALES & MARKETING DEPARTMENT 2026
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Semua kolom bulan (<span className="text-emerald-300 font-semibold">JANUARY – DESEMBER</span>) bisa diedit manual dan kolom <span className="text-amber-300 font-semibold">TOTAL</span> serta rasio/basket size terhitung otomatis oleh sistem.
+                  Semua kolom bulan (<span className="text-emerald-300 font-semibold">JANUARY – DESEMBER</span>) bisa diedit manual dan kolom <span className="text-amber-300 font-semibold">TOTAL</span>, rasio/basket size, serta grafik terhitung otomatis oleh sistem.
                 </p>
               </div>
               <span className="text-xs font-semibold text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 rounded-lg">
                 THE KERANJANG BALI • 2026
               </span>
+            </div>
+
+            <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 space-y-3 print:hidden">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                <div>
+                  <h3 className="text-xs sm:text-sm font-bold text-white uppercase tracking-wide">
+                    Grafik Otomatis Tahunan 2026 (Jan – Des)
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Otomatis berubah mengikuti perubahan angka pada tabel Annual Report 2026 di bawah
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-2 text-xs">
+                  <div className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1.5">
+                    <span className="text-slate-400">Seri Utama:</span>
+                    <select
+                      value={selectedAnnualChartRowId}
+                      onChange={(e) => setSelectedAnnualChartRowId(e.target.value)}
+                      className="bg-transparent text-emerald-300 font-semibold outline-none"
+                    >
+                      {computedAnnualReport.map((r) => (
+                        <option key={r.id} value={r.id} className="bg-slate-950 text-white">
+                          {r.item}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1.5">
+                    <span className="text-slate-400">Pembanding:</span>
+                    <select
+                      value={selectedAnnualCompareRowId}
+                      onChange={(e) => setSelectedAnnualCompareRowId(e.target.value)}
+                      className="bg-transparent text-cyan-300 font-semibold outline-none"
+                    >
+                      <option value="NONE" className="bg-slate-950 text-white">
+                        Tanpa Pembanding
+                      </option>
+                      {computedAnnualReport.map((r) => (
+                        <option key={r.id} value={r.id} className="bg-slate-950 text-white">
+                          {r.item}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="h-72 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={annualChartData.series}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                    <XAxis dataKey="bulan" stroke="#94a3b8" fontSize={12} />
+                    <YAxis stroke="#94a3b8" fontSize={12} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: '#0b0f17',
+                        borderColor: '#334155',
+                        color: '#f8fafc',
+                        fontSize: '12px'
+                      }}
+                      formatter={(val, name) => {
+                        const isPrimary = String(name).includes('Utama');
+                        const rowRef = isPrimary
+                          ? annualChartData.primaryRow
+                          : annualChartData.secondaryRow;
+                        return [
+                          formatAnnualCell(val, rowRef?.format || 'number'),
+                          rowRef?.item || name
+                        ];
+                      }}
+                    />
+                    <Legend wrapperStyle={{ fontSize: '12px' }} />
+                    <Bar
+                      dataKey="primaryVal"
+                      name={`${annualChartData.primaryRow?.item || 'Utama'} (Utama)`}
+                      fill="#10b981"
+                      radius={[4, 4, 0, 0]}
+                    />
+                    {annualChartData.secondaryRow && (
+                      <Bar
+                        dataKey="secondaryVal"
+                        name={`${annualChartData.secondaryRow.item} (Pembanding)`}
+                        fill="#38bdf8"
+                        radius={[4, 4, 0, 0]}
+                      />
+                    )}
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </div>
 
             <div className="rounded-xl border border-slate-800 bg-[#0a0d14] overflow-hidden shadow-lg">
@@ -2588,7 +2767,7 @@ export default function App() {
                     Perbandingan Mingguan Lengkap W1 – W5 (Revenue, Traffic & Transaksi)
                   </h2>
                   <p className="text-xs text-slate-400">
-                    Edit angka W1 sampai W5 secara manual—persentase pertumbuhan Week-over-Week terhitung otomatis
+                    Edit rentang/label week maupun angka W1–W5 secara manual—persentase pertumbuhan Week-over-Week terhitung otomatis
                   </p>
                 </div>
               </div>
@@ -2598,6 +2777,7 @@ export default function App() {
                   <thead>
                     <tr className="bg-slate-900 text-slate-300 uppercase">
                       <th className="p-2.5 border border-slate-800">Minggu</th>
+                      <th className="p-2.5 border border-slate-800">Rentang / Label Week</th>
                       <th className="p-2.5 border border-slate-800">Revenue (Input Manual)</th>
                       <th className="p-2.5 border border-slate-800">Growth Rev (%)</th>
                       <th className="p-2.5 border border-slate-800">Traffic / Pax</th>
@@ -2610,7 +2790,15 @@ export default function App() {
                     {comparisonRows.map((row, idx) => (
                       <tr key={row.minggu} className="border-b border-slate-800 hover:bg-slate-900/50">
                         <td className="p-2.5 border border-slate-800 font-bold text-cyan-300">
-                          {row.minggu} <span className="text-[11px] font-normal text-slate-400">({row.label})</span>
+                          {row.minggu}
+                        </td>
+                        <td className="p-2.5 border border-slate-800">
+                          <input
+                            type="text"
+                            value={row.label || ''}
+                            onChange={(e) => handleUpdateWeekLabel(row.minggu, e.target.value)}
+                            className="w-32 rounded border border-cyan-500/35 bg-slate-950 px-2 py-1 text-cyan-200 font-medium outline-none"
+                          />
                         </td>
                         <td className="p-2.5 border border-slate-800">
                           <input
