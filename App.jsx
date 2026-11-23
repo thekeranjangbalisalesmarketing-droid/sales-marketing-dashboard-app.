@@ -28,7 +28,8 @@ import {
   EyeOff,
   Printer,
   Store,
-  Receipt
+  Receipt,
+  Table2
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -43,9 +44,24 @@ import {
   Legend
 } from 'recharts';
 
-const STORAGE_KEY = 'sm_command_center_v4';
+const STORAGE_KEY = 'sm_command_center_v5';
 const AUTH_SESSION_KEY = 'sm_command_center_unlocked_v1';
 const ACCESS_PASSCODE = import.meta.env.VITE_APP_PASSCODE || 'SM2026';
+
+const MONTHS_2026 = [
+  { key: 'jan', label: 'JANUARY', days: 31 },
+  { key: 'feb', label: 'FEBRUARY', days: 28 },
+  { key: 'mar', label: 'MARET', days: 31 },
+  { key: 'apr', label: 'APRIL', days: 30 },
+  { key: 'may', label: 'MEI', days: 31 },
+  { key: 'jun', label: 'JUNE', days: 30 },
+  { key: 'jul', label: 'JULY', days: 31 },
+  { key: 'aug', label: 'AGUSTUS', days: 31 },
+  { key: 'sep', label: 'SEPTEMBER', days: 30 },
+  { key: 'oct', label: 'OCTOBER', days: 31 },
+  { key: 'nov', label: 'NOVEMBER', days: 30 },
+  { key: 'dec', label: 'DESEMBER', days: 31 }
+];
 
 const PROGRAM_PAKET_OPTIONS = [
   'DINNER + SHOPPING',
@@ -83,8 +99,8 @@ const INITIAL_KPI_SCORECARDS = [
     periodeLabel: 'BULANAN',
     summaryLabel: 'TOTAL',
     rows: [
-      { id: 'm-1', indikator: 'REVENUE', bobot: 40, target: 3628357876, targetMtd: 2418905251, actual: 654461361, isCurrency: true },
-      { id: 'm-2', indikator: 'TRAFFIC', bobot: 60, target: 12433, targetMtd: 8289, actual: 5091, isCurrency: false }
+      { id: 'm-1', indikator: 'REVENUE', bobot: 40, target: 3628357876, actual: 654461361, isCurrency: true },
+      { id: 'm-2', indikator: 'TRAFFIC', bobot: 60, target: 12433, actual: 5091, isCurrency: false }
     ]
   },
   {
@@ -94,8 +110,8 @@ const INITIAL_KPI_SCORECARDS = [
     periodeLabel: 'BULANAN',
     summaryLabel: '',
     rows: [
-      { id: 'g-1', indikator: 'REVENUE', bobot: 50, target: 290268630, targetMtd: 193512420, actual: 117227200, isCurrency: true },
-      { id: 'g-2', indikator: 'TRAFFIC', bobot: 50, target: 995, targetMtd: 663, actual: 2642, isCurrency: false }
+      { id: 'g-1', indikator: 'REVENUE', bobot: 50, target: 290268630, actual: 117227200, isCurrency: true },
+      { id: 'g-2', indikator: 'TRAFFIC', bobot: 50, target: 995, actual: 2642, isCurrency: false }
     ]
   },
   {
@@ -105,8 +121,8 @@ const INITIAL_KPI_SCORECARDS = [
     periodeLabel: 'BULANAN',
     summaryLabel: '',
     rows: [
-      { id: 'es-1', indikator: 'REVENUE', bobot: 50, target: 290268630, targetMtd: 193512420, actual: 189411850, isCurrency: true },
-      { id: 'es-2', indikator: 'TRAFFIC', bobot: 50, target: 995, targetMtd: 663, actual: 409, isCurrency: false }
+      { id: 'es-1', indikator: 'REVENUE', bobot: 50, target: 290268630, actual: 189411850, isCurrency: true },
+      { id: 'es-2', indikator: 'TRAFFIC', bobot: 50, target: 995, actual: 409, isCurrency: false }
     ]
   },
   {
@@ -116,7 +132,7 @@ const INITIAL_KPI_SCORECARDS = [
     periodeLabel: 'BULANAN',
     summaryLabel: '',
     rows: [
-      { id: 'ed-1', indikator: 'DEALING MITRA EVENT', bobot: 100, target: 20, targetMtd: 13, actual: 8, isCurrency: false }
+      { id: 'ed-1', indikator: 'DEALING MITRA EVENT', bobot: 100, target: 20, actual: 8, isCurrency: false }
     ]
   },
   {
@@ -126,8 +142,8 @@ const INITIAL_KPI_SCORECARDS = [
     periodeLabel: 'BULANAN',
     summaryLabel: '',
     rows: [
-      { id: 'gl-1', indikator: 'REVENUE', bobot: 70, target: 290268630, targetMtd: 187270084, actual: 20682000, isCurrency: true },
-      { id: 'gl-2', indikator: 'TRAFFIC', bobot: 30, target: 995, targetMtd: 642, actual: 51, isCurrency: false }
+      { id: 'gl-1', indikator: 'REVENUE', bobot: 70, target: 290268630, actual: 20682000, isCurrency: true },
+      { id: 'gl-2', indikator: 'TRAFFIC', bobot: 30, target: 995, actual: 51, isCurrency: false }
     ]
   },
   {
@@ -137,7 +153,7 @@ const INITIAL_KPI_SCORECARDS = [
     periodeLabel: 'BULANAN',
     summaryLabel: '',
     rows: [
-      { id: 'c-1', indikator: 'PENYELESAIAN CRM', bobot: 100, target: 620, targetMtd: 400, actual: 176, isCurrency: false }
+      { id: 'c-1', indikator: 'PENYELESAIAN CRM', bobot: 100, target: 620, actual: 176, isCurrency: false }
     ]
   },
   {
@@ -147,7 +163,7 @@ const INITIAL_KPI_SCORECARDS = [
     periodeLabel: 'BULANAN',
     summaryLabel: '',
     rows: [
-      { id: 'fg-1', indikator: 'NEW DATABASE TRAVEL', bobot: 100, target: 250, targetMtd: 161, actual: 126, isCurrency: false }
+      { id: 'fg-1', indikator: 'NEW DATABASE TRAVEL', bobot: 100, target: 250, actual: 126, isCurrency: false }
     ]
   },
   {
@@ -157,7 +173,7 @@ const INITIAL_KPI_SCORECARDS = [
     periodeLabel: 'BULANAN',
     summaryLabel: '',
     rows: [
-      { id: 'd-1', indikator: 'SERVICE TRAILING', bobot: 100, target: 10, targetMtd: 7, actual: 4, isCurrency: false }
+      { id: 'd-1', indikator: 'SERVICE TRAILING', bobot: 100, target: 10, actual: 4, isCurrency: false }
     ]
   },
   {
@@ -167,9 +183,9 @@ const INITIAL_KPI_SCORECARDS = [
     periodeLabel: 'BULANAN',
     summaryLabel: '',
     rows: [
-      { id: 'w-1', indikator: 'KETERLAKSANAAN GOALS', bobot: 25, target: 100, targetMtd: 71, actual: 30, isPercentValue: true },
-      { id: 'w-2', indikator: 'KETERLAKSANAAN SO', bobot: 25, target: 100, targetMtd: 71, actual: 29, isPercentValue: true },
-      { id: 'w-3', indikator: 'KETERLAKSANAAN SI', bobot: 50, target: 100, targetMtd: 71, actual: 14, isPercentValue: true }
+      { id: 'w-1', indikator: 'KETERLAKSANAAN GOALS', bobot: 25, target: 100, actual: 30, isPercentValue: true },
+      { id: 'w-2', indikator: 'KETERLAKSANAAN SO', bobot: 25, target: 100, actual: 29, isPercentValue: true },
+      { id: 'w-3', indikator: 'KETERLAKSANAAN SI', bobot: 50, target: 100, actual: 14, isPercentValue: true }
     ]
   }
 ];
@@ -182,9 +198,9 @@ const INITIAL_STRATEGI_INISIATIF = [
     bobot: 20,
     pic: 'Nadia',
     rows: [
-      { id: '1-1-a', si: 'WhatsApp Personal Mitra Guide', target: 0, targetMtd: 0, actual: 0 },
-      { id: '1-1-b', si: 'Talk to Guide Bali', target: 0, targetMtd: 0, actual: 0 },
-      { id: '1-1-c', si: 'Blast Mitra Visit To Bali', target: 0, targetMtd: 0, actual: 0 }
+      { id: '1-1-a', si: 'WhatsApp Personal Mitra Guide', target: 260, actual: 175 },
+      { id: '1-1-b', si: 'Talk to Guide Bali', target: 26, actual: 52 },
+      { id: '1-1-c', si: 'Blast Mitra Visit To Bali', target: 100, actual: 70 }
     ]
   },
   {
@@ -194,9 +210,9 @@ const INITIAL_STRATEGI_INISIATIF = [
     bobot: 25,
     pic: 'Vacant',
     rows: [
-      { id: '1-2-a', si: 'WhatsApp Personal Mitra', target: 0, targetMtd: 0, actual: 0 },
-      { id: '1-2-b', si: 'New Database', target: 0, targetMtd: 0, actual: 0 },
-      { id: '1-2-c', si: 'Meeting Mitra', target: 0, targetMtd: 0, actual: 0 }
+      { id: '1-2-a', si: 'WhatsApp Personal Mitra', target: 0, actual: 0 },
+      { id: '1-2-b', si: 'New Database', target: 0, actual: 0 },
+      { id: '1-2-c', si: 'Meeting Mitra', target: 0, actual: 0 }
     ]
   },
   {
@@ -206,8 +222,8 @@ const INITIAL_STRATEGI_INISIATIF = [
     bobot: 20,
     pic: 'Vacant',
     rows: [
-      { id: '1-3-a', si: 'WhatsApp Personal Mitra Driver', target: 0, targetMtd: 0, actual: 0 },
-      { id: '1-3-b', si: 'Talk To Driver', target: 0, targetMtd: 0, actual: 0 }
+      { id: '1-3-a', si: 'WhatsApp Personal Mitra Driver', target: 0, actual: 0 },
+      { id: '1-3-b', si: 'Talk To Driver', target: 0, actual: 0 }
     ]
   },
   {
@@ -217,8 +233,8 @@ const INITIAL_STRATEGI_INISIATIF = [
     bobot: 20,
     pic: 'Selvia',
     rows: [
-      { id: '1-4-a', si: 'Blast Database Event', target: 0, targetMtd: 0, actual: 0 },
-      { id: '1-4-b', si: 'Penyelenggaraan Event', target: 0, targetMtd: 0, actual: 0 }
+      { id: '1-4-a', si: 'Blast Database Event', target: 0, actual: 0 },
+      { id: '1-4-b', si: 'Penyelenggaraan Event', target: 0, actual: 0 }
     ]
   },
   {
@@ -228,8 +244,8 @@ const INITIAL_STRATEGI_INISIATIF = [
     bobot: 25,
     pic: 'Dhimas',
     rows: [
-      { id: '1-5-a', si: 'New Database event', target: 0, targetMtd: 0, actual: 0 },
-      { id: '1-5-b', si: 'Meeting EO', target: 0, targetMtd: 0, actual: 0 }
+      { id: '1-5-a', si: 'New Database event', target: 0, actual: 0 },
+      { id: '1-5-b', si: 'Meeting EO', target: 0, actual: 0 }
     ]
   },
   {
@@ -239,9 +255,9 @@ const INITIAL_STRATEGI_INISIATIF = [
     bobot: 25,
     pic: 'Vacant',
     rows: [
-      { id: '1-6-a', si: 'WhatsApp Personal Mitra', target: 0, targetMtd: 0, actual: 0 },
-      { id: '1-6-b', si: 'New Database', target: 0, targetMtd: 0, actual: 0 },
-      { id: '1-6-c', si: 'Meeting Mitra', target: 0, targetMtd: 0, actual: 0 }
+      { id: '1-6-a', si: 'WhatsApp Personal Mitra', target: 0, actual: 0 },
+      { id: '1-6-b', si: 'New Database', target: 0, actual: 0 },
+      { id: '1-6-c', si: 'Meeting Mitra', target: 0, actual: 0 }
     ]
   },
   {
@@ -251,8 +267,8 @@ const INITIAL_STRATEGI_INISIATIF = [
     bobot: 25,
     pic: 'Linda',
     rows: [
-      { id: '1-7-a', si: 'WhatsApp Personal Mitra Pemerintahan', target: 0, targetMtd: 0, actual: 0 },
-      { id: '1-7-b', si: 'Meeting Pemerintahan', target: 0, targetMtd: 0, actual: 0 }
+      { id: '1-7-a', si: 'WhatsApp Personal Mitra Pemerintahan', target: 0, actual: 0 },
+      { id: '1-7-b', si: 'Meeting Pemerintahan', target: 0, actual: 0 }
     ]
   },
   {
@@ -262,9 +278,9 @@ const INITIAL_STRATEGI_INISIATIF = [
     bobot: 20,
     pic: 'Dharma',
     rows: [
-      { id: '1-8-a', si: 'Check Trailing', target: 0, targetMtd: 0, actual: 0 },
-      { id: '1-8-b', si: 'Service Trailing', target: 0, targetMtd: 0, actual: 0 },
-      { id: '1-8-c', si: 'Foto bus rombongan', target: 0, targetMtd: 0, actual: 0 }
+      { id: '1-8-a', si: 'Check Trailing', target: 0, actual: 0 },
+      { id: '1-8-b', si: 'Service Trailing', target: 0, actual: 0 },
+      { id: '1-8-c', si: 'Foto bus rombongan', target: 0, actual: 0 }
     ]
   },
   {
@@ -274,9 +290,280 @@ const INITIAL_STRATEGI_INISIATIF = [
     bobot: 25,
     pic: 'MAGANG',
     rows: [
-      { id: '1-9-a', si: 'New Database Travel (Fahmi Magang)', target: 0, targetMtd: 0, actual: 0 },
-      { id: '1-9-b', si: 'Share Voucher Daybus (Fahmi Magang)', target: 0, targetMtd: 0, actual: 0 }
+      { id: '1-9-a', si: 'New Database Travel (Fahmi Magang)', target: 0, actual: 0 },
+      { id: '1-9-b', si: 'Share Voucher Daybus (Fahmi Magang)', target: 0, actual: 0 }
     ]
+  }
+];
+
+const createEmptyMonthMap = (defaultVal = 0) =>
+  MONTHS_2026.reduce((acc, m) => ({ ...acc, [m.key]: defaultVal }), {});
+
+const INITIAL_ANNUAL_REPORT = [
+  {
+    id: 'ar-1',
+    item: 'TARGET SALES STORE',
+    type: 'input',
+    format: 'currency',
+    values: {
+      ...createEmptyMonthMap(0),
+      jan: 11035508986,
+      feb: 6131785266,
+      mar: 12965918988,
+      apr: 4923923445,
+      may: 9371184304,
+      jun: 10405273316,
+      jul: 11253511071,
+      aug: 9213309267,
+      sep: 9449338312,
+      oct: 9077991691
+    }
+  },
+  {
+    id: 'ar-2',
+    item: 'ACTUAL SALES STORE',
+    type: 'input',
+    format: 'currency',
+    values: {
+      ...createEmptyMonthMap(0),
+      jan: 6065185960,
+      feb: 3288294648,
+      mar: 5272968813,
+      apr: 3903394090,
+      may: 4861314523,
+      jun: 4431189141,
+      jul: 4372321694,
+      aug: 4354220796,
+      sep: 3223215545715,
+      oct: 3544965525
+    }
+  },
+  {
+    id: 'ar-3',
+    item: 'TRAFFIC PENGUNJUNG',
+    type: 'input',
+    format: 'number',
+    values: {
+      ...createEmptyMonthMap(0),
+      jan: 35393,
+      feb: 316464,
+      mar: 21304,
+      apr: 23071,
+      may: 25424,
+      jun: 23705,
+      jul: 21510,
+      aug: 21920,
+      sep: 18306,
+      oct: 19473
+    }
+  },
+  {
+    id: 'ar-4',
+    item: 'TRANSAKSI',
+    type: 'input',
+    format: 'number',
+    values: {
+      ...createEmptyMonthMap(0),
+      jan: 14809,
+      feb: 8697,
+      mar: 10315,
+      apr: 10242,
+      may: 11323,
+      jun: 10445,
+      jul: 9357,
+      aug: 10409,
+      sep: 8032,
+      oct: 8597
+    }
+  },
+  {
+    id: 'ar-5',
+    item: 'TRANSAKSI ROMBONGAN',
+    type: 'input',
+    format: 'number',
+    values: {
+      ...createEmptyMonthMap(0),
+      jan: 5348,
+      feb: 2841,
+      mar: 1265,
+      apr: 2457,
+      may: 2191,
+      jun: 1036,
+      jul: 902,
+      aug: 685,
+      sep: 902,
+      oct: 981
+    }
+  },
+  {
+    id: 'ar-6',
+    item: 'BASKET SIZE ALL',
+    type: 'formula',
+    formula: 'basket_size_all',
+    format: 'currency',
+    values: createEmptyMonthMap(0)
+  },
+  {
+    id: 'ar-7',
+    item: 'ALL BUDGET SALES',
+    type: 'input',
+    format: 'currency',
+    values: {
+      ...createEmptyMonthMap(0),
+      jan: 450367,
+      feb: 433114,
+      mar: 455030,
+      apr: 480451,
+      may: 492815,
+      jun: 421598,
+      jul: 448102,
+      aug: 416992,
+      sep: 39380289,
+      oct: 422255
+    }
+  },
+  {
+    id: 'ar-8',
+    item: 'BUDGET IMPACT VS REVENUE',
+    type: 'formula',
+    formula: 'budget_impact',
+    format: 'percent',
+    values: createEmptyMonthMap(0)
+  },
+  {
+    id: 'ar-9',
+    item: 'KONTRIBUSI TRANSAKSI ROMBONGAN VS STORE',
+    type: 'formula',
+    formula: 'contrib_trx_rombongan',
+    format: 'percent',
+    values: createEmptyMonthMap(0)
+  },
+  {
+    id: 'ar-10',
+    item: 'REGISTRASI DRIVER',
+    type: 'input',
+    format: 'number',
+    values: {
+      ...createEmptyMonthMap(0),
+      jan: 1121,
+      feb: 925,
+      mar: 1091,
+      apr: 925,
+      may: 1001,
+      jun: 1039,
+      jul: 1087,
+      aug: 1230,
+      sep: 919,
+      oct: 945
+    }
+  },
+  {
+    id: 'ar-11',
+    item: 'ACTUAL SALES ROMBONGAN',
+    type: 'input',
+    format: 'currency',
+    values: {
+      ...createEmptyMonthMap(0),
+      jan: 146409550,
+      feb: 221472600,
+      mar: 34234060,
+      apr: 423411910,
+      may: 241965065,
+      jun: 754629764,
+      jul: 111769180,
+      aug: 182784680,
+      sep: 229540881,
+      oct: 206788981
+    }
+  },
+  {
+    id: 'ar-12',
+    item: 'ACTUAL KOMISI TRAVEL',
+    type: 'input',
+    format: 'currency',
+    values: {
+      ...createEmptyMonthMap(0),
+      jan: 173568522,
+      feb: 120288848,
+      mar: 113004602,
+      apr: 118124181,
+      may: 148083838,
+      jun: 114415838,
+      jul: 117114861,
+      aug: 155105131,
+      sep: 281480347,
+      oct: 272328841
+    }
+  },
+  {
+    id: 'ar-13',
+    item: 'ACTUAL % KOMISI VS TOTAL BELANJA DRIVER',
+    type: 'formula',
+    formula: 'komisi_vs_driver',
+    format: 'percent',
+    values: createEmptyMonthMap(0)
+  },
+  {
+    id: 'ar-14',
+    item: 'KONTRIBUSI ROMBONGAN VS SALES',
+    type: 'formula',
+    formula: 'contrib_rombongan_vs_sales',
+    format: 'percent',
+    values: createEmptyMonthMap(0)
+  },
+  {
+    id: 'ar-15',
+    item: 'TARGET SALES OFFLINE',
+    type: 'input',
+    format: 'currency',
+    values: {
+      ...createEmptyMonthMap(0),
+      jan: 2948509222,
+      feb: 1532940291,
+      mar: 3940828192,
+      apr: 1223721117,
+      may: 2494405914,
+      jun: 2746277944,
+      jul: 2914413707,
+      aug: 2461987532,
+      sep: 2526254720,
+      oct: 2327273673
+    }
+  },
+  {
+    id: 'ar-16',
+    item: 'ACHIEVEMENT SALES OFFLINE',
+    type: 'input',
+    format: 'currency',
+    values: {
+      ...createEmptyMonthMap(0),
+      jan: 1479333485,
+      feb: 1090915359,
+      mar: 949222612,
+      apr: 1113726802,
+      may: 1712738531,
+      jun: 934150247,
+      jul: 926823839,
+      aug: 1232462729,
+      sep: 808285720,
+      oct: 1025251987
+    }
+  },
+  {
+    id: 'ar-17',
+    item: 'PERCENTAGE ACHIEVEMENT OFFLINE',
+    type: 'formula',
+    formula: 'pct_offline',
+    format: 'percent',
+    values: createEmptyMonthMap(0)
+  },
+  {
+    id: 'ar-18',
+    item: 'KONTRIBUSI SALES OFFLINE VS SALES STORE',
+    type: 'formula',
+    formula: 'contrib_offline_vs_store',
+    format: 'percent',
+    values: createEmptyMonthMap(0)
   }
 ];
 
@@ -304,7 +591,7 @@ const INITIAL_TASKS = [
     judul: 'Rekap capaian harian & mingguan (W3), update progres Goals, SO, dan SI',
     pic: 'WINDA',
     kanal: 'ADMIN & ASISTEN',
-    tanggal: '2026-11-21',
+    tanggal: '2026-11-23',
     waktu: '09:00',
     prioritas: 'High',
     status: 'In Progress',
@@ -333,7 +620,7 @@ const INITIAL_MOMS = [
     poinPembahasan: 'Koordinasi jadwal rombongan, kesiapan venue Teater Saba & Belanja, serta percepatan pencapaian target KPI dan Strategi Inisiatif.',
     actionItem: 'Konfirmasi teknis event tanggal 29 November & update capaian actual mingguan',
     picAction: 'WINDA',
-    deadline: '2026-11-23',
+    deadline: '2026-11-25',
     convertedToTask: false
   }
 ];
@@ -358,6 +645,13 @@ const formatCellVal = (val, row) => {
   return formatNum(num);
 };
 
+const formatAnnualCell = (val, fmt) => {
+  const num = Number(val || 0);
+  if (fmt === 'currency') return formatNum(num);
+  if (fmt === 'percent') return `${num.toFixed(1)}%`;
+  return formatNum(num);
+};
+
 const calcPctChange = (current, previous) => {
   const curr = Number(current || 0);
   const prev = Number(previous || 0);
@@ -370,6 +664,14 @@ const calcBasketSize = (revenueVal, transaksiVal) => {
   const trx = Number(transaksiVal || 0);
   if (trx <= 0) return 0;
   return Math.round(rev / trx);
+};
+
+// Rumus Target MTD harian: target / jumlah hari per bulan * hari ke-
+const calcAutoTargetMtd = (targetVal, daysInMonth, dayNumber) => {
+  const tgt = Number(targetVal || 0);
+  const days = Math.max(1, Number(daysInMonth || 30));
+  const day = Math.min(days, Math.max(1, Number(dayNumber || 1)));
+  return Math.round((tgt / days) * day);
 };
 
 const calcStrategiPerform = (actualVal, targetVal, bobotVal) => {
@@ -391,7 +693,7 @@ const calcStrategiPerform = (actualVal, targetVal, bobotVal) => {
 };
 
 const buildGoogleCalendarUrl = (title, dateStr, timeStr, details, location = 'Teater Saba & Belanja') => {
-  const cleanDate = (dateStr || '2026-11-21').replace(/-/g, '');
+  const cleanDate = (dateStr || '2026-11-23').replace(/-/g, '');
   const rawTime = (timeStr || '09:00').split('-')[0].trim().replace('.', ':');
   const cleanTime = (rawTime.includes(':') ? rawTime : '09:00').padStart(5, '0').replace(':', '') + '00';
   const endHourNum = (parseInt(cleanTime.slice(0, 2), 10) + 1) % 24;
@@ -425,9 +727,13 @@ export default function App() {
   const [periodMode, setPeriodMode] = useState('mingguan');
   const [selectedWeek, setSelectedWeek] = useState('ALL');
   const [customStart, setCustomStart] = useState('2026-11-01');
-  const [customEnd, setCustomEnd] = useState('2026-11-30');
+  const [customEnd, setCustomEnd] = useState('2026-11-23');
   const [selectedKanalFilter, setSelectedKanalFilter] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Pengaturan Target MTD Otomatis Harian: target / jumlah hari bulan * hari ke-
+  const [mtdDaysInMonth, setMtdDaysInMonth] = useState(30);
+  const [mtdCurrentDay, setMtdCurrentDay] = useState(23);
 
   const [pics, setPics] = useState(() => {
     try {
@@ -453,6 +759,15 @@ export default function App() {
       return saved?.strategiInisiatif || INITIAL_STRATEGI_INISIATIF;
     } catch {
       return INITIAL_STRATEGI_INISIATIF;
+    }
+  });
+
+  const [annualReportRows, setAnnualReportRows] = useState(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+      return saved?.annualReportRows || INITIAL_ANNUAL_REPORT;
+    } catch {
+      return INITIAL_ANNUAL_REPORT;
     }
   });
 
@@ -484,7 +799,7 @@ export default function App() {
   });
 
   const [posManualForm, setPosManualForm] = useState({
-    minggu: 'W3',
+    minggu: 'W4',
     revenuePos: 0,
     trafficPos: 0,
     transaksiPos: 0
@@ -511,8 +826,8 @@ export default function App() {
   const [lastSavedAt, setLastSavedAt] = useState(() => new Date().toLocaleTimeString('id-ID'));
 
   const [formAcq, setFormAcq] = useState({
-    tanggal: '2026-11-20',
-    minggu: 'W3',
+    tanggal: '2026-11-23',
+    minggu: 'W4',
     waktu: '14:00',
     kanal: 'GUIDE',
     pic: 'NADIA',
@@ -536,7 +851,7 @@ export default function App() {
     judul: '',
     pic: 'NADIA',
     kanal: 'GUIDE',
-    tanggal: '2026-11-21',
+    tanggal: '2026-11-24',
     waktu: '10:00',
     prioritas: 'High',
     status: 'In Progress',
@@ -544,14 +859,14 @@ export default function App() {
   });
 
   const [newMom, setNewMom] = useState({
-    tanggal: '2026-11-20',
-    minggu: 'W3',
+    tanggal: '2026-11-23',
+    minggu: 'W4',
     judul: '',
     peserta: 'CHOKI DASYAT, WINDA',
     poinPembahasan: '',
     actionItem: '',
     picAction: 'WINDA',
-    deadline: '2026-11-23'
+    deadline: '2026-11-25'
   });
 
   const [aiPrompt, setAiPrompt] = useState('');
@@ -559,7 +874,7 @@ export default function App() {
   const [aiMessages, setAiMessages] = useState([
     {
       role: 'assistant',
-      text: 'Halo! AI Strategist aktif & siap dipakai. Tanya saya soal perbandingan W1–W5, sales POS & basket size, skor KPI tiap PIC, Strategi Inisiatif (SI) & Nilai Perform, posisi VACANT, atau rencana aksi 7 hari.'
+      text: 'Halo! AI Strategist aktif & siap dipakai. Tanya saya soal perbandingan W1–W5, annual report 2026, sales POS & basket size, target MTD harian, skor KPI tiap PIC, Strategi Inisiatif (SI) & Nilai Perform, posisi VACANT, atau rencana aksi 7 hari.'
     }
   ]);
 
@@ -569,6 +884,7 @@ export default function App() {
         pics,
         scorecards,
         strategiInisiatif,
+        annualReportRows,
         acquisitions,
         weeklyMetrics,
         posMetrics,
@@ -580,7 +896,17 @@ export default function App() {
     } catch (e) {
       console.error('Gagal menyimpan data lokal:', e);
     }
-  }, [pics, scorecards, strategiInisiatif, acquisitions, weeklyMetrics, posMetrics, tasks, moms]);
+  }, [
+    pics,
+    scorecards,
+    strategiInisiatif,
+    annualReportRows,
+    acquisitions,
+    weeklyMetrics,
+    posMetrics,
+    tasks,
+    moms
+  ]);
 
   const handleUnlock = (e) => {
     e.preventDefault();
@@ -606,6 +932,86 @@ export default function App() {
       // ignore
     }
   };
+
+  const handleUpdateAnnualCell = (rowId, monthKey, val) => {
+    setAnnualReportRows((prev) =>
+      prev.map((r) =>
+        r.id === rowId
+          ? {
+              ...r,
+              values: {
+                ...r.values,
+                [monthKey]: Number(val || 0)
+              }
+            }
+          : r
+      )
+    );
+  };
+
+  const computedAnnualReport = useMemo(() => {
+    const getVal = (id, mKey) => {
+      const found = annualReportRows.find((r) => r.id === id);
+      return Number(found?.values?.[mKey] || 0);
+    };
+
+    return annualReportRows.map((row) => {
+      const monthComputed = {};
+      MONTHS_2026.forEach((m) => {
+        const mk = m.key;
+        if (row.type === 'input') {
+          monthComputed[mk] = Number(row.values?.[mk] || 0);
+          return;
+        }
+
+        const actualStore = getVal('ar-2', mk);
+        const trxAll = getVal('ar-4', mk);
+        const trxRombongan = getVal('ar-5', mk);
+        const budgetSales = getVal('ar-7', mk);
+        const salesRombongan = getVal('ar-11', mk);
+        const komisiTravel = getVal('ar-12', mk);
+        const achOffline = getVal('ar-16', mk);
+
+        if (row.formula === 'basket_size_all') {
+          monthComputed[mk] = trxAll > 0 ? Math.round(actualStore / trxAll) : 0;
+        } else if (row.formula === 'budget_impact') {
+          monthComputed[mk] = actualStore > 0 ? Number(((budgetSales / actualStore) * 100).toFixed(1)) : 0;
+        } else if (row.formula === 'contrib_trx_rombongan') {
+          monthComputed[mk] = trxAll > 0 ? Number(((trxRombongan / trxAll) * 100).toFixed(1)) : 0;
+        } else if (row.formula === 'komisi_vs_driver') {
+          monthComputed[mk] = salesRombongan > 0 ? Number(((komisiTravel / salesRombongan) * 100).toFixed(1)) : 0;
+        } else if (row.formula === 'contrib_rombongan_vs_sales') {
+          monthComputed[mk] = actualStore > 0 ? Number(((salesRombongan / actualStore) * 100).toFixed(1)) : 0;
+        } else if (row.formula === 'pct_offline') {
+          const targetOff = getVal('ar-15', mk);
+          monthComputed[mk] = targetOff > 0 ? Number(((achOffline / targetOff) * 100).toFixed(1)) : 0;
+        } else if (row.formula === 'contrib_offline_vs_store') {
+          monthComputed[mk] = actualStore > 0 ? Number(((achOffline / actualStore) * 100).toFixed(1)) : 0;
+        } else {
+          monthComputed[mk] = 0;
+        }
+      });
+
+      const sumAllMonths = MONTHS_2026.reduce((s, m) => s + Number(monthComputed[m.key] || 0), 0);
+      const countActiveMonths = MONTHS_2026.filter((m) => Number(monthComputed[m.key] || 0) !== 0).length;
+      const totalColValue =
+        row.format === 'percent'
+          ? countActiveMonths > 0
+            ? Number((sumAllMonths / countActiveMonths).toFixed(1))
+            : 0
+          : row.formula === 'basket_size_all'
+          ? countActiveMonths > 0
+            ? Math.round(sumAllMonths / countActiveMonths)
+            : 0
+          : sumAllMonths;
+
+      return {
+        ...row,
+        computedValues: monthComputed,
+        totalValue: totalColValue
+      };
+    });
+  }, [annualReportRows]);
 
   const handleUpdatePosRow = (mingguKey, field, val) => {
     setPosMetrics((prev) =>
@@ -784,7 +1190,7 @@ export default function App() {
   const mainSummary = useMemo(() => {
     if (periodMode === 'harian') {
       const dayItems = acquisitions.filter((a) => a.tanggal === customEnd);
-      const prevDateObj = new Date(customEnd || '2026-11-20');
+      const prevDateObj = new Date(customEnd || '2026-11-23');
       prevDateObj.setDate(prevDateObj.getDate() - 1);
       const prevDateStr = prevDateObj.toISOString().split('T')[0];
       const prevItems = acquisitions.filter((a) => a.tanggal === prevDateStr);
@@ -875,14 +1281,14 @@ export default function App() {
     );
   };
 
-  const handleUpdateScorecardActual = (cardId, rowId, newActual) => {
+  const handleUpdateScorecardField = (cardId, rowId, field, newVal) => {
     setScorecards((prev) =>
       prev.map((card) => {
         if (card.id !== cardId) return card;
         return {
           ...card,
           rows: card.rows.map((r) =>
-            r.id === rowId ? { ...r, actual: Number(newActual || 0) } : r
+            r.id === rowId ? { ...r, [field]: Number(newVal || 0) } : r
           )
         };
       })
@@ -907,12 +1313,14 @@ export default function App() {
     return scorecards.map((card) => {
       const rowsCalc = card.rows.map((r) => {
         const targetVal = Number(r.target || 0);
+        const targetMtdAuto = calcAutoTargetMtd(targetVal, mtdDaysInMonth, mtdCurrentDay);
         const actualVal = Number(r.actual || 0);
         const acvPct = targetVal > 0 ? Math.round((actualVal / targetVal) * 100) : 0;
         const realisasiPct = Math.min(100, acvPct);
         const skorPct = Math.round((realisasiPct * Number(r.bobot || 0)) / 100);
         return {
           ...r,
+          targetMtd: targetMtdAuto,
           acvPct,
           realisasiPct,
           skorPct
@@ -926,13 +1334,13 @@ export default function App() {
         totalSkorPct
       };
     });
-  }, [scorecards]);
+  }, [scorecards, mtdDaysInMonth, mtdCurrentDay]);
 
   const computedStrategi = useMemo(() => {
     return strategiInisiatif.map((group) => {
       const rowsCalc = group.rows.map((row) => {
         const targetNum = Number(row.target || 0);
-        const targetMtdNum = Number(row.targetMtd || 0);
+        const targetMtdNum = calcAutoTargetMtd(targetNum, mtdDaysInMonth, mtdCurrentDay);
         const actualNum = Number(row.actual || 0);
         const pct = targetNum > 0 ? Math.round((actualNum / targetNum) * 100) : 0;
         const nilaiPerform = calcStrategiPerform(actualNum, targetNum, group.bobot);
@@ -959,7 +1367,7 @@ export default function App() {
         avgPerform
       };
     });
-  }, [strategiInisiatif]);
+  }, [strategiInisiatif, mtdDaysInMonth, mtdCurrentDay]);
 
   const handleAddPic = (e) => {
     e.preventDefault();
@@ -1046,7 +1454,7 @@ export default function App() {
         judul: `[MOM] ${mom.actionItem}`,
         pic: mom.picAction || 'WINDA',
         kanal: 'MOM ACTION',
-        tanggal: mom.deadline || '2026-11-23',
+        tanggal: mom.deadline || '2026-11-25',
         waktu: '10:00',
         prioritas: 'High',
         status: 'In Progress',
@@ -1070,6 +1478,7 @@ export default function App() {
         pics,
         scorecards,
         strategiInisiatif,
+        annualReportRows,
         acquisitions,
         weeklyMetrics,
         posMetrics,
@@ -1098,6 +1507,7 @@ export default function App() {
         if (parsed.pics) setPics(parsed.pics);
         if (parsed.scorecards) setScorecards(parsed.scorecards);
         if (parsed.strategiInisiatif) setStrategiInisiatif(parsed.strategiInisiatif);
+        if (parsed.annualReportRows) setAnnualReportRows(parsed.annualReportRows);
         if (parsed.acquisitions) setAcquisitions(parsed.acquisitions);
         if (parsed.weeklyMetrics) setWeeklyMetrics(parsed.weeklyMetrics);
         if (parsed.posMetrics) setPosMetrics(parsed.posMetrics);
@@ -1137,6 +1547,12 @@ export default function App() {
       );
     }
 
+    if (q.includes('mtd') || q.includes('hari')) {
+      lines.push(
+        `Target MTD Otomatis Harian saat ini dihitung dengan rumus Target / ${mtdDaysInMonth} hari × hari ke-${mtdCurrentDay}.`
+      );
+    }
+
     if (q.includes('vacant') || q.includes('posisi') || q.includes('tim') || q.includes('pic')) {
       lines.push(
         vacantPositions.length > 0
@@ -1171,7 +1587,7 @@ export default function App() {
         lines.push(`Perhatian Posisi VACANT: ${vacantPositions.join(', ')} perlu backup eksekusi harian.`);
       }
       lines.push(
-        `Rencana Aksi 7 Hari:\n1. Update Target, Target MTD, dan Actual harian di tab KPI & FUNNEL.\n2. Kunci jadwal rombongan & event masuk ke Schedule dan Google Calendar.\n3. Follow up mitra aktif (Guide, Travel, EO, Pemerintahan) serta tutup action item di MOM.`
+        `Rencana Aksi 7 Hari:\n1. Update Target, Target MTD harian (hari ke-${mtdCurrentDay}/${mtdDaysInMonth}), dan Actual di tab KPI & FUNNEL.\n2. Kunci jadwal rombongan & event masuk ke Schedule dan Google Calendar.\n3. Follow up mitra aktif (Guide, Travel, EO, Pemerintahan) serta tutup action item di MOM.`
       );
     }
 
@@ -1241,6 +1657,7 @@ export default function App() {
 
   const navItems = [
     { id: 'dashboard', label: 'DASHBOARD', icon: BarChart3 },
+    { id: 'annual', label: 'ANNUAL 2026', icon: Table2 },
     { id: 'perbandingan', label: 'W1–W5 & PERIODE', icon: Layers },
     { id: 'kpi', label: 'KPI & FUNNEL', icon: Target },
     { id: 'schedule', label: 'SCHEDULE & KALENDER', icon: Calendar },
@@ -1560,7 +1977,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* BLOK DASHBOARD SALES POS + BASKET SIZE OTOMATIS */}
             <div className="rounded-xl border border-emerald-500/30 bg-[#0e131d] p-4 sm:p-5 space-y-4 print:bg-white print:border-slate-300">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-800 pb-3">
                 <div>
@@ -2076,6 +2492,93 @@ export default function App() {
           </div>
         )}
 
+        {activeTab === 'annual' && (
+          <div className="space-y-4">
+            <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div>
+                <h2 className="text-sm sm:text-base font-bold text-white uppercase tracking-wide">
+                  ANNUAL REPORT SALES & MARKETING DEPARTMENT 2026
+                </h2>
+                <p className="text-xs text-slate-400">
+                  Semua kolom bulan (<span className="text-emerald-300 font-semibold">JANUARY – DESEMBER</span>) bisa diedit manual dan kolom <span className="text-amber-300 font-semibold">TOTAL</span> serta rasio/basket size terhitung otomatis oleh sistem.
+                </p>
+              </div>
+              <span className="text-xs font-semibold text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 rounded-lg">
+                THE KERANJANG BALI • 2026
+              </span>
+            </div>
+
+            <div className="rounded-xl border border-slate-800 bg-[#0a0d14] overflow-hidden shadow-lg">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-[11px] tabular-nums">
+                  <thead>
+                    <tr className="bg-slate-900 text-slate-200 uppercase">
+                      <th className="p-2 border border-slate-800 sticky left-0 z-10 bg-slate-900 min-w-[240px]">
+                        ITEM
+                      </th>
+                      {MONTHS_2026.map((m) => (
+                        <th key={m.key} className="p-2 border border-slate-800 text-right min-w-[115px]">
+                          {m.label}
+                        </th>
+                      ))}
+                      <th className="p-2 border border-slate-800 text-right bg-emerald-950 text-emerald-200 min-w-[125px]">
+                        TOTAL
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {computedAnnualReport.map((row) => {
+                      const isFormula = row.type === 'formula';
+                      return (
+                        <tr
+                          key={row.id}
+                          className={`border-b border-slate-800/80 ${
+                            isFormula ? 'bg-slate-900/75 font-semibold' : 'hover:bg-slate-900/40'
+                          }`}
+                        >
+                          <td
+                            className={`p-2 border border-slate-800 sticky left-0 z-10 ${
+                              isFormula ? 'bg-slate-900 text-amber-300' : 'bg-[#0a0d14] text-white font-bold'
+                            }`}
+                          >
+                            {row.item}
+                          </td>
+                          {MONTHS_2026.map((m) => {
+                            const val = row.computedValues[m.key];
+                            if (isFormula) {
+                              return (
+                                <td
+                                  key={m.key}
+                                  className="p-2 border border-slate-800 text-right text-amber-200"
+                                >
+                                  {formatAnnualCell(val, row.format)}
+                                </td>
+                              );
+                            }
+                            return (
+                              <td key={m.key} className="p-1.5 border border-slate-800 text-right">
+                                <input
+                                  type="number"
+                                  value={row.values?.[m.key] ?? 0}
+                                  onChange={(e) => handleUpdateAnnualCell(row.id, m.key, e.target.value)}
+                                  className="w-28 rounded border border-slate-700/80 bg-slate-950 px-1.5 py-1 text-right text-slate-100 focus:border-emerald-400 outline-none"
+                                />
+                              </td>
+                            );
+                          })}
+                          <td className="p-2 border border-slate-800 text-right font-extrabold bg-emerald-950/50 text-emerald-300">
+                            {formatAnnualCell(row.totalValue, row.format)}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
         {activeTab === 'perbandingan' && (
           <div className="space-y-5">
             <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4">
@@ -2197,18 +2700,40 @@ export default function App() {
 
         {activeTab === 'kpi' && (
           <div className="space-y-6">
-            <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
               <div>
                 <h2 className="text-sm sm:text-base font-bold text-white uppercase tracking-wide">
                   KPI SCORECARD PER PIC & POSISI (BULANAN)
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Ubah nilai pada kolom <span className="text-cyan-300 font-semibold">Actual</span> untuk menghitung <span className="text-emerald-300 font-semibold">%ACV</span>, <span className="text-amber-300 font-semibold">%Realisasi</span>, dan <span className="text-white font-semibold">Skor</span> secara otomatis.
+                  <span className="text-emerald-300 font-semibold">Target MTD</span> dihitung otomatis harian dengan rumus <span className="text-white font-semibold">(Target ÷ Jumlah Hari Bulan) × Hari Ke-</span>.
                 </p>
               </div>
-              <span className="text-xs font-semibold text-emerald-300 bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 rounded-lg">
-                {computedScorecards.length} Blok Scorecard PIC
-              </span>
+
+              <div className="flex flex-wrap items-center gap-2 text-xs print:hidden">
+                <div className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1.5">
+                  <span className="text-slate-400">Hari Ke-:</span>
+                  <input
+                    type="number"
+                    min="1"
+                    max="31"
+                    value={mtdCurrentDay}
+                    onChange={(e) => setMtdCurrentDay(Number(e.target.value || 1))}
+                    className="w-12 bg-transparent text-cyan-300 font-bold outline-none"
+                  />
+                </div>
+                <div className="flex items-center gap-1.5 rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-1.5">
+                  <span className="text-slate-400">Jumlah Hari Bulan:</span>
+                  <input
+                    type="number"
+                    min="28"
+                    max="31"
+                    value={mtdDaysInMonth}
+                    onChange={(e) => setMtdDaysInMonth(Number(e.target.value || 30))}
+                    className="w-12 bg-transparent text-emerald-300 font-bold outline-none"
+                  />
+                </div>
+              </div>
             </div>
 
             {computedScorecards.map((card) => (
@@ -2239,7 +2764,7 @@ export default function App() {
                         <th className="p-2 border border-slate-800">Indikator</th>
                         <th className="p-2 border border-slate-800 text-center">Bobot</th>
                         <th className="p-2 border border-slate-800 text-right">Target</th>
-                        <th className="p-2 border border-slate-800 text-right">Target MTD</th>
+                        <th className="p-2 border border-slate-800 text-right">Target MTD (Auto)</th>
                         <th className="p-2 border border-slate-800 text-right">Actual</th>
                         <th className="p-2 border border-slate-800 text-center">%ACV</th>
                         <th className="p-2 border border-slate-800 text-center">%Realisasi</th>
@@ -2264,10 +2789,17 @@ export default function App() {
                           <td className="p-2 border border-slate-800 text-center font-bold text-slate-200">
                             {row.bobot}%
                           </td>
-                          <td className="p-2 border border-slate-800 text-right text-slate-200">
-                            {formatCellVal(row.target, row)}
+                          <td className="p-2 border border-slate-800 text-right">
+                            <input
+                              type="number"
+                              value={row.target}
+                              onChange={(e) =>
+                                handleUpdateScorecardField(card.id, row.id, 'target', e.target.value)
+                              }
+                              className="w-32 rounded border border-slate-700 bg-slate-950 px-2 py-1 text-right text-slate-200 font-medium focus:border-emerald-400 outline-none"
+                            />
                           </td>
-                          <td className="p-2 border border-slate-800 text-right text-slate-300">
+                          <td className="p-2 border border-slate-800 text-right font-semibold text-emerald-300">
                             {formatCellVal(row.targetMtd, row)}
                           </td>
                           <td className="p-2 border border-slate-800 text-right">
@@ -2275,7 +2807,7 @@ export default function App() {
                               type="number"
                               value={row.actual}
                               onChange={(e) =>
-                                handleUpdateScorecardActual(card.id, row.id, e.target.value)
+                                handleUpdateScorecardField(card.id, row.id, 'actual', e.target.value)
                               }
                               className="w-32 rounded border border-cyan-500/40 bg-slate-950 px-2 py-1 text-right text-cyan-300 font-semibold focus:border-emerald-400 outline-none"
                             />
@@ -2346,7 +2878,7 @@ export default function App() {
                     C. STRATEGI INISIATIF — BULANAN
                   </h3>
                   <p className="text-xs text-slate-400">
-                    Edit kolom <span className="text-slate-200 font-semibold">Target</span>, <span className="text-slate-200 font-semibold">Target MTD</span>, dan <span className="text-cyan-300 font-semibold">Actual</span> secara manual untuk menghitung <span className="text-emerald-300 font-semibold">Presentase</span>, <span className="text-amber-300 font-semibold">Nilai Perform</span>, dan <span className="text-rose-300 font-semibold">Gap SO</span> secara otomatis.
+                    Edit kolom <span className="text-slate-200 font-semibold">Target</span> dan <span className="text-cyan-300 font-semibold">Actual</span> — <span className="text-emerald-300 font-semibold">Target MTD</span> terhitung otomatis per hari (<span className="text-white font-semibold">Target ÷ {mtdDaysInMonth} × {mtdCurrentDay}</span>), lalu <span className="text-amber-300 font-semibold">Presentase</span>, <span className="text-amber-300 font-semibold">Nilai Perform</span>, dan <span className="text-rose-300 font-semibold">Gap SO</span> terhitung otomatis.
                   </p>
                 </div>
                 <span className="text-xs font-semibold text-cyan-300 bg-cyan-500/10 border border-cyan-500/30 px-3 py-1 rounded-lg">
@@ -2420,15 +2952,8 @@ export default function App() {
                                   className="w-20 rounded border border-slate-700 bg-slate-950 px-2 py-1 text-right text-slate-200 font-medium focus:border-cyan-400 outline-none"
                                 />
                               </td>
-                              <td className="p-2 border border-slate-800 text-right">
-                                <input
-                                  type="number"
-                                  value={row.targetMtd}
-                                  onChange={(e) =>
-                                    handleUpdateStrategiField(group.id, row.id, 'targetMtd', e.target.value)
-                                  }
-                                  className="w-20 rounded border border-slate-700 bg-slate-950 px-2 py-1 text-right text-slate-200 font-medium focus:border-cyan-400 outline-none"
-                                />
+                              <td className="p-2 border border-slate-800 text-right font-semibold text-emerald-300">
+                                {formatNum(row.targetMtd)}
                               </td>
                               <td className="p-2 border border-slate-800 text-right">
                                 <input
@@ -2856,7 +3381,7 @@ export default function App() {
         )}
       </main>
 
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 border-t border-slate-800 bg-[#090c12]/95 backdrop-blur grid grid-cols-6 print:hidden">
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-30 border-t border-slate-800 bg-[#090c12]/95 backdrop-blur grid grid-cols-7 print:hidden">
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = activeTab === item.id;
@@ -2870,7 +3395,7 @@ export default function App() {
               }`}
             >
               <Icon className="w-4 h-4" />
-              <span className="truncate max-w-[54px]">{item.label.split(' ')[0]}</span>
+              <span className="truncate max-w-[46px]">{item.label.split(' ')[0]}</span>
             </button>
           );
         })}
