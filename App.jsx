@@ -49,7 +49,7 @@ import {
   Legend
 } from 'recharts';
 
-const STORAGE_KEY = 'sm_command_center_v11';
+const STORAGE_KEY = 'sm_command_center_v12';
 const AUTH_SESSION_KEY = 'sm_command_center_unlocked_v1';
 const ACCESS_PASSCODE = import.meta.env.VITE_APP_PASSCODE || 'SM2026';
 
@@ -656,62 +656,9 @@ const INITIAL_MOMS = [
   }
 ];
 
-const INITIAL_CHECKLISTS = [
-  { id: 'chk-1', pic: 'NADIA', kategori: 'Mitra Guide', item: 'Follow up WA personal mitra guide aktif & konfirmasi bus masuk', done: true },
-  { id: 'chk-2', pic: 'SELVIA', kategori: 'Event & Rombongan', item: 'Cek kesiapan paket event/rombongan & blast database event', done: true },
-  { id: 'chk-3', pic: 'DHIMAS', kategori: 'EO & Dealing', item: 'Update progres dealing mitra event & jadwal meeting EO', done: false },
-  { id: 'chk-4', pic: 'LINDA', kategori: 'Government', item: 'Follow up agenda instansi/pemerintahan & kunjungan rombongan', done: false },
-  { id: 'chk-5', pic: 'ARVA', kategori: 'CRM', item: 'Rekap penyelesaian follow up CRM & konversi prospek', done: true },
-  { id: 'chk-6', pic: 'FAHMI', kategori: 'Database & Voucher', item: 'Input new database travel & distribusi voucher daybus', done: false },
-  { id: 'chk-7', pic: 'DHARMA', kategori: 'Trailing & Area', item: 'Cek trailing, dokumentasi bus rombongan & service area', done: false },
-  { id: 'chk-8', pic: 'WINDA', kategori: 'Admin & Rekap', item: 'Sinkronisasi rekap harian, target MTD, dan action item MOM', done: true }
-];
+const INITIAL_PLAYBOOKS = [];
 
-const INITIAL_PLAYBOOKS = [
-  {
-    id: 'pb-1',
-    judul: 'SOP Penyambutan & Briefing Rombongan / Bus Wisata',
-    kanal: 'GUIDE & HELPER',
-    ringkasan: 'Pastikan konfirmasi ETA bus 1 jam sebelum tiba, sambutan di drop-off, arahan program paket (Dinner/Lunch/Shopping/Event), dan dokumentasi foto rombongan.'
-  },
-  {
-    id: 'pb-2',
-    judul: 'Panduan Follow Up Mitra Guide, Travel & EO',
-    kanal: 'PARTNERSHIP & EVENT',
-    ringkasan: 'Lakukan personal touch via WA sebelum jadwal kunjungan/event, siapkan skema komisi/benefit yang jelas, dan catat seluruh feedback mitra di CRM/MOM.'
-  },
-  {
-    id: 'pb-3',
-    judul: 'Alur Pengajuan Anggaran & Aktivasi Event (EAF)',
-    kanal: 'ADMIN & EVENT',
-    ringkasan: 'Susun rincian kebutuhan acara/promosi, estimasi pax/revenue, dan jadwal pelaksanaan sebelum diajukan agar approval berjalan tepat waktu.'
-  }
-];
-
-const INITIAL_EAF_RECORDS = [
-  {
-    id: 'eaf-1',
-    kode: 'EAF-NOV-01',
-    tanggal: '2026-11-18',
-    judul: 'Aktivasi Event & Pendukung Rombongan November',
-    pengaju: 'SELVIA',
-    kanal: 'EVENT',
-    estimasiBudget: 12500000,
-    estimasiRevenue: 85000000,
-    status: 'Approved'
-  },
-  {
-    id: 'eaf-2',
-    kode: 'EAF-NOV-02',
-    tanggal: '2026-11-22',
-    judul: 'Kebutuhan Materi & Kunjungan Mitra Travel / Pemerintahan',
-    pengaju: 'LINDA',
-    kanal: 'GOVERMENT',
-    estimasiBudget: 4500000,
-    estimasiRevenue: 45000000,
-    status: 'Pending'
-  }
-];
+const INITIAL_EAF_RECORDS = [];
 
 const formatIDR = (val) => {
   const num = Number(val || 0);
@@ -868,17 +815,17 @@ export default function App() {
   const [authError, setAuthError] = useState('');
 
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [workspaceSubTab, setWorkspaceSubTab] = useState('checklist');
+  const [workspaceSubTab, setWorkspaceSubTab] = useState('workspace');
   const [selectedPicWorkspace, setSelectedPicWorkspace] = useState('ALL');
   const [periodMode, setPeriodMode] = useState('mingguan');
   const [selectedWeek, setSelectedWeek] = useState('ALL');
   const [customStart, setCustomStart] = useState('2026-11-01');
-  const [customEnd, setCustomEnd] = useState('2026-11-23');
+  const [customEnd, setCustomEnd] = useState('2026-11-24');
   const [selectedKanalFilter, setSelectedKanalFilter] = useState('ALL');
   const [searchQuery, setSearchQuery] = useState('');
 
   const [mtdDaysInMonth, setMtdDaysInMonth] = useState(30);
-  const [mtdCurrentDay, setMtdCurrentDay] = useState(23);
+  const [mtdCurrentDay, setMtdCurrentDay] = useState(24);
 
   const [selectedAnnualYear, setSelectedAnnualYear] = useState(2026);
   const [selectedAnnualChartRowId, setSelectedAnnualChartRowId] = useState('ar-2');
@@ -973,19 +920,10 @@ export default function App() {
     }
   });
 
-  const [checklists, setChecklists] = useState(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-      return saved?.checklists || INITIAL_CHECKLISTS;
-    } catch {
-      return INITIAL_CHECKLISTS;
-    }
-  });
-
   const [playbooks, setPlaybooks] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-      return saved?.playbooks || INITIAL_PLAYBOOKS;
+      return Array.isArray(saved?.playbooks) ? saved.playbooks : INITIAL_PLAYBOOKS;
     } catch {
       return INITIAL_PLAYBOOKS;
     }
@@ -994,16 +932,10 @@ export default function App() {
   const [eafRecords, setEafRecords] = useState(() => {
     try {
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
-      return saved?.eafRecords || INITIAL_EAF_RECORDS;
+      return Array.isArray(saved?.eafRecords) ? saved.eafRecords : INITIAL_EAF_RECORDS;
     } catch {
       return INITIAL_EAF_RECORDS;
     }
-  });
-
-  const [newChecklist, setNewChecklist] = useState({
-    pic: 'NADIA',
-    kategori: 'Follow Up Mitra',
-    item: ''
   });
 
   const [newPlaybook, setNewPlaybook] = useState({
@@ -1026,7 +958,7 @@ export default function App() {
   const [lastSavedAt, setLastSavedAt] = useState(() => new Date().toLocaleTimeString('id-ID'));
 
   const [formAcq, setFormAcq] = useState({
-    tanggal: '2026-11-23',
+    tanggal: '2026-11-24',
     minggu: 'W4',
     waktu: '14:00',
     kanal: 'GUIDE',
@@ -1051,7 +983,7 @@ export default function App() {
     judul: '',
     pic: 'NADIA',
     kanal: 'GUIDE',
-    tanggal: '2026-11-24',
+    tanggal: '2026-11-25',
     waktu: '10:00',
     prioritas: 'High',
     status: 'In Progress',
@@ -1059,14 +991,14 @@ export default function App() {
   });
 
   const [newMom, setNewMom] = useState({
-    tanggal: '2026-11-23',
+    tanggal: '2026-11-24',
     minggu: 'W4',
     judul: '',
     peserta: 'CHOKI DASYAT, WINDA',
     poinPembahasan: '',
     actionItem: '',
     picAction: 'WINDA',
-    deadline: '2026-11-25'
+    deadline: '2026-11-26'
   });
 
   const [aiPrompt, setAiPrompt] = useState('');
@@ -1074,7 +1006,7 @@ export default function App() {
   const [aiMessages, setAiMessages] = useState([
     {
       role: 'assistant',
-      text: 'Halo! AI Strategist aktif & siap dipakai. Tanya saya soal perbandingan W1–W5, annual report THE KERANJANG BALI (2024–2028), funnel konversi sales, kesimpulan bulanan, EAF, checklist SPV/PIC, skor KPI, Strategi Inisiatif (SI), posisi VACANT, atau rencana aksi 7 hari.'
+      text: 'Halo! AI Strategist aktif & siap dipakai. Tanya saya soal perbandingan W1–W5, annual report THE KERANJANG BALI (2024–2028), funnel konversi sales, kesimpulan bulanan, EAF, workspace PIC, skor KPI, Strategi Inisiatif (SI), posisi VACANT, atau rencana aksi 7 hari.'
     }
   ]);
 
@@ -1090,7 +1022,6 @@ export default function App() {
         posMetrics,
         tasks,
         moms,
-        checklists,
         playbooks,
         eafRecords
       };
@@ -1109,7 +1040,6 @@ export default function App() {
     posMetrics,
     tasks,
     moms,
-    checklists,
     playbooks,
     eafRecords
   ]);
@@ -1472,7 +1402,7 @@ export default function App() {
         row.program.toLowerCase().includes(q) ||
         (row.partner || '').toLowerCase().includes(q);
 
-      const activeMonthPrefix = (customEnd || '2026-11-23').slice(0, 7);
+      const activeMonthPrefix = (customEnd || '2026-11-24').slice(0, 7);
       let matchDate = true;
       if (periodMode === 'harian') {
         matchDate = row.tanggal === customEnd;
@@ -1501,7 +1431,7 @@ export default function App() {
 
   const mainSummary = useMemo(() => {
     if (periodMode === 'harian') {
-      const targetDate = customEnd || '2026-11-23';
+      const targetDate = customEnd || '2026-11-24';
       const prevDateStr = shiftIsoDate(targetDate, -1);
       const dayItems = acquisitions.filter((a) => a.tanggal === targetDate);
       const prevItems = acquisitions.filter((a) => a.tanggal === prevDateStr);
@@ -1776,10 +1706,6 @@ export default function App() {
     const trafActual = Number(mainSummary.traffic || 0);
     const trafPct = trafTarget > 0 ? ((trafActual / trafTarget) * 100).toFixed(1) : '0.0';
 
-    const doneChk = checklists.filter((c) => c.done).length;
-    const totalChk = checklists.length || 1;
-    const chkPct = Math.round((doneChk / totalChk) * 100);
-
     return [
       {
         num: 1,
@@ -1797,46 +1723,19 @@ export default function App() {
         text:
           trafTarget > 0
             ? `Pencapaian traffic periode aktif: ${formatNum(trafActual)} pax (${trafPct}% dari akumulasi traffic tahunan ${formatNum(trafTarget)} pax).`
-            : `Progres Checklist SPV & PIC saat ini ${doneChk}/${totalChk} item selesai (${chkPct}%).`
+            : `Total task aktif tim saat ini: ${tasks.length} agenda terjadwal.`
       },
       {
         num: 4,
-        text: `Terdapat ${eafRecords.filter((e) => e.status === 'Pending').length} pengajuan EAF berstatus Pending dan ${pics.filter((p) => p.nama === 'VACANT').length} posisi VACANT yang perlu dipantau.`
+        text: `Terdapat ${eafRecords.filter((e) => e.status === 'Pending').length} pengajuan EAF berstatus Pending (${eafRecords.length} total EAF) dan ${pics.filter((p) => p.nama === 'VACANT').length} posisi VACANT yang perlu dipantau.`
       }
     ];
-  }, [annualTotalsMap, selectedAnnualYear, mainSummary, funnelSummary, checklists, eafRecords, pics]);
-
-  const filteredChecklists = useMemo(() => {
-    if (selectedPicWorkspace === 'ALL') return checklists;
-    return checklists.filter((c) => c.pic.toUpperCase() === selectedPicWorkspace.toUpperCase());
-  }, [checklists, selectedPicWorkspace]);
+  }, [annualTotalsMap, selectedAnnualYear, mainSummary, funnelSummary, tasks.length, eafRecords, pics]);
 
   const filteredTasksWorkspace = useMemo(() => {
     if (selectedPicWorkspace === 'ALL') return tasks;
     return tasks.filter((t) => t.pic.toUpperCase() === selectedPicWorkspace.toUpperCase());
   }, [tasks, selectedPicWorkspace]);
-
-  const handleToggleChecklist = (id) => {
-    setChecklists((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, done: !c.done } : c))
-    );
-  };
-
-  const handleAddChecklist = (e) => {
-    e.preventDefault();
-    if (!newChecklist.item.trim()) return;
-    setChecklists((prev) => [
-      {
-        id: `chk-${Date.now()}`,
-        pic: newChecklist.pic,
-        kategori: newChecklist.kategori || 'Operasional',
-        item: newChecklist.item.trim(),
-        done: false
-      },
-      ...prev
-    ]);
-    setNewChecklist((prev) => ({ ...prev, item: '' }));
-  };
 
   const handleAddPlaybook = (e) => {
     e.preventDefault();
@@ -1851,6 +1750,10 @@ export default function App() {
       ...prev
     ]);
     setNewPlaybook({ judul: '', kanal: 'GUIDE', ringkasan: '' });
+  };
+
+  const handleDeletePlaybook = (id) => {
+    setPlaybooks((prev) => prev.filter((item) => item.id !== id));
   };
 
   const handleAddEaf = (e) => {
@@ -1890,6 +1793,10 @@ export default function App() {
         return { ...item, status: order[nextIdx] };
       })
     );
+  };
+
+  const handleDeleteEaf = (id) => {
+    setEafRecords((prev) => prev.filter((item) => item.id !== id));
   };
 
   const handleAddPic = (e) => {
@@ -1977,7 +1884,7 @@ export default function App() {
         judul: `[MOM] ${mom.actionItem}`,
         pic: mom.picAction || 'WINDA',
         kanal: 'MOM ACTION',
-        tanggal: mom.deadline || '2026-11-25',
+        tanggal: mom.deadline || '2026-11-26',
         waktu: '10:00',
         prioritas: 'High',
         status: 'In Progress',
@@ -2007,7 +1914,6 @@ export default function App() {
         posMetrics,
         tasks,
         moms,
-        checklists,
         playbooks,
         eafRecords
       },
@@ -2042,9 +1948,8 @@ export default function App() {
         if (parsed.posMetrics) setPosMetrics(parsed.posMetrics);
         if (parsed.tasks) setTasks(parsed.tasks);
         if (parsed.moms) setMoms(parsed.moms);
-        if (parsed.checklists) setChecklists(parsed.checklists);
-        if (parsed.playbooks) setPlaybooks(parsed.playbooks);
-        if (parsed.eafRecords) setEafRecords(parsed.eafRecords);
+        if (Array.isArray(parsed.playbooks)) setPlaybooks(parsed.playbooks);
+        if (Array.isArray(parsed.eafRecords)) setEafRecords(parsed.eafRecords);
       } catch (err) {
         console.error('File backup tidak valid:', err);
       }
@@ -2079,11 +1984,10 @@ export default function App() {
       );
     }
 
-    if (q.includes('eaf') || q.includes('budget') || q.includes('checklist') || q.includes('playbook')) {
+    if (q.includes('eaf') || q.includes('budget') || q.includes('playbook')) {
       const totalBudgetEaf = eafRecords.reduce((s, e) => s + Number(e.estimasiBudget || 0), 0);
-      const doneChk = checklists.filter((c) => c.done).length;
       lines.push(
-        `Operasional & EAF:\n• Checklist selesai: ${doneChk}/${checklists.length} item\n• Total estimasi EAF: ${formatIDR(totalBudgetEaf)} (${eafRecords.length} pengajuan)\n• Playbook tersedia: ${playbooks.length} panduan`
+        `Operasional & EAF:\n• Total estimasi EAF: ${formatIDR(totalBudgetEaf)} (${eafRecords.length} pengajuan)\n• Playbook tersimpan: ${playbooks.length} panduan`
       );
     }
 
@@ -2133,7 +2037,7 @@ export default function App() {
         lines.push(`Perhatian Posisi VACANT: ${vacantPositions.join(', ')} perlu backup eksekusi harian.`);
       }
       lines.push(
-        `Rencana Aksi 7 Hari:\n1. Update Target, Target MTD harian (hari ke-${mtdCurrentDay}/${mtdDaysInMonth}), dan Actual di tab KPI & FUNNEL.\n2. Kunci jadwal rombongan & event masuk ke Schedule dan Google Calendar.\n3. Follow up mitra aktif (Guide, Travel, EO, Pemerintahan) serta tutup action item di MOM & Checklist.`
+        `Rencana Aksi 7 Hari:\n1. Update Target, Target MTD harian (hari ke-${mtdCurrentDay}/${mtdDaysInMonth}), dan Actual di tab KPI & FUNNEL.\n2. Kunci jadwal rombongan & event masuk ke Schedule dan Google Calendar.\n3. Follow up mitra aktif (Guide, Travel, EO, Pemerintahan) serta tutup action item di MOM.`
       );
     }
 
@@ -3899,16 +3803,16 @@ export default function App() {
             <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
               <div>
                 <h2 className="text-sm sm:text-base font-bold text-white uppercase tracking-wide">
-                  Workspace Sales & Marketing — Checklist SPV/PIC, Playbook & EAF
+                  Workspace Sales & Marketing — Workspace PIC, Playbook & EAF
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Kelola workspace harian per PIC, standar eksekusi sales/event, dan pencatatan pengajuan EAF
+                  Kelola workspace harian per PIC, playbook sales/event, dan pencatatan pengajuan EAF
                 </p>
               </div>
 
               <div className="flex flex-wrap items-center gap-1.5 print:hidden">
                 {[
-                  { id: 'checklist', label: 'Workspace & Checklist SPV', icon: ClipboardCheck },
+                  { id: 'workspace', label: 'Workspace PIC', icon: ClipboardCheck },
                   { id: 'playbook', label: 'Playbook Sales & Event', icon: BookOpen },
                   { id: 'eaf', label: 'Pencatatan EAF', icon: Wallet }
                 ].map((sub) => {
@@ -3933,7 +3837,7 @@ export default function App() {
               </div>
             </div>
 
-            {workspaceSubTab === 'checklist' && (
+            {workspaceSubTab === 'workspace' && (
               <div className="space-y-4">
                 <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 flex flex-wrap items-center justify-between gap-2 text-xs">
                   <div className="flex items-center gap-2">
@@ -3943,7 +3847,7 @@ export default function App() {
                       onChange={(e) => setSelectedPicWorkspace(e.target.value)}
                       className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-cyan-300 font-semibold"
                     >
-                      <option value="ALL">Semua PIC / SPV</option>
+                      <option value="ALL">Semua PIC</option>
                       {pics
                         .filter((p) => p.nama !== 'VACANT')
                         .map((p) => (
@@ -3954,103 +3858,36 @@ export default function App() {
                     </select>
                   </div>
                   <span className="text-emerald-300 font-bold">
-                    Selesai: {filteredChecklists.filter((c) => c.done).length} / {filteredChecklists.length} Checklist
+                    Task Aktif: {filteredTasksWorkspace.length} Agenda
                   </span>
                 </div>
 
-                <form
-                  onSubmit={handleAddChecklist}
-                  className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 grid grid-cols-1 sm:grid-cols-4 gap-2.5 text-xs print:hidden"
-                >
-                  <select
-                    value={newChecklist.pic}
-                    onChange={(e) => setNewChecklist({ ...newChecklist, pic: e.target.value })}
-                    className="rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-2 text-white"
-                  >
-                    {pics
-                      .filter((p) => p.nama !== 'VACANT')
-                      .map((p) => (
-                        <option key={p.id} value={p.nama}>
-                          PIC: {p.nama} ({p.posisi})
-                        </option>
-                      ))}
-                  </select>
-                  <input
-                    type="text"
-                    placeholder="Kategori (mis. Follow Up Mitra)"
-                    value={newChecklist.kategori}
-                    onChange={(e) => setNewChecklist({ ...newChecklist, kategori: e.target.value })}
-                    className="rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-2 text-white"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Isi item checklist harian / SPV..."
-                    value={newChecklist.item}
-                    onChange={(e) => setNewChecklist({ ...newChecklist, item: e.target.value })}
-                    className="rounded-lg border border-slate-700 bg-slate-950 px-2.5 py-2 text-white"
-                    required
-                  />
-                  <button
-                    type="submit"
-                    className="rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-2 px-3 flex items-center justify-center gap-1.5"
-                  >
-                    <Plus className="w-4 h-4" /> Tambah Checklist
-                  </button>
-                </form>
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                  <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 space-y-2.5">
-                    <h3 className="text-xs sm:text-sm font-bold text-white uppercase">
-                      Checklist Harian & Kontrol SPV
-                    </h3>
-                    {filteredChecklists.map((c) => (
-                      <button
-                        key={c.id}
-                        type="button"
-                        onClick={() => handleToggleChecklist(c.id)}
-                        className={`w-full text-left rounded-xl border p-3 transition flex items-start gap-3 text-xs ${
-                          c.done
-                            ? 'border-emerald-500/30 bg-emerald-500/10 text-slate-300'
-                            : 'border-slate-800 bg-slate-950/80 text-white hover:border-slate-700'
-                        }`}
-                      >
-                        <CheckCircle2
-                          className={`w-4 h-4 shrink-0 mt-0.5 ${
-                            c.done ? 'text-emerald-400' : 'text-slate-600'
-                          }`}
-                        />
-                        <div className="flex-1">
+                <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 space-y-2.5">
+                  <h3 className="text-xs sm:text-sm font-bold text-white uppercase">
+                    Workspace Agenda / Task PIC ({filteredTasksWorkspace.length})
+                  </h3>
+                  {filteredTasksWorkspace.length === 0 ? (
+                    <p className="text-xs text-slate-500 py-4 text-center">
+                      Belum ada agenda/task untuk filter PIC ini.
+                    </p>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {filteredTasksWorkspace.map((t) => (
+                        <div
+                          key={t.id}
+                          className="rounded-xl border border-slate-800 bg-slate-950/80 p-3.5 text-xs space-y-1.5"
+                        >
                           <div className="flex items-center justify-between gap-2">
-                            <span className="font-bold text-cyan-300">{c.pic}</span>
-                            <span className="text-[10px] rounded bg-slate-800 px-2 py-0.5 text-slate-300">
-                              {c.kategori}
+                            <span className="font-bold text-amber-300">{t.pic}</span>
+                            <span className="text-[11px] text-slate-400">
+                              {t.tanggal} • {t.status} ({t.progress}%)
                             </span>
                           </div>
-                          <div className={`mt-1 ${c.done ? 'line-through text-slate-400' : ''}`}>
-                            {c.item}
-                          </div>
+                          <div className="font-semibold text-white">{t.judul}</div>
                         </div>
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 space-y-2.5">
-                    <h3 className="text-xs sm:text-sm font-bold text-white uppercase">
-                      Task Aktif PIC ({filteredTasksWorkspace.length})
-                    </h3>
-                    {filteredTasksWorkspace.map((t) => (
-                      <div
-                        key={t.id}
-                        className="rounded-xl border border-slate-800 bg-slate-950/80 p-3 text-xs space-y-1.5"
-                      >
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="font-bold text-amber-300">{t.pic}</span>
-                          <span className="text-[11px] text-slate-400">{t.tanggal} • {t.status}</span>
-                        </div>
-                        <div className="font-semibold text-white">{t.judul}</div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -4096,20 +3933,36 @@ export default function App() {
                   />
                 </form>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {playbooks.map((pb) => (
-                    <div
-                      key={pb.id}
-                      className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 space-y-2 text-xs"
-                    >
-                      <span className="inline-block rounded bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 px-2 py-0.5 font-bold text-[10px] uppercase">
-                        {pb.kanal}
-                      </span>
-                      <h3 className="text-sm font-bold text-white">{pb.judul}</h3>
-                      <p className="text-slate-300 leading-relaxed">{pb.ringkasan}</p>
-                    </div>
-                  ))}
-                </div>
+                {playbooks.length === 0 ? (
+                  <div className="rounded-xl border border-slate-800 bg-[#0e131d] p-6 text-center text-xs text-slate-500">
+                    Playbook masih kosong. Silakan tambahkan playbook baru pada form di atas.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {playbooks.map((pb) => (
+                      <div
+                        key={pb.id}
+                        className="rounded-xl border border-slate-800 bg-[#0e131d] p-4 space-y-2 text-xs"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="inline-block rounded bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 px-2 py-0.5 font-bold text-[10px] uppercase">
+                            {pb.kanal}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleDeletePlaybook(pb.id)}
+                            className="p-1 text-rose-400 hover:bg-rose-500/15 rounded print:hidden"
+                            aria-label="Hapus playbook"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                        <h3 className="text-sm font-bold text-white">{pb.judul}</h3>
+                        <p className="text-slate-300 leading-relaxed">{pb.ringkasan}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 
@@ -4175,36 +4028,58 @@ export default function App() {
                           <th className="p-2.5 border border-slate-800 text-right">Estimasi Budget</th>
                           <th className="p-2.5 border border-slate-800 text-right">Target Revenue</th>
                           <th className="p-2.5 border border-slate-800 text-center">Status</th>
+                          <th className="p-2.5 border border-slate-800 text-center print:hidden">Aksi</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {eafRecords.map((item) => (
-                          <tr key={item.id} className="border-b border-slate-800 hover:bg-slate-900/50">
-                            <td className="p-2.5 border border-slate-800 font-bold text-cyan-300">{item.kode}</td>
-                            <td className="p-2.5 border border-slate-800">{item.tanggal}</td>
-                            <td className="p-2.5 border border-slate-800 font-semibold text-white">{item.judul}</td>
-                            <td className="p-2.5 border border-slate-800 text-emerald-200">{item.pengaju}</td>
-                            <td className="p-2.5 border border-slate-800 text-right font-semibold text-amber-300">
-                              {formatIDR(item.estimasiBudget)}
-                            </td>
-                            <td className="p-2.5 border border-slate-800 text-right font-semibold text-emerald-300">
-                              {formatIDR(item.estimasiRevenue)}
-                            </td>
-                            <td className="p-2.5 border border-slate-800 text-center">
-                              <button
-                                type="button"
-                                onClick={() => handleToggleEafStatus(item.id)}
-                                className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
-                                  item.status === 'Approved' || item.status === 'Done'
-                                    ? 'bg-emerald-500/20 text-emerald-300'
-                                    : 'bg-amber-500/20 text-amber-300'
-                                }`}
-                              >
-                                {item.status}
-                              </button>
+                        {eafRecords.length === 0 ? (
+                          <tr>
+                            <td
+                              colSpan={8}
+                              className="p-6 text-center text-slate-500 border border-slate-800"
+                            >
+                              Belum ada pencatatan EAF. Mulai catat pengajuan EAF baru di form atas.
                             </td>
                           </tr>
-                        ))}
+                        ) : (
+                          eafRecords.map((item) => (
+                            <tr key={item.id} className="border-b border-slate-800 hover:bg-slate-900/50">
+                              <td className="p-2.5 border border-slate-800 font-bold text-cyan-300">{item.kode}</td>
+                              <td className="p-2.5 border border-slate-800">{item.tanggal}</td>
+                              <td className="p-2.5 border border-slate-800 font-semibold text-white">{item.judul}</td>
+                              <td className="p-2.5 border border-slate-800 text-emerald-200">{item.pengaju}</td>
+                              <td className="p-2.5 border border-slate-800 text-right font-semibold text-amber-300">
+                                {formatIDR(item.estimasiBudget)}
+                              </td>
+                              <td className="p-2.5 border border-slate-800 text-right font-semibold text-emerald-300">
+                                {formatIDR(item.estimasiRevenue)}
+                              </td>
+                              <td className="p-2.5 border border-slate-800 text-center">
+                                <button
+                                  type="button"
+                                  onClick={() => handleToggleEafStatus(item.id)}
+                                  className={`rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
+                                    item.status === 'Approved' || item.status === 'Done'
+                                      ? 'bg-emerald-500/20 text-emerald-300'
+                                      : 'bg-amber-500/20 text-amber-300'
+                                  }`}
+                                >
+                                  {item.status}
+                                </button>
+                              </td>
+                              <td className="p-2.5 border border-slate-800 text-center print:hidden">
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteEaf(item.id)}
+                                  className="p-1 text-rose-400 hover:bg-rose-500/15 rounded"
+                                  aria-label="Hapus EAF"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </td>
+                            </tr>
+                          ))
+                        )}
                       </tbody>
                     </table>
                   </div>
